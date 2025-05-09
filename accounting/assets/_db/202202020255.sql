@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `hide` TINYINT UNSIGNED NULL DEFAULT NULL AFTER `fiscal_year_id`;

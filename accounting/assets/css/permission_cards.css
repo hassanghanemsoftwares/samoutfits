@@ -1,0 +1,21 @@
+.permission_cards {
+    border: 1px solid black;
+    border-radius: 5px !important;
+    height: 100% !important;
+    min-height: 430px;
+    margin-top: 10px !important;
+}
+.permission_cards .panel-header {
+    background-color: black;
+    color: white;
+    font-weight: bold;
+}
+.permission_cards .panel-body {
+    padding: 0px !important;
+}
+.permission_cards .panel-body ul {
+    margin: 0px !important;
+}
+.permission_cards input {
+    margin-right: 15px;
+}

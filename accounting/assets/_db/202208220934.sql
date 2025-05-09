@@ -1,0 +1,1 @@
+ALTER TABLE `items` ADD `old_price` DOUBLE UNSIGNED NULL AFTER `stock_clearance`;

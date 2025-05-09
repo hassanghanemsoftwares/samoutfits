@@ -1,0 +1,1 @@
+ALTER TABLE `transactions` ADD `op_nb` INT UNSIGNED NULL AFTER `updated_on`;

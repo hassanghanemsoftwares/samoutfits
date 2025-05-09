@@ -1,0 +1,2 @@
+CREATE TABLE `transaction_item_sizes` ( `id` INT UNSIGNED NOT NULL AUTO_INCREMENT , `transaction_item_id` INT UNSIGNED NOT NULL , `size` VARCHAR(255) NOT NULL , `qty` INT UNSIGNED NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+ALTER TABLE `transaction_item_sizes` ADD CONSTRAINT `transaction_item_sales_ibfk_1` FOREIGN KEY (`transaction_item_id`) REFERENCES `transaction_items`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

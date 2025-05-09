@@ -1,0 +1,1 @@
+ALTER TABLE `transactions` ADD `delivery_note` VARCHAR(255) NULL AFTER `description`;

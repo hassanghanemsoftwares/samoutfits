@@ -1,0 +1,1 @@
+ALTER TABLE `transactions` ADD `cash_date` DATE NULL AFTER `value_date`, ADD `return_date` DATE NULL AFTER `cash_date`;

@@ -1,0 +1,4 @@
+ALTER TABLE `transactions` ADD `delivery_charge` DOUBLE UNSIGNED NOT NULL AFTER `status`, ADD `source` VARCHAR(255) NOT NULL AFTER `delivery_charge`, ADD `status2` VARCHAR(255) NOT NULL AFTER `source`;
+ALTER TABLE `transactions` CHANGE `delivery_charge` `delivery_charge` DOUBLE UNSIGNED NULL, CHANGE `source` `source` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL, CHANGE `status2` `status2` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL;
+ALTER TABLE `transaction_item_sizes` CHANGE `qty` `qty` DOUBLE UNSIGNED NOT NULL;
+ALTER TABLE `accounts` ADD `description` VARCHAR(255) NULL AFTER `open_balance`;

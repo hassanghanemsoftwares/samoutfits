@@ -1,0 +1,1 @@
+ALTER TABLE `transactions` ADD `payment_method` VARCHAR(50) NULL DEFAULT NULL AFTER `relation_id`;

@@ -1,0 +1,1 @@
+ALTER TABLE `orders` ADD `delivery_charge` DOUBLE UNSIGNED NULL AFTER `discount`;
