@@ -57,14 +57,14 @@ class Products extends MY_Controller
 		$data['product'] = $this->Item->load_item_data($item_id);
 		$data['category'] = $data['product']['category'];
 		$data['sub_category'] = $data['product']['sub_category'];
-		$data['category_link'] = str_replace(" ","%20", str_replace("&","%26", $data['product']['category']));
-		$data['sub_category_link'] = str_replace(" ","%20", str_replace("&","%26", $data['product']['sub_category']));
+		$data['category_link'] = str_replace(" ", "%20", str_replace("&", "%26", $data['product']['category']));
+		$data['sub_category_link'] = str_replace(" ", "%20", str_replace("&", "%26", $data['product']['sub_category']));
 		// var_dump($data['sub_category_link'], $data['category_link']);exit;
 		$data['images'] = $this->Item->load_item_images($item_id);
 		$tags = $this->Item->load_item_tags($item_id);
 		$data['all_tags'] = $tags;
 		$data['tags'] = '';
-		var_dump($data['sizes']);exit;
+		// var_dump( $data['sizes']);exit;
 		if ($tags) {
 			foreach ($tags as $k => $tag) {
 				if ($k == 0) {
@@ -75,15 +75,23 @@ class Products extends MY_Controller
 			}
 			$data['tags'] .= ".";
 		}
-		if (in_array($data['product']['category'], ['Wallets', 'Hats'])) {
+		if (
+			in_array($data['product']['category'], ['Wallets', 'Hats']) ||
+			(isset($data['sizes'][0]['size']) && $data['sizes'][0]['size'] === "No")
+		) {
 			$data['hide_size'] = 1;
 		} else {
 			$data['hide_size'] = 0;
 		}
-		$similar = $this->Item->load_similar_products($data['product']['category'], $item_id);
+		if(count($data['sizes']) ==0){
+			$data['hide_size'] = 1;
+
+		}
+// var_dump($data['product']);exit;
+		$similar = $this->Item->load_similar_products($data['product']['category'],$data['product']['sub_category'], $item_id);
 		if (count($similar) < 12) {
 			$more_limit = 12 - count($similar);
-			$more = $this->Item->load_more_similar_products($data['product']['category'], $item_id, $more_limit);
+			$more = $this->Item->load_more_similar_products($data['product']['category'],$data['product']['sub_category'], $item_id, $more_limit);
 			foreach ($more as $m) {
 				$similar[] = $m;
 			}
@@ -97,9 +105,9 @@ class Products extends MY_Controller
 			'price' => $data['product']['price'],
 			'old_price' => $data['product']['old_price'],
 			'color' => $data['product']['color'],
-			'url' => "https://www.samoutfits.com/products/view/".$item_id,
-			'availability' => (doubleval($data['product']['qty'] > 0))? 'In Stock' : 'Out of Stock', 
-			'image' => (isset($data['images'][0]['image_name'])? "https://www.samoutfits.com/accounting/assets/uploads/".$data['images'][0]['image_name'] : "" )
+			'url' => "https://www.samoutfits.com/products/view/" . $item_id,
+			'availability' => (doubleval($data['product']['qty'] > 0)) ? 'In Stock' : 'Out of Stock',
+			'image' => (isset($data['images'][0]['image_name']) ? "https://www.samoutfits.com/accounting/assets/uploads/" . $data['images'][0]['image_name'] : "")
 		);
 		$data['title'] = $this->lang->line('Product') . " - " . $data['product']['barcode'];
 		$this->load->view('templates/header', [
@@ -171,8 +179,8 @@ class Products extends MY_Controller
 			$data['selected_subcategory'] = [];
 			foreach ($subcategory_array as $s) {
 				str_replace('%20', ' ',  $s);
-				if($s == "Deodorant%20%26%20Roll"){
-				    $s = "Deodorant%20%26%20Roll-on";
+				if ($s == "Deodorant%20%26%20Roll") {
+					$s = "Deodorant%20%26%20Roll-on";
 				}
 				$data['selected_subcategory'][$s] = $s;
 			}
@@ -198,7 +206,7 @@ class Products extends MY_Controller
 		} else {
 			$data['max_price'] = 100;
 		}
-		if($data['max_price'] == 0){
+		if ($data['max_price'] == 0) {
 			$data['max_price'] = 100;
 		}
 		if ($colors) {
@@ -417,12 +425,13 @@ class Products extends MY_Controller
 	}
 
 	//get json product info
-	public function json_info(){
-		$item_id=$this->input->post('item_id');
+	public function json_info()
+	{
+		$item_id = $this->input->post('item_id');
 		$item = $this->Item->load_item_data($item_id);
-		$response=array(
-			"result"=>true,
-			"data"=>$item
+		$response = array(
+			"result" => true,
+			"data" => $item
 		);
 		echo json_encode($response);
 	}

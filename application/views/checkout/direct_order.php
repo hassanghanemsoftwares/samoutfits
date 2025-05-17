@@ -21,6 +21,13 @@
     .bootstrap-select>.dropdown-toggle {
         height: calc(1.5em + 0.75rem);
     }
+
+    .spinner-white {
+        border-top-color: white !important;
+        /* Change the spinner color to white */
+        border-left-color: white !important;
+        /* Ensure the spinner is fully white */
+    }
 </style>
 <!-- Checkout Start -->
 <?php echo form_open('checkout/confirm_direct_order', 'id="directOrderForm" name="directOrderForm" onsubmit="return validation();" role="form" autocomplete="off" novalidate') ?>
@@ -69,7 +76,7 @@
                     <div class="row">
                         <div class="col-md-12 form-group">
                             <label>Country/Region</label>
-                            <?php echo form_dropdown('country_val', '', '', 'id="country_val"  class="form-control form-control-md selectpicker countrypicker"  data-live-search="true" data-flag="true" data-default="' . 'LB' . '"') ?>
+                            <?php echo form_dropdown('country_val', '', '', 'id="country_val"  class="form-control form-control-md selectpicker countrypicker" data-countries="LB"  data-live-search="true" data-flag="true" data-default="' . 'LB' . '"') ?>
                         </div>
                         <div class="col-md-6 form-group">
                             <label>First Name <span id="msg_fname"></span></label>
@@ -80,15 +87,20 @@
                             <input class="form-control" type="text" id="lname" name="lname" value="">
                         </div>
                         <div class="col-md-12 form-group">
-                            <label>Address <span id="msg_direction"></span></label>
-                            <input class="form-control" type="text" value="" id="direction" name="direction">
-                        </div>
-                        <div class="col-md-12 form-group">
                             <label>City <span id="msg_city"></span></label>
                             <input class="form-control" list="cities" type="text" id="city" name="city" value="" />
                             <datalist id="cities">
                             </datalist>
                         </div>
+                        <div class="col-md-12 form-group">
+                            <label>Street <span id="msg_direction"></span></label>
+                            <input class="form-control" type="text" value="" id="street" name="street">
+                        </div>
+                        <!-- <div class="col-md-12 form-group">
+                            <label>Address <span id="msg_direction"></span></label>
+                            <input class="form-control" type="text" value="" id="direction" name="direction">
+                        </div> -->
+
                         <div class="col-md-6 form-group" style="padding-left:30px !important;">
                             <label>Other Phone (Optional)</label>
                             <div class="row">
@@ -108,10 +120,14 @@
                                     <!-- </div> -->
                                 </div>
                             </div>
+                            <span id="msg_phone2"></span>
+
                         </div>
                         <div class="col-md-6 form-group">
                             <label>Email</label>
                             <input class="form-control" type="text" id="email" name="email" value="">
+                            <span id="msg_email"></span>
+
                         </div>
                         <div class="col-md-12 form-group">
                             <label>Directions (Optional)</label>
@@ -129,7 +145,7 @@
         </div>
         <div class="col-lg-4">
             <div class="input-group mb-30">
-                <input type="text" id="coupon" class="form-control border-0 p-4" placeholder="Coupon Code">
+                <input type="text" id="coupon" class="form-control border-0 p-4" value="<?php echo isset($coupon) ? htmlspecialchars($coupon) : ''; ?>" placeholder="Coupon Code">
                 <div class="input-group-append">
                     <button type="button" class="btn btn-primary" id="check_coupon">Apply Coupon</button>
                 </div>
@@ -189,8 +205,10 @@
                     <input type="text" id="discount" name="discount" value="<?php echo $discount; ?>" hidden>
                     <input type="text" id="discount_type" name="discount_type" value="<?php echo $discount_type; ?>"
                         hidden>
-                    <button type="button" id="placeOrderBtn"
-                        class="btn btn-block btn-primary font-weight-bold py-3">Place Order</button>
+                    <button type="button" id="placeOrderBtn" class="btn btn-block btn-primary font-weight-bold py-3">
+                        <span class="spinner-border spinner-border-sm d-none mr-2 " role="status"></span>
+                        <span class="btn-text">Place Order</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -323,7 +341,7 @@
                                 </button>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-12">
-                                <button type="button" class="btn mx-2" id="continue_shopping"
+                                <button type="button" class="btn mx-2  text-white bg-dark" id="continue_shopping"
                                     style="background-color:#FFDF59; color:#3D464D;">
                                     <i class="fas fa-shopping-basket me-2"></i>
                                     <?php echo $this->lang->line('Continue_Shopping') ?>

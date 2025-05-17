@@ -12,6 +12,7 @@
             <li><a href="ecommerce/users">Users</a></li>
              <li><a href="ecommerce/sections">Sections</a></li> 
             <li><a href="ecommerce/landing_page">Landing Page</a></li>
+            <li><a href="ecommerce/newsletter_subscribers">Newsletter subscribers</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
             <li><a href="accounts/index"><span class="glyphicon glyphicon-log-in"></span> Accounting</a></li>

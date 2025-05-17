@@ -1,8 +1,10 @@
 <?php $sub_cat_list = $this->violet_auth->get_all_subcategories();
 // var_dump($sub_cat_list); exit; 
 ?>
-<div class="container-fluid">
-	<div class="row bg-secondary py-1 px-xl-5">
+<!-- <div class="container-fluid">
+	<div class="row bg-secondary py-1 px-xl-5"> -->
+<div>
+	<div class="row bg-secondary">
 		<div class="col-lg-6 d-none d-lg-block">
 			<div class="d-inline-flex align-items-center h-100">
 				<a class="text-body mr-3" href="">About</a>
@@ -11,8 +13,8 @@
 			</div>
 		</div>
 		<div class="col-lg-6 text-center text-lg-right">
-			<div class="d-inline-flex align-items-center">
-				<div class="btn-group" <?php echo ($this->violet_auth->is_logged_in()) ? 'hidden' : ''; ?>>
+			<!-- <div class="d-inline-flex align-items-center"> -->
+			<!-- <div class="btn-group" <?php echo ($this->violet_auth->is_logged_in()) ? 'hidden' : ''; ?>>
 					<button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">My
 						Account</button>
 					<div class="dropdown-menu dropdown-menu-right">
@@ -20,8 +22,10 @@
 						<a href="users/signup" class="dropdown-item" type="button" hidden>Sign up</a>
 						<a href="users/register" class="dropdown-item" type="button">Sign up</a>
 					</div>
-				</div>
-
+				</div> -->
+			<?php
+			if ($this->violet_auth->is_logged_in()) {
+			?>
 				<div class="btn-group" <?php echo ($this->violet_auth->is_logged_in()) ? '' : 'hidden'; ?>>
 					<button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">My
 						Account</button>
@@ -46,7 +50,10 @@
 						<center><a href="users/logout" class="dropdown-item" type="button">Sign Out</a></center>
 					</div>
 				</div>
-				<div class="btn-group mx-2">
+			<?php
+			}
+			?>
+			<!-- <div class="btn-group mx-2">
 					<button type="button" class="btn btn-sm btn-light dropdown-toggle"
 						data-toggle="dropdown">USD</button>
 					<div class="dropdown-menu dropdown-menu-right">
@@ -59,9 +66,9 @@
 					<div class="dropdown-menu dropdown-menu-right">
 						<button class="dropdown-item" type="button">EN</button>
 					</div>
-				</div>
-			</div>
-			<div class="d-inline-flex align-items-center d-block d-lg-none">
+				</div> -->
+			<!-- </div> -->
+			<!-- <div class="d-inline-flex align-items-center d-block d-lg-none">
 				<a href="accounts/wishlist" class="btn px-0 ml-2">
 					<i class="fas fa-heart text-dark"></i>
 					<span class="badge text-dark border border-dark rounded-circle" id="WishlistCountNavPhone"
@@ -72,7 +79,7 @@
 					<span class="badge text-dark border border-dark rounded-circle" style="padding-bottom: 2px;"
 						id="cartCountNavPhone"><?php echo count($this->cart->contents()); ?></span>
 				</a>
-			</div>
+			</div> -->
 		</div>
 	</div>
 	<div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
@@ -80,7 +87,8 @@
 			<a href="home/index" class="text-decoration-none">
 				<!-- <span class="h1 text-uppercase text-primary bg-dark px-2">SAM</span>
 				<span class="h1 text-uppercase text-dark bg-primary px-2 ml-n1">Outfits</span> -->
-				<!--<img src="<?php //echo base_url(); ?>assets/img/icon.png" height="67px" width="auto" alt="">-->
+				<!--<img src="<?php //echo base_url(); 
+								?>assets/img/icon.png" height="67px" width="auto" alt="">-->
 				<img class="ml-2" src="<?php echo base_url(); ?>assets/img/text.png" height="67px" width="auto" alt="">
 				<!-- <span class="h2 text-uppercase text-black px-2">SAM</span> -->
 			</a>
@@ -116,7 +124,7 @@
 				<div class="navbar-nav w-100">
 					<?php foreach ($sub_cat_list as $k => $s) {
 						if (count($s) == 1 && in_array(NULL, $s)) {
-							?>
+					?>
 							<div>
 								<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace('&', '%26', $k)) ?>"
 									class="nav-item nav-link"><?php echo $k ?></a>
@@ -133,11 +141,11 @@
 										if ($c != NULL && $c != '0') { ?>
 											<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace('&', '%26', $k)) ?>/<?php echo str_replace('&', '%26', $c) ?>"
 												class="dropdown-item"><?php echo $c ?></a>
-										<?php }
+									<?php }
 									} ?>
 								</div>
 							</div>
-						<?php }
+					<?php }
 					} ?>
 					<a href="products/stock_clearance" class="nav-item nav-link">Stock Clearance</a>
 				</div>
@@ -145,15 +153,22 @@
 		</div>
 		<div class="col-lg-9">
 			<nav class="navbar navbar-expand-lg bg-dark navbar-dark py-1 py-lg-0 px-0 navbar_web">
-				<a href="home/index" class="text-decoration-none d-block d-lg-none">
-					<!-- <span class="h1 text-uppercase text-dark bg-light px-2">SAM</span>
-					<span class="h1 text-uppercase text-light bg-primary px-2 ml-n1">Outfits</span> -->
-					<img src="<?php echo base_url(); ?>assets/img/icon_white.png" height="65px" width="auto" alt="">
-				</a>
-				<button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-					<!-- <span class="navbar-toggler-icon text-white"></span> -->
-					<i class="fas fa-sliders-h text-white"></i>
-				</button>
+				<div class="d-flex justify-content-between w-100 align-items-center d-lg-none">
+					<a href="home/index" class="text-decoration-none">
+						<img src="<?php echo base_url(); ?>assets/img/icon_white.png" height="65px" width="auto" alt="">
+					</a>
+					<div class="d-flex align-items-center">
+						<a href="cart/index" class="btn px-0 text-white mr-2">
+							<i class="fas fa-shopping-cart" style="font-size: 1.25rem;"></i>
+
+							<span class="badge border rounded-circle" style="padding-bottom: 2px;"
+								id="cartCountNavPhone"><?php echo count($this->cart->contents()); ?></span>
+						</a>
+						<button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+							<i class="fas fa-sliders-h text-white"></i>
+						</button>
+					</div>
+				</div>
 				<div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
 					<div class="col-lg-12 col-12 text-left mt-2 d-lg-none">
 						<div class="input-group">
@@ -171,7 +186,7 @@
 						<a href="home/index" class="nav-item nav-link active text-white">Home</a>
 						<?php foreach ($sub_cat_list as $k => $s) {
 							if (count($s) == 1 && in_array(NULL, $s)) {
-								?>
+						?>
 								<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace('&', '%26', $k)) ?>"
 									class="nav-item nav-link only-mobile"><?php echo $k ?></a>
 							<?php } else { ?>
@@ -186,20 +201,20 @@
 											if ($c != NULL && $c != '0') { ?>
 												<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace('&', '%26', $k)) ?>/<?php echo str_replace('&', '%26', $c) ?>"
 													class="nav-item nav-link text-black"><?php echo $c ?></a>
-											<?php }
+										<?php }
 										} ?>
 									</div>
 								</div>
-							<?php }
+						<?php }
 						} ?>
 						<a href="products/stock_clearance" class="nav-item nav-link d-lg-none">Stock Clearance</a>
 					</div>
 					<div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-						<a href="accounts/wishlist" class="btn px-0 text-white">
+						<!-- <a href="accounts/wishlist" class="btn px-0 text-white">
 							<i class="fas fa-heart text-white"></i>
 							<span class="badge text-secondary border border-secondary rounded-circle"
 								style="padding-bottom: 2px;" id="WishlistCountNav">0</span>
-						</a>
+						</a> -->
 						<a href="cart/index" class="btn px-0 ml-3 text-white">
 							<i class="fas fa-shopping-cart text-white"></i>
 							<span class="badge text-secondary border border-secondary rounded-circle"
@@ -212,4 +227,10 @@
 		</div>
 	</div>
 </div>
+<?php if ($this->session->flashdata('success')): ?>
+	<div id="message_success" class="alert alert-success" style="text-align:center; margin:0;" onclick="document.getElementById('message_success').style.display = 'none'"><?= $this->session->flashdata('success') ?></div>
+<?php elseif ($this->session->flashdata('error')): ?>
+	<div id="message_danger" class="alert alert-danger" style="text-align:center; margin:0;" onclick="document.getElementById('message_danger').style.display = 'none'"><?= $this->session->flashdata('error') ?></div>
+<?php endif; ?>
+
 <!-- Navbar End -->

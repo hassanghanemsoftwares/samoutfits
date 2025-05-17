@@ -31,13 +31,12 @@
                             <div class="col-md-12 col-lg-6 col-xl-6 order-1 order-lg-1">
                                 <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-0 mt-4">Sign up</p>
                                 <?php echo form_open('users/register_ecomerce_user_and_account', 'id="registerForm" name="registerForm" onsubmit="return validation();" class="mx-1 mx-md-4" role="form" autocomplete="off" novalidate') ?>
-                                <div class="d-flex flex-row align-items-center mb-4">
+                                <!-- <div class="d-flex flex-row align-items-center mb-4">
                                     <i class="fas fa-flag fa-lg me-3 fa-fw" style="width: 10%;"></i>
                                     <div class="form-outline flex-fill mb-0" style="width: 60%;">
                                         <?php echo form_dropdown('country', '', '', 'id="country" class="selectpicker countrypicker form-control" disabled   data-live-search="true" data-flag="true" data-default="LB"') ?>
                                     </div>
-                                    <!-- </div><div class="d-flex flex-row align-items-center mb-4"> -->
-                                    <!-- <i class="fas fa-mobile fa-lg me-3 fa-fw"></i> -->
+                                  
                                     <div class="form-outline flex-fill mb-0" style="width: 30%;">
                                         <input type="text" id="code" name="code" class="form-control"
                                             placeholder="Country Code" readonly />
@@ -53,7 +52,28 @@
                                 </div>
                                 <div class="d-flex flex-row align-items-center mb-4">
                                     <span id="msg_phone"></span>
+                                </div> -->
+                                <div class="d-flex flex-row align-items-center mb-0">
+                                    <i class="fas fa-flag fa-lg me-3 mr-2 fa-fw"></i>
+
+                                    <div class="form-outline w-20">
+                                        <?php echo form_dropdown('country', '', '', 'id="country" class="selectpicker countrypicker  form-control border"  data-live-search="true" data-flag="true" style="padding: 5px;" data-default="LB"') ?>
+                                    </div>
+
+
+                                    <!-- <div class="form-outline"> -->
+                                    <input type="hidden" class="form-control " id="code" name="code" value="+961"
+                                        placeholder="Your Phone Number" required="required"
+                                        data-validation-required-message="Please enter your phone number" />
+                                    <input type="text" class="form-control " id="phone" name="phone"
+                                        placeholder="Your Phone Number" required="required"
+                                        data-validation-required-message="Please enter your phone number" />
+                                    <!-- </div> -->
+
                                 </div>
+                            
+                                    <span id="msg_phone" class="d-flex flex-row align-items-center mb-4"></span>
+                            
                                 <div class="d-flex flex-row align-items-center mb-0">
                                     <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
                                     <div class="form-outline flex-fill mb-0">
@@ -136,12 +156,14 @@
                                                     placeholder="Your Phone Number" required="required"
                                                     data-validation-required-message="Other Phone(Optional)" />
                                                 <!-- </div> -->
+                                                  <span id="msg_phone2" class="d-flex flex-row align-items-center mb-4"></span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-12 form-group">
                                         <label>Email</label>
                                         <input class="form-control" type="text" id="email" name="email" value="">
+                                        <span id="msg_email" class="d-flex flex-row align-items-center mb-4"></span>
                                     </div>
                                 </div>
                             </div>

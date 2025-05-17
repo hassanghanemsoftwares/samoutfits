@@ -36,14 +36,15 @@
 				<div class="col-md-6 mb-5">
 					<h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
 					<p>Submit Your Email To Keep You In Touch With Our Latest News</p>
-					<form action="">
-						<div class="input-group">
-							<input type="text" class="form-control" placeholder="Your Email Address">
-							<div class="input-group-append">
-								<button class="btn btn-primary">Submit</button>
-							</div>
+					<?php echo form_open('Newsletter/submit'); ?>
+					<div class="input-group">
+						<input type="text" name="email" class="form-control" placeholder="Your Email Address">
+						<div class="input-group-append">
+							<button type="submit" class="btn btn-primary">Submit</button>
 						</div>
-					</form>
+					</div>
+					<?php echo form_close(); ?>
+
 					<h6 class="text-secondary text-uppercase mt-5 mb-3">Follow Us</h6>
 					<div class="d-flex">
 						<a class="btn btn-primary btn-square mr-2" href="https://www.instagram.com/samoutfitslb/"><i class="fab fa-instagram"></i></a>

@@ -1,7 +1,7 @@
 <?php if ($this->session->flashdata('message')) { ?>
-	<div id="message" class="alert alert-success" style="text-align:center; margin:0;" onclick="document.getElementById('message').style.display = 'none'">
-		<strong><?php echo $this->session->flashdata('message') ?></strong>
-	</div>
+    <div id="message" class="alert alert-success" style="text-align:center; margin:0;" onclick="document.getElementById('message').style.display = 'none'">
+        <strong><?php echo $this->session->flashdata('message') ?></strong>
+    </div>
 <?php } ?>
 <!-- Breadcrumb Start -->
 <div class="container-fluid mt-4">
@@ -24,6 +24,7 @@
                 <thead class="thead-dark">
                     <tr>
                         <th>Product</th>
+                        <th>Code</th>
                         <th>Size</th>
                         <th>Price</th>
                         <th>Quantity</th>
@@ -36,8 +37,13 @@
                         <tr>
                             <td class="align-middle">
                                 <a href="products/view/<?php echo $item['id'] ?>" class="text-dark">
-                                <img src="accounting/assets/uploads/<?php echo $item['options']['image'] ?>" alt="" width="60px"> <?php echo $item['options']['barcode'] ?>
-                                <input type="text" name="item_id" id="item_id" class="r-item_id" value="<?php echo $item['id'] ?>" hidden>
+                                    <img src="accounting/assets/uploads/<?php echo $item['options']['image'] ?>" alt="" width="60px">
+                                    <input type="text" name="item_id" id="item_id" class="r-item_id" value="<?php echo $item['id'] ?>" hidden>
+                                </a>
+                            </td>
+                            <td class="align-middle">
+                                <a href="products/view/<?php echo $item['id'] ?>" class="text-dark">
+                                    <?php echo $item['options']['barcode'] ?>
                                 </a>
                             </td>
                             <td class="align-middle i-size"><?php echo $item['options']['size'] ?></td>
@@ -49,7 +55,7 @@
                                             <i class="fa fa-minus"></i>
                                         </button>
                                     </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center r-qty" value="<?php echo $item['qty'] ?>" readonly>
+                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center r-qty" value="<?php echo $item['qty'] ?>" max="<?php echo $item['total_qty'] ?>" readonly>
                                     <div class="input-group-btn i-plus">
                                         <button class="btn btn-sm btn-primary btn-plus">
                                             <i class="fa fa-plus"></i>
@@ -95,9 +101,9 @@
                         <h5 id="grand_total">$<?php echo $subtot + $delivery_charge; ?></h5>
                     </div>
                     <?php echo form_open('checkout/index', 'role="form"  onsubmit="return validation();" autocomplete="off"'); ?>
-                    <input type="text" name="coupon_id" id="coupon_id" hidden>
-                    <input type="text" name="discount_type" id="discount_type" value="1" hidden>
-                    <input type="text" name="discount" id="discount" value="0" hidden>
+                    <input type="hidden" name="coupon_id" id="coupon_id">
+                    <input type="hidden" name="discount_type" id="discount_type" value="1">
+                    <input type="hidden" name="discount" id="discount" value="0">
                     <input type="text" id="loged_in_user" value="<?php echo $this->violet_auth->get_user_id(); ?>" hidden>
                     <button type="submit" class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</button>
                     <?php echo form_close(); ?>

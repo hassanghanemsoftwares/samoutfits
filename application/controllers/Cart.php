@@ -19,17 +19,25 @@ class Cart extends CI_Controller
         $data = array();
         // Retrieve cart data from the session
         $data['cartItems'] = $this->cart->contents();
+
         $data['subtot'] = 0;
-        foreach ($data['cartItems'] as $i) {
+        foreach ($data['cartItems'] as $key => $i) {
+            $size = $this->Item->load_item_available_by_size($i['id'], $i['options']['size']);
+            //   var_dump($size); exit;
+
+            // Optional: check if $size is not null or empty
+            $data['cartItems'][$key]['total_qty'] = $size ? $size['total_qty'] : 0;
+
             $data['subtot'] += $i['subtotal'];
         }
+
         $this->load->model('Configuration');
         $delivery_charge = $this->Configuration->fetch_delivery_charge();
-        if($delivery_charge['valueStr']){
+        if ($delivery_charge['valueStr']) {
             $data['delivery_charge'] = $delivery_charge['valueStr'];
         } else {
             $data['delivery_charge'] = 0;
-        }      
+        }
         // var_dump($data['cartItems']);
         // exit;
         $data['title'] =  $this->lang->line('cart');
@@ -71,10 +79,12 @@ class Cart extends CI_Controller
     {
         $item_id = $this->input->post('item_id');
         $qty = $this->input->post('qty');
-        if($qty<=0){
-            $qty=1;
+        if ($qty <= 0) {
+            $qty = 1;
         }
         $size = $this->input->post('size');
+        $total_qty = $this->Item->load_item_available_by_size($item_id, $size)['total_qty'];
+
         $product = $this->Item->load_item_data($item_id);
         $images = $this->Item->load_item_images($item_id);
         if ($images === []) {
@@ -82,20 +92,38 @@ class Cart extends CI_Controller
         } else {
             $image = $images[0]['image_name'];
         }
-        // Add product to the cart
-        $data = array(
-            'id'    => $item_id,
-            'qty'    => $qty,
-            'price'    => $product['price'],
-            'name'    => $product['description'],
-            'options' => ['image' => $image, 'size' => $size, 'barcode' => $product['barcode']]
-        );
-        $saved = $this->cart->insert($data);
+        $cart = $this->cart->contents();
+        $item_cart = false;
+
+        foreach ($cart as $row) {
+            if ($row['id'] == $item_id && $row['options']['size'] == $size) {
+                $item_cart = $row;
+                break;
+            }
+        }
+        if ($item_cart) {
+            $data = array(
+                'rowid' => $item_cart['rowid'],
+                'qty'   => $qty
+            );
+            $saved = $this->cart->update($data);
+        } else {
+            $data = array(
+                'id'    => $item_id,
+                'qty'    => $qty,
+                'price'    => $product['price'],
+                'name'    => $product['description'],
+                'options' => ['image' => $image, 'size' => $size, 'barcode' => $product['barcode']]
+            );
+            $saved = $this->cart->insert($data);
+        }
+
+
         $response['res'] = $saved ? 'ok' : 'error';
         $response['count_cart'] = count($this->cart->contents());
         $this->output->set_content_type('application/json')
-				->set_output(
-						json_encode($response)
-		);
+            ->set_output(
+                json_encode($response)
+            );
     }
 }

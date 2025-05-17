@@ -11,6 +11,8 @@ defined('BASEPATH') or die('No direct script access allowed');
  * @property Coupon $Coupon
  * @property Inbox $Inbox
  * @property Landing_page $Landing_page
+ * @property NewsletterModel $NewsletterModel
+ * 
  */
 class Ecommerce extends MY_Controller
 {
@@ -21,6 +23,7 @@ class Ecommerce extends MY_Controller
     public $Landing_page = null;
     public $Configuration = null;
     public $User = null;
+    public $NewsletterModel = null;
 
     public function __construct()
     {
@@ -636,4 +639,26 @@ class Ecommerce extends MY_Controller
             redirect('ecommerce/landing_page');
         }
     }
+    
+    public function newsletter_subscribers()
+    {
+        $this->load->model('NewsletterModel');
+
+
+        if ($this->input->is_ajax_request()) {
+            $this->_render_json($this->NewsletterModel->load_newsletter_subscribers_data_tables());
+        } else {
+       
+            $data['records'] = $this->NewsletterModel->paginate_newsletter_subscribers();
+            $data['title'] = $this->lang->line('newsletter_subscribers');
+            $this->load->view('templates/eco_header', [
+                '_page_title' => $data['title'],
+                '_moreCss' => ['css/dataTables.bootstrap.min', 'css/fixedHeader.dataTables.min', 'js/air-datepicker/css/datepicker.min'],
+            ]);
+            $this->load->view('newsletter_subscribers/index', $data);
+            $this->load->view('templates/footer', ['_moreJs' => ['jquery.dataTables.min', 'dataTables.bootstrap.min', 'newsletter_subscribers/index', 'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en']]);
+        }
+    }
 }
+
+

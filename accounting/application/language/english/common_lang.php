@@ -258,7 +258,7 @@ $lang['tags'] = 'Tags';
 $lang['tag'] = 'Tag';
 $lang['published'] = 'Published';
 $lang['sub_categories'] = 'Sub-Categories';
-$lang['variant1']="fb Product Category";
+$lang['variant1'] = "fb Product Category";
 $lang['sub_category'] = 'Sub-Category';
 $lang['old_price'] = 'Old Price';
 $lang['eco_delivery_charge'] = 'Ecommerce Delivery Charge';
@@ -610,4 +610,7 @@ $lang['sorry_please_you_must_check_items_available_qty'] = "Sorry, please you mu
 $lang['select_different_warehouse_than_the_current_warehouse'] = "Select different warehouse than the current warehouse";
 $lang['link'] = 'Link';
 $lang['pending_orders'] = 'Pending Orders';
-$lang['Pixel_Excel']="Pixel Excel";
+$lang['Pixel_Excel'] = "Pixel Excel";
+
+
+$lang['newsletter_subscribers'] = "Newsletter subscribers";

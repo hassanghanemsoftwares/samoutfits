@@ -30,7 +30,7 @@
           <input type="text" name="account_id" id="account_id" value="<?php echo $user['account_id'] ?>" hidden>
           <input type="text" id="country_name" value="<?php echo $user['country'] ?>" hidden>
           <div class="form-group">
-            <?php echo form_dropdown('address[country]', '', '', 'id="country" class="selectpicker countrypicker form-control" data-live-search="true" data-flag="true" data-default="' . $user['country'] . '"') ?>
+            <?php echo form_dropdown('address[country]', '', '', 'id="country" class="selectpicker countrypicker form-control" data-countries="LB" data-live-search="true" data-flag="true" data-default="' . $user['country'] . '"') ?>
             <span id='msg_country'></span>
           </div>
           <div class="form-group">

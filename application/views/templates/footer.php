@@ -8,6 +8,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
 <script src="assets/lib/easing/easing.min.js"></script>
 <script src="assets/lib/owlcarousel/owl.carousel.min.js"></script>
+<script src="assets/lib//slick-carousel/slick.min.js"></script>
 <!-- Contact Javascript File -->
 <!-- <script src="assets/mail/jqBootstrapValidation.min.js"></script>
 <script src="assets/mail/contact.js"></script> -->
@@ -17,7 +18,7 @@
 <?php
 if (isset($_moreJs)) :
 	foreach ($_moreJs as $jsFile) {
-		echo PHP_EOL, '<script src="assets/js/', $jsFile, '.js?version=4.9"></script>';
+		echo PHP_EOL, '<script src="assets/js/', $jsFile, '.js?version=5.4"></script>';
 	}
 endif
 ?>

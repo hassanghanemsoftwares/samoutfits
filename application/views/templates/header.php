@@ -34,6 +34,8 @@
 	<!-- Libraries Stylesheet -->
 	<link href="assets/lib/animate/animate.min.css" rel="stylesheet">
 	<link href="assets/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="assets/lib//slick-carousel/slick.css" />
+	<link rel="stylesheet" type="text/css" href="assets/lib//slick-carousel/slick-theme.css" />
 	<!-- Customized Bootstrap Stylesheet -->
 	<link href="assets/css/style.css?version=4.1" rel="stylesheet">
 	<?php
@@ -66,7 +68,7 @@
 	<!-- End Meta Pixel Code -->
 
 	<?php if (isset($_pixelMetaData)) { ?>
-		<meta property="og:title" content="<?php echo $_pixelMetaData['description'].". ".$_pixelMetaData['title']  ?>">
+		<meta property="og:title" content="<?php echo $_pixelMetaData['description'] . ". " . $_pixelMetaData['title']  ?>">
 		<meta property="og:description" content="<?php echo $_pixelMetaData['note'] ?>">
 		<meta property="og:url" content="<?php echo $_pixelMetaData['url'] ?>">
 		<meta property="og:image" content="<?php echo $_pixelMetaData['image'] ?>">
@@ -77,20 +79,20 @@
 		<meta property="product:color" content="<?php echo $_pixelMetaData['color'] ?>" />
 		<meta property="product:availability" content="<?php echo $_pixelMetaData['availability'] ?>">
 	<?php } else { ?>
-	  <meta property="og:title" content="Online Shopping">
-    <meta property="og:description" content="موقع تسوق الكتروني لبناني متخصص بالالبسة والأحذية وتوابع الموضة من الألف الى الياء تم إنشائه
+		<meta property="og:title" content="Online Shopping">
+		<meta property="og:description" content="موقع تسوق الكتروني لبناني متخصص بالالبسة والأحذية وتوابع الموضة من الألف الى الياء تم إنشائه
 ليصبح الأوفر في لبنان">
-    <meta property="og:image" content="<?php echo base_url(); ?>assets/img/sam_what_image.jpg?v=4.1">
-    <meta property="og:url" content="https://samoutfits.com">
-    <meta property="og:type" content="website">
+		<meta property="og:image" content="<?php echo base_url(); ?>assets/img/sam_what_image.jpg?v=4.1">
+		<meta property="og:url" content="https://samoutfits.com">
+		<meta property="og:type" content="website">
 	<?php } ?>
 	<!-- For Twitter (Optional) -->
-    <meta name="twitter:card" content="<?php echo base_url(); ?>assets/img/sam_what_image.jpg?v=4.1">
-    <meta name="twitter:title" content="Online Shopping">
-    <meta name="twitter:description" content="موقع تسوق الكتروني لبناني متخصص بالالبسة والأحذية وتوابع الموضة من الألف الى الياء تم إنشائه
+	<meta name="twitter:card" content="<?php echo base_url(); ?>assets/img/sam_what_image.jpg?v=4.1">
+	<meta name="twitter:title" content="Online Shopping">
+	<meta name="twitter:description" content="موقع تسوق الكتروني لبناني متخصص بالالبسة والأحذية وتوابع الموضة من الألف الى الياء تم إنشائه
 ليصبح الأوفر في لبنان">
-    <meta name="twitter:image" content="<?php echo base_url(); ?>assets/img/sam_what_image.jpg?v=4.1">
-    
+	<meta name="twitter:image" content="<?php echo base_url(); ?>assets/img/sam_what_image.jpg?v=4.1">
+
 	<!-- Google Tag Manager -->
 	<script>
 		(function(w, d, s, l, i) {

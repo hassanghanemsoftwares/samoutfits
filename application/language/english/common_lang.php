@@ -227,4 +227,11 @@ $lang['stock_clearance'] = 'Stock Clearance';
 $lang['Validate']="Validate";
 $lang['Place_Order_Without_Otp']="Place Order Without Otp";
 $lang['Continue_Shopping']="Continue Shopping";
-$lang['Continue_Us_On_WhatsApp']="Continue Us On WhatsApp";
+$lang['Continue_Us_On_WhatsApp']="Contact Us";
+$lang['phone_length_invalid']="Please check phone number length";
+$lang['invalid_email']="Please Enter correct email";
+
+$lang['invalid_email_address'] = 'Invalid email address.';
+$lang['subscribed_successfully'] = 'Subscribed successfully!';
+$lang['email_already_subscribed'] = 'Email is already subscribed.';
+

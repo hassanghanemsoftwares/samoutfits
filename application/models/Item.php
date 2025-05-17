@@ -8,7 +8,7 @@ class Item extends MY_Model
 	protected $modelName = 'Item';
 	protected $_table = 'items';
 	protected $_listFieldName = 'description';
-	protected $_fieldsNames = ['id', 'barcode', 'description', 'category', 'open_cost', 'cost', 'purchase_cost', 'open_qty', 'qty', 'price', 'profit', 'TVA', 'description2', 'brand', 'color', 'gender', 'publish','size_chart', 'link'];
+	protected $_fieldsNames = ['id', 'barcode', 'description', 'category', 'open_cost', 'cost', 'purchase_cost', 'open_qty', 'qty', 'price', 'profit', 'TVA', 'description2', 'brand', 'color', 'gender', 'publish', 'size_chart', 'link'];
 	protected $allowedNulls = ['link'];
 
 	public function __construct()
@@ -220,7 +220,24 @@ class Item extends MY_Model
 		$query = $this->db->get()->result_array();
 		return $query;
 	}
-
+	public function load_item_available_by_size($item_id, $size)
+	{
+		$this->db->select('transaction_item_sizes.size, SUM(transaction_item_sizes.qty * transaction_items.mvt_type) as total_qty');
+		$this->db->from('warehouses');
+		$this->db->join('transaction_items', 'warehouses.id = transaction_items.warehouse_id', 'inner');
+		$this->db->join('items', 'items.id = transaction_items.item_id', 'inner');
+		$this->db->join('transactions', 'transaction_items.transaction_id = transactions.id', 'inner');
+		$this->db->join('transaction_item_sizes', 'transaction_items.id = transaction_item_sizes.transaction_item_id', 'inner');
+		$this->db->where('items.id', $item_id);
+		   if (!is_null($size)) {
+        $this->db->where('transaction_item_sizes.size', $size);
+    }
+		$this->db->where('warehouses.warehouse', "Primary Warehouse");
+		$this->db->group_by('transaction_item_sizes.size');
+		$this->db->having('SUM(transaction_item_sizes.qty * transaction_items.mvt_type) >', 0);
+		$query = $this->db->get()->row_array(); 
+		return $query;
+	}
 	public function load_all_item_data($item_id)
 	{
 		$query = [
@@ -236,7 +253,7 @@ class Item extends MY_Model
 		return $this->load($query);
 	}
 
-	public function load_similar_products($category, $item_id)
+	public function load_similar_products($category,$sub_category, $item_id)
 	{
 		$query = [
 			'select' => "items.*,  SUM(transaction_items.qty * transaction_items.mvt_type) as total_qty",
@@ -245,7 +262,8 @@ class Item extends MY_Model
 				['warehouses', 'transaction_items.warehouse_id = warehouses.id', 'inner'],
 			],
 			'where' => [
-				['items.category', $category],
+				// ['items.category', $category],
+				['items.sub_category', $sub_category],
 				['items.id !=', $item_id],
 				['warehouses.warehouse', "Primary Warehouse"],
 				['items.publish', 1]
@@ -278,7 +296,7 @@ class Item extends MY_Model
 			$count1 = 0;
 			$this->load->model('Keyword');
 			if ($res) {
-			    $keywords = [];
+				$keywords = [];
 				foreach ($res as $r) {
 					if (ctype_alpha($r)) {
 						$keywords[] = $this->Keyword->find_keywords_by_search($r);
@@ -334,12 +352,12 @@ class Item extends MY_Model
 			if ($res) {
 				$bc =  $res['barcode'];
 				$where_st = "a.barcode = '$s'";
-			}else{
+			} else {
 				$where_st = "tags.tag LIKE '%$s%' OR a.description LIKE '%$s%' OR a.color LIKE '%$s%' OR a.barcode LIKE '%$s%' OR a.category LIKE '%$s%' OR a.sub_category LIKE '%$s%' ";
 			}
 		}
 		// mysqli_real_escape_string()
-		$where_st = ($where_st)? $where_st : "a.description LIKE '%$s%'";
+		$where_st = ($where_st) ? $where_st : "a.description LIKE '%$s%'";
 		$q = "SELECT a.*
 		FROM (
 		SELECT
@@ -378,7 +396,7 @@ class Item extends MY_Model
 		}
 	}
 
-	public function load_more_similar_products($category, $item_id, $limit)
+	public function load_more_similar_products($category,$sub_category, $item_id, $limit)
 	{
 		$query = [
 			'select' => "items.*,  SUM(transaction_items.qty * transaction_items.mvt_type) as total_qty",
@@ -387,7 +405,8 @@ class Item extends MY_Model
 				['warehouses', 'transaction_items.warehouse_id = warehouses.id', 'inner'],
 			],
 			'where' => [
-				['items.category !=', $category],
+				// ['items.category !=', $category],
+				['items.sub_category !=', $sub_category],
 				['items.id !=', $item_id],
 				['warehouses.warehouse', "Primary Warehouse"],
 				['items.publish', 1]
@@ -474,7 +493,7 @@ class Item extends MY_Model
 			$this->db->where_in('items.gender', str_replace('%20', ' ', $gender));
 		}
 		$query = $this->db->get()->result_array();
-// 		echo($this->db->last_query());exit;
+		// 		echo($this->db->last_query());exit;
 		return $query;
 	}
 
@@ -486,7 +505,7 @@ class Item extends MY_Model
 		];
 		return $this->load($query);
 	}
-	
+
 	public function load_landing_page_category_items_with_price_and_image($category)
 	{
 		$this->db->select('items.*, SUM(transaction_item_sizes.qty * transaction_items.mvt_type) as total_qty');
@@ -514,11 +533,11 @@ class Item extends MY_Model
 			return false;
 		}
 	}
-	    public function get_section_order()
-    {
-        $this->db->select('*');
-        $this->db->from('reordenig_sections');
-        $this->db->order_by('reordenig_sections.order_nb', 'ASC');
-        return $this->db->get()->result_array();
-    }
+	public function get_section_order()
+	{
+		$this->db->select('*');
+		$this->db->from('reordenig_sections');
+		$this->db->order_by('reordenig_sections.order_nb', 'ASC');
+		return $this->db->get()->result_array();
+	}
 }

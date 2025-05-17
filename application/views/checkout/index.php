@@ -43,7 +43,7 @@
                         <div class="row">
                             <div class="col-md-6 form-group">
                                 <label>Country</label>
-                                <?php echo form_dropdown('country', '', '', 'id="country"  class="form-control form-control-md selectpicker countrypicker"  data-live-search="true" data-flag="true" data-default="' . $account['country'] . '"') ?>
+                                <?php echo form_dropdown('country', '', '', 'id="country"  class="form-control form-control-md selectpicker countrypicker" data-countries="LB" data-live-search="true" data-flag="true" data-default="' . $account['country'] . '"') ?>
                             </div>
                             <div class="col-md-6 form-group">
                                 <label>City <span id="msg_city"></span></label>

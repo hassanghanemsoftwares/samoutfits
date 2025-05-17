@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') or exit ('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 /**
  * @property Item $Item
  * @property Order $Order
@@ -68,12 +68,25 @@ class Checkout extends MY_Controller
     //direct checkout and make order start
     public function direct_order()
     {
+        $post = $this->input->post(null, true);
+
         $data['cartItems'] = $this->cart->contents();
         $this->load->model('Configuration');
         $delivery_charge = $this->Configuration->fetch_delivery_charge();
         $data['discount'] = 0;
         $data['coupon_id'] = 0;
         $data['discount_type'] = 1;
+        if ($post) {
+            $data['coupon'] = $post['coupon'];
+            $data['discount'] = $post['discount'];
+            $data['coupon_id'] = $post['coupon_id'];
+            $data['discount_type'] = $post['discount_type'];
+
+
+            
+        }
+
+        // var_dump($post);exit;
         if ($delivery_charge['valueStr']) {
             $data['delivery_charge'] = $delivery_charge['valueStr'];
         } else {
@@ -107,8 +120,6 @@ class Checkout extends MY_Controller
             $this->session->set_flashdata('message', $this->lang->line('*Can_not_proceed_your_cart_is_empty!*'));
             redirect('cart/index');
         }
-
-
     }
     //direct checkout and make order end
 
@@ -259,7 +270,6 @@ class Checkout extends MY_Controller
                     );
                 }
             }
-
         } else {
             $phone = $this->input->post('phone');
             $verification_code = rand(1000, 9999);
@@ -318,30 +328,58 @@ class Checkout extends MY_Controller
         $this->load->model('Transaction');
         $this->load->model('User');
         //check if phone number exist start
-         $phone_without_code = $this->input->post('phone');
+        $phone_without_code = $this->input->post('phone');
 
-         $firstTwoCharsOfPhone = substr($phone_without_code, 0, 2); // Get the first two characters
+        $firstTwoCharsOfPhone = substr($phone_without_code, 0, 2); // Get the first two characters
 
-         if ($firstTwoCharsOfPhone === '03' && $this->input->post('phone_code') == 961) {
-             $phone_without_code = '3' . substr($phone_without_code, 2); // Replace with '99' and concatenate the rest of the string
-         }
+        if ($firstTwoCharsOfPhone === '03' && $this->input->post('phone_code') == 961) {
+            $phone_without_code = '3' . substr($phone_without_code, 2); // Replace with '99' and concatenate the rest of the string
+        }
 
-         $phone_string = $this->input->post('phone_code') . $phone_without_code;
-         $phone = str_replace(' ', '', $phone_string);
+        $phone_string = $this->input->post('phone_code') . $phone_without_code;
+        $phone = str_replace(' ', '', $phone_string);
 
         $phone_code = $this->input->post('phone_code');
         $phone_number = $this->input->post('phone');
         $account_exist = $this->Account->check_if_account_exist($phone);
+
         //check if account exist
         if ($account_exist) {
             //if exist use this account
             $account = $account_exist;
             $acc_id = $account['id'];
+
+
+            $phone2 = $this->input->post('phone2_code') . $this->input->post('phone2');
+            $info = array(
+                "fname" => $this->input->post('fname'),
+                "lname" => $this->input->post('lname'),
+                'phone' => $phone,
+                'phone2' => str_replace(' ', '', $phone2),
+                'email' => $this->input->post('email'),
+                'country' => $this->input->post('country_val'),
+                'city' => $this->input->post('city'),
+                'place' => null,
+                'street' => $this->input->post('street'),
+                'building' => null,
+                'floor' => null,
+                'direction' =>  $this->input->post('directions')
+            );
+
+            $this->Account->update_user_account($acc_id, $info);
+
             $user_exist = $this->User->user_account_exit($acc_id);
+
             //check if account have user start
             if ($user_exist) {
+                $user_data = array(
+                    "fname" => $this->input->post('fname'),
+                    "lname" => $this->input->post('lname'),
+                    "birthdate" => null,
+                );
                 $ecom_user = $user_exist;
                 $ecom_user_id = $ecom_user['id'];
+                $this->User->update_ecomerce_user($ecom_user_id, $user_data);
             } else {
                 $user_data = array(
                     "password" => "nopasswordCReaTE2024" . $acc_id,
@@ -365,10 +403,10 @@ class Checkout extends MY_Controller
                 'country' => $this->input->post('country_val'),
                 'city' => $this->input->post('city'),
                 'place' => null,
-                'street' => null,
+                'street' => $this->input->post('street'),
                 'building' => null,
                 'floor' => null,
-                'direction' => $this->input->post('direction') . " - " . $this->input->post('directions')
+                'direction' =>  $this->input->post('directions')
             );
 
             $acc_id = $this->Account->create_account_for_user($info);
@@ -404,10 +442,10 @@ class Checkout extends MY_Controller
                 'country' => $post['country_val'],
                 'city' => $post['city'],
                 'place' => null,
-                'street' => null,
+                'street' => $this->input->post('street'),
                 'building' => null,
                 'floor' => null,
-                'direction' => $post['direction'] . " - " . $post['direction'],
+                'direction' =>  $post['directions'],
             );
             //updated 2024-03-07
             $updated = $this->Account->update_user_shipping_address_as_user($acc_id, $address);
@@ -426,7 +464,7 @@ class Checkout extends MY_Controller
             $address = array(
                 'country' => $post['country_val'],
                 'city' => $post['city'],
-                'description' => $post['direction'],
+                'description' => $post['directions'],
             );
             //updated 2024-03-07
             $opt_success = $this->input->post('otp_success');
@@ -440,9 +478,11 @@ class Checkout extends MY_Controller
                 $delivery_charge = $post['delivery_charge'];
                 $this->load->model('Coupon');
                 $coupon = $this->Coupon->get_coupon_data($iserted_order['coupon_id']);
+                $done = false;
                 foreach ($data['cartItems'] as $t) {
                     $done = $this->Order_item->add_new_order_item($t, $this->Order->get_field('id'), $discount_item);
                 }
+                // var_dump($done);exit;
                 $inserted_order_items = $this->Order->load_order_items_as_order($order_id);
                 if ($done) {
                     $local_currency = $this->Account->fetch_system_local_currency()['valueInt'];
@@ -624,13 +664,13 @@ class Checkout extends MY_Controller
     {
         $cartItems = $this->cart->contents();
         $this->load->model('Configuration');
-        $delivery_charge =$this->Configuration->fetch_delivery_charge();
+        $delivery_charge = $this->Configuration->fetch_delivery_charge();
         $subtotal = 0;
         $products = array();
         foreach ($cartItems as $item) {
             $subtotal += (float) $item['price'] * $item['qty'];
             $products[] = [
-                'name' => $item ['name'],     // Name or ID is required.
+                'name' => $item['name'],     // Name or ID is required.
                 'id' => $item['id'],
                 'price' => $item['price'],
                 'brand' => ' ',

@@ -28,7 +28,7 @@ class User extends MY_Model
 	{
 		$this->db->select('ecommerce_users.*');
 		$this->db->from('ecommerce_users');
-		$this->db->join('accounts','ecommerce_users.account_id=accounts.id','inner');
+		$this->db->join('accounts', 'ecommerce_users.account_id=accounts.id', 'inner');
 		$this->db->where('accounts.phone', $phone);
 		$query = $this->db->get()->row_array();
 		return $query;
@@ -44,12 +44,13 @@ class User extends MY_Model
 		return $query;
 	}
 
-	public function user_account_exit($acc_id){
+	public function user_account_exit($acc_id)
+	{
 		$this->db->select('*');
 		$this->db->from('ecommerce_users');
 		$this->db->where('ecommerce_users.account_id ', $acc_id);
 		$query = $this->db->get();
-		if($query->num_rows()==0){
+		if ($query->num_rows() == 0) {
 			return false;
 		}
 		return $query->row_array();
@@ -103,6 +104,18 @@ class User extends MY_Model
 			return '';
 		}
 	}
+	public function update_ecomerce_user($user_id, $info)
+	{
+		   $data = array(
+        
+            'first_name' => $info['fname'],
+            'last_name' => $info['lname'],
+           
+        );
+        $this->db->where('id', $user_id);
+		$query = $this->db->update('ecommerce_users', $data);
+		return $query;
+	}
 
 	public function load_all_inbox_msgs_for_customer($limit = false, $offset = false)
 	{
@@ -111,7 +124,7 @@ class User extends MY_Model
 		$this->db->where('to_user_id', $this->violet_auth->get_user_id());
 		$this->db->or_where('to_user_id = from_user_id');
 		$this->db->where('hide !=', 1);
-		$this->db->order_by('id','DESC');
+		$this->db->order_by('id', 'DESC');
 		if ($limit !== false && $offset  !== false) {
 			$this->db->limit($limit, $offset);
 		}
@@ -128,10 +141,11 @@ class User extends MY_Model
 		return $query;
 	}
 
-	public function load_all_coupons_for_customer_used_in_orders(){
+	public function load_all_coupons_for_customer_used_in_orders()
+	{
 		$this->db->select('coupons.*');
 		$this->db->from('orders');
-		$this->db->join('coupons', 'coupons.id = orders.coupon_id', 'inner');		
+		$this->db->join('coupons', 'coupons.id = orders.coupon_id', 'inner');
 		$this->db->where('orders.customer_id', $this->violet_auth->get_user_id());
 		$this->db->group_by('coupons.id ');
 		$query = $this->db->get()->result_array();
@@ -210,26 +224,26 @@ class User extends MY_Model
 
 	//added 2024-03-05 start
 	//check coupon on phone number
-	public function check_customer_coupon_on_phone($coupon,$phone)
+	public function check_customer_coupon_on_phone($coupon, $phone)
 	{
-		$query_check_account=$this->db->select('accounts.phone,accounts.id')->from('accounts')->where('accounts.phone',$phone)->get();
-	    if($query_check_account->num_rows()==0){
-	        $query = $this->db->select('coupons.*')->from('coupons')
-			->where('BINARY(coupon) = ', $coupon)
-			->where('coupons.customer_id', '1')
-			->get()->row_array();
-	    } else {
-	        $account=$query_check_account->row_array();
-	     $query = $this->db->select('coupons.*,accounts.phone')->from('coupons')
-		    ->join('ecommerce_users','coupons.customer_id=ecommerce_users.id','left')
-			->join('accounts','ecommerce_users.account_id=accounts.id','left')
-			->where('BINARY(coupon) = ', $coupon)
-			->group_start()
-			->where('coupons.customer_id', '1')
-			->or_where('accounts.phone', $phone)
-			->group_end()
-			->get()->row_array();   
-	    }
+		$query_check_account = $this->db->select('accounts.phone,accounts.id')->from('accounts')->where('accounts.phone', $phone)->get();
+		if ($query_check_account->num_rows() == 0) {
+			$query = $this->db->select('coupons.*')->from('coupons')
+				->where('BINARY(coupon) = ', $coupon)
+				->where('coupons.customer_id', '1')
+				->get()->row_array();
+		} else {
+			$account = $query_check_account->row_array();
+			$query = $this->db->select('coupons.*,accounts.phone')->from('coupons')
+				->join('ecommerce_users', 'coupons.customer_id=ecommerce_users.id', 'left')
+				->join('accounts', 'ecommerce_users.account_id=accounts.id', 'left')
+				->where('BINARY(coupon) = ', $coupon)
+				->group_start()
+				->where('coupons.customer_id', '1')
+				->or_where('accounts.phone', $phone)
+				->group_end()
+				->get()->row_array();
+		}
 		return $query;
 	}
 	// added 2024-03-05 end
@@ -264,7 +278,7 @@ class User extends MY_Model
 		return $query;
 	}
 
-	public function calculate_how_many_times_coupon_code_is_used_by_customer_on_customer_id($customer_id,$coupon_id)
+	public function calculate_how_many_times_coupon_code_is_used_by_customer_on_customer_id($customer_id, $coupon_id)
 	{
 		$this->db->select('COUNT(*) as count');
 		$this->db->from('orders');
@@ -311,14 +325,16 @@ class User extends MY_Model
 		return $query;
 	}
 
-	public function change_user_password($new_pass){
+	public function change_user_password($new_pass)
+	{
 		$data = array('password' => $this->encryptPass($new_pass));
 		$this->db->where('id', $this->violet_auth->get_user_id());
 		$query = $this->db->update('ecommerce_users', $data);
 		return $query;
 	}
 
-	public function check_if_user_password_is_true($password){
+	public function check_if_user_password_is_true($password)
+	{
 		$this->db->select('id');
 		$this->db->from('ecommerce_users');
 		$this->db->where('id', $this->violet_auth->get_user_id());
