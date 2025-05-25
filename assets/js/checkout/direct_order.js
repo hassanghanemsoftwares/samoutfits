@@ -158,50 +158,137 @@ jQuery(document).ready(function () {
       //     },
       // });
       $("#otp_success").val(0);
-      var form = document.getElementById("directOrderForm");
-      var formData = new FormData(form);
       const $btn = $("#placeOrderBtn");
       $btn.prop("disabled", true);
       $btn.find(".spinner-border").removeClass("d-none").addClass("text-white"); // show spinner
-      $btn.find(".btn-text").text("Placing Order...").addClass("text-white");
-      $.ajax({
-        url: getAppURL("checkout/confirm_direct_order"),
-        type: "POST",
-        data: formData,
-        processData: false,
-        contentType: false,
-        dataType: "json",
-        success: function (dataResult) {
-          if (dataResult.result) {
-            //place order make fire on purchase start
-            //end
-            $("#order_success_message").text(
-              "Order Received And Waiting Approval. We Will Contact You Shortly"
-            );
-            $("#order_success_modal").modal("show");
-            firePurchase(
-              dataResult.fireData.order,
-              dataResult.fireData.coupon,
-              dataResult.fireData.order_items,
-              dataResult.fireData.delivery_charge
-            );
-          } else {
-            $("#error_message").text(dataResult.message);
+      
+
+      var form = document.getElementById("directOrderForm");
+      var formData = new FormData(form);
+
+      if (formData.get("payment_method") === "cod") {
+          $btn.find(".btn-text").text("Placing Order...").addClass("text-white");
+        $.ajax({
+          url: getAppURL("checkout/confirm_direct_order"),
+          type: "POST",
+          data: formData,
+          processData: false,
+          contentType: false,
+          dataType: "json",
+          success: function (dataResult) {
+            if (dataResult.result) {
+              //place order make fire on purchase start
+              //end
+              $("#order_success_message").text(
+                "Order Received And Waiting Approval. We Will Contact You Shortly"
+              );
+              $("#order_success_modal").modal("show");
+              firePurchase(
+                dataResult.fireData.order,
+                dataResult.fireData.coupon,
+                dataResult.fireData.order_items,
+                dataResult.fireData.delivery_charge
+              );
+            } else {
+              $("#error_message").text(dataResult.message);
+              $("#error_modal").modal("show");
+            }
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.log("Error: " + textStatus + " " + errorThrown);
+            $("#error_message").text("We Have Error Please Call Admin!!");
             $("#error_modal").modal("show");
-          }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-          console.log("Error: " + textStatus + " " + errorThrown);
-          $("#error_message").text("We Have Error Please Call Admin!!");
-          $("#error_modal").modal("show");
-        },
-        complete: function () {
-          // Hide loader and restore button text regardless of result
-          $btn.prop("disabled", false);
-          $btn.find(".spinner-border").addClass("d-none").removeClass("text-white");
-          $btn.find(".btn-text").text("Place Order").removeClass("text-white");
-        },
-      });
+          },
+          complete: function () {
+            // Hide loader and restore button text regardless of result
+            $btn.prop("disabled", false);
+            $btn
+              .find(".spinner-border")
+              .addClass("d-none")
+              .removeClass("text-white");
+            $btn
+              .find(".btn-text")
+              .text("Place Order")
+              .removeClass("text-white");
+          },
+        });
+      } else if (formData.get("payment_method") === "whish") {
+          $btn.find(".btn-text").text("Redirecting. Wait a moment...").addClass("text-white");
+        var formDataObject = {};
+        formData.forEach((value, key) => {
+          formDataObject[key] = value;
+        });
+        var whishData = {
+          amount: calculateTotal(), // your total amount function
+          currency: "USD", // or get from your form
+          invoice: formData.get("invoice") || "INV_" + Date.now(),
+          externalId: Math.floor(Math.random() * 1000000), // generate or get unique external ID
+          successCallbackUrl: getAppURL("checkout/whish_success_callback"),
+          failureCallbackUrl: getAppURL("checkout/whish_failure_callback"),
+          successRedirectUrl: getAppURL("checkout/whish_success_redirect"),
+          failureRedirectUrl: getAppURL("checkout/whish_failure_redirect"),
+          formData: formDataObject,
+        };
+
+        $.ajax({
+          url: getAppURL("checkout/create_whish_payment"), // You create this API in backend that calls WhishService->createCollect()
+          type: "POST",
+          data: JSON.stringify(whishData),
+          contentType: "application/json",
+          dataType: "json",
+          success: function (response) {
+            if (response.result) {
+              // Order placed successfully
+              // $("#order_success_message").text(
+              //   "Order Received And Waiting Approval. We Will Contact You Shortly"
+              // );
+              // $("#order_success_modal").modal("show");
+
+              firePurchase(
+                response.fireData.order,
+                response.fireData.coupon,
+                response.fireData.order_items,
+                response.fireData.delivery_charge
+              );
+
+              //  Now handle Whish response
+              const whish = response.whish;
+              if (
+                whish &&
+                whish.status === true &&
+                whish.data &&
+                whish.data.collectUrl
+              ) {
+                //  Redirect to Whish payment page
+                window.location.href = whish.data.collectUrl;
+                return;
+              }
+            } else {
+              //  Order failed
+              $("#error_message").text(response.message);
+              $("#error_modal").modal("show");
+            }
+          },
+
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.log("Error: " + textStatus + " " + errorThrown);
+            $("#error_message").text("We Have Error Please Call Admin!!");
+            $("#error_modal").modal("show");
+          },
+          complete: function () {
+            // Hide loader and restore button text regardless of result
+            $btn.prop("disabled", false);
+            $btn
+              .find(".spinner-border")
+              .addClass("d-none")
+              .removeClass("text-white");
+            $btn
+              .find(".btn-text")
+              .text("Place Order")
+              .removeClass("text-white");
+          },
+        });
+      }
     }
   });
 
@@ -254,6 +341,7 @@ function calculateTotal() {
   }
   var final_tot = tot + parseFloat($("#delivery_charge").val());
   $("#totalLabel").text("$".concat(final_tot));
+  return final_tot;
 }
 //calculate end
 function validation() {
@@ -324,15 +412,22 @@ function validation() {
       .css("color", "red");
     count++;
   }
-
-  if ($("#direction").val() !== "") {
-    $("#msg_direction").html("");
+  if ($("#street").val() !== "") {
+    $("#msg_street").html("");
   } else {
-    $("#msg_direction")
+    $("#msg_street")
       .html("*" + _lang.Required + "*")
       .css("color", "red");
     count++;
   }
+  // if ($("#direction").val() !== "") {
+  //   $("#msg_direction").html("");
+  // } else {
+  //   $("#msg_direction")
+  //     .html("*" + _lang.Required + "*")
+  //     .css("color", "red");
+  //   count++;
+  // }
 
   if (count !== 0) {
     $("html, body").animate({ scrollTop: 0 }, "slow");
@@ -3735,7 +3830,7 @@ function fireCheckout() {
 
 jQuery(document).ready(function () {
   fireCheckout();
-  $("#order_success_modal, #error_modal").on("hidden.bs.modal", function () {
+  $("#order_success_modal").on("hidden.bs.modal", function () {
     location.reload();
   });
 });

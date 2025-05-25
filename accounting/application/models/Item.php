@@ -8,7 +8,7 @@ class Item extends MY_Model
 	protected $modelName = 'Item';
 	protected $_table = 'items';
 	protected $_listFieldName = 'description';
-	protected $_fieldsNames = ['id', 'barcode', 'description', 'category', 'open_cost', 'cost', 'purchase_cost', 'open_qty', 'price', 'price_ttc', 'qty', 'profit', 'TVA', 'color', 'note', 'gender', 'publish', 'sub_category','variant1', 'stock_clearance', 'old_price', 'size_chart', 'supplier_code', 'rmb', 'link'];
+	protected $_fieldsNames = ['id', 'barcode', 'description', 'category', 'open_cost', 'cost', 'purchase_cost', 'open_qty', 'price', 'price_ttc', 'qty', 'profit', 'TVA', 'color', 'note', 'gender', 'publish', 'sub_category','variant1', 'stock_clearance', 'old_price', 'size_chart', 'supplier_code', 'rmb', 'link','cool_storage','flammable_handling','fragile'];
 	protected $allowedNulls = ['supplier_code', 'rmb', 'link','variant1'];
 
 	public function __construct()
@@ -753,7 +753,18 @@ class Item extends MY_Model
 	{
 		return $this->db->update('items', array('stock_clearance' => $stock_clearance), array('id' => $item_id));
 	}
-
+	public function update_product_cool_storage($item_id, $cool_storage)
+	{
+		return $this->db->update('items', array('cool_storage' => $cool_storage), array('id' => $item_id));
+	}
+	public function update_product_flammable_handling($item_id, $flammable_handling)
+	{
+		return $this->db->update('items', array('flammable_handling' => $flammable_handling), array('id' => $item_id));
+	}
+	public function update_product_fragile($item_id, $fragile)
+	{
+		return $this->db->update('items', array('fragile' => $fragile), array('id' => $item_id));
+	}
 	public function update_product_category($item_id, $category)
 	{
 		return $this->db->update('items', array('category' => $category), array('id' => $item_id));

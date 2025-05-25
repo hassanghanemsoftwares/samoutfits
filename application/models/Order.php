@@ -7,7 +7,7 @@ class Order extends MY_Model
     protected $modelName = 'Order';
     protected $_table = 'orders';
     protected $_listFieldName = 'id';
-    protected $_fieldsNames = ['id', 'auto_no', 'customer_id', 'order_date', 'value_date', 'currency_id', 'currency_rate', 'description', 'status', 'coupon_id', 'discount', 'address', 'delivery_charge','otp','gest'];
+    protected $_fieldsNames = ['id', 'auto_no', 'customer_id', 'order_date', 'value_date', 'currency_id', 'currency_rate', 'description', 'status', 'coupon_id', 'discount', 'address', 'delivery_charge', 'otp', 'gest', 'payment_method', 'payment_status'];
     protected $_dateFields = ['order_date', 'value_date'];
     protected $allowedNulls = ['value_date', 'description', 'status', 'coupon_id', 'discount'];
 
@@ -55,7 +55,7 @@ class Order extends MY_Model
         return  $saved;
     }
 
-    public function create_new_order_as_user($user_id,$coupon_id, $discount, $description, $address, $delivery_charge,$opt_success,$gest)
+    public function create_new_order_as_user($user_id, $coupon_id, $discount, $description, $address, $delivery_charge, $opt_success, $gest, $payment_method, $payment_status)
     {
         $full_address = '';
         foreach ($address as $k => $a) {
@@ -88,8 +88,11 @@ class Order extends MY_Model
             'discount' => $discount,
             'delivery_charge' => $delivery_charge,
             'address' => $full_address,
-            'otp'=>$opt_success,
-            'gest'=>$gest
+            'otp' => $opt_success,
+            'gest' => $gest,
+            'payment_method' => $payment_method,
+            'payment_status' => $payment_status
+
         );
         $this->Order->set_fields($data);
         $saved = $this->Order->insert();
@@ -174,7 +177,7 @@ class Order extends MY_Model
             'select' => "orders.*, DATE_FORMAT(orders.order_date, '%d %M %Y') as date, coupons.amount, coupons.discount_type, coupons.coupon",
             'join' => ['coupons', 'orders.coupon_id = coupons.id', 'left'],
             'where' => [
-                ['orders.customer_id', $this->violet_auth->get_user_id()],               
+                ['orders.customer_id', $this->violet_auth->get_user_id()],
             ],
             'where_in' => [['orders.status', ["Successfully Delivered", "Failed To Deliver", "Cancelled By Administrator"]]],
             'order_by' => [['orders.auto_no', 'DESC']]
@@ -215,5 +218,22 @@ class Order extends MY_Model
             'where' => [['orders.id', $id]]
         ];
         return $this->load($query);
+    }
+
+    public function update_order_payment_status($order_id, $status)
+    {
+        $data = array(
+            'payment_status' => $status
+        );
+        $this->db->where('orders.id', $order_id);
+        return $this->db->update('orders', $data);
+    }
+        public function get_order_data($order_id)
+    {
+        $this->db->select('*');
+        $this->db->from('orders');
+        $this->db->where('id', $order_id);
+        $query = $this->db->get()->row_array();
+        return $query;
     }
 }

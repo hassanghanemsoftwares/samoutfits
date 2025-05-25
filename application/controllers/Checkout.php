@@ -1,4 +1,5 @@
 <?php
+
 defined('BASEPATH') or exit('No direct script access allowed');
 /**
  * @property Item $Item
@@ -11,12 +12,18 @@ defined('BASEPATH') or exit('No direct script access allowed');
  */
 class Checkout extends MY_Controller
 {
+    public $Account = NULL;
+    public $cart = NULL;
+    public $Configuration = NULL;
+    public $Coupon = NULL;
+    public $whish = NULL;
 
     function __construct()
     {
         parent::__construct();
         // Load cart library
         $this->load->library('cart');
+        $this->load->library('Whish');
         $this->load->model('Item');
     }
 
@@ -81,9 +88,6 @@ class Checkout extends MY_Controller
             $data['discount'] = $post['discount'];
             $data['coupon_id'] = $post['coupon_id'];
             $data['discount_type'] = $post['discount_type'];
-
-
-            
         }
 
         // var_dump($post);exit;
@@ -468,9 +472,17 @@ class Checkout extends MY_Controller
             );
             //updated 2024-03-07
             $opt_success = $this->input->post('otp_success');
+            $payment_method = $this->input->post('payment_method');
+            if ($payment_method == "cod") {
+                $payment_method = "C.O.D";
+                $payment_status = null;
+            }
+            if ($payment_method == "whish") {
+                $payment_status =  'Pending';
+            }
             // echo $opt_success; exit;
             $gest = 1;
-            $saved = $this->Order->create_new_order_as_user($ecom_user_id, $post['coupon_id'], $discount, $post['note'], $address, $post['delivery_charge'], $opt_success, $gest);
+            $saved = $this->Order->create_new_order_as_user($ecom_user_id, $post['coupon_id'], $discount, $post['note'], $address, $post['delivery_charge'], $opt_success, $gest, $payment_method, $payment_status);
             if ($saved) {
                 $this->load->model('Order_item');
                 $order_id = $this->Order->get_field('id');
@@ -491,8 +503,32 @@ class Checkout extends MY_Controller
                     $user = $this->User->fetch_ecommerce_online_user_from_users_table();
                     $fiscal_year_id = $user['fiscal_year_id'];
                     $user_id = $user['id'];
+                    $requirementText = "";
+                    $this->load->model('Item');
+                    foreach ($data['cartItems'] as $item) {
+                        $itemData =    $this->Item->load_item_data($item['id']);
+                        $requirements = [];
+
+                        if ($itemData['cool_storage'] === "1") {
+                            $requirements[] = "Requires Cool Storage";
+                        }
+
+                        if ($itemData['flammable_handling'] === "1") {
+                            $requirements[] = "Requires Flammable Handling";
+                        }
+
+                        if ($itemData['fragile'] === "1") {
+                            $requirements[] = "Requires Fragile Handling";
+                        }
+
+                        $requirementText = implode('/ ', $requirements);
+                    }
+                    if ($requirementText != "") {
+                        $post['note'] = $post['note'] . " " . $requirementText;
+                    }
+
                     //updated 2024-03-07
-                    $added = $this->Transaction->create_new_sale_invoice_for_order_as_user($acc_id, $discount, $local_currency, $account2, $fiscal_year_id, $user_id, $post['note'], $post['delivery_charge']);
+                    $added = $this->Transaction->create_new_sale_invoice_for_order_as_user($acc_id, $discount, $local_currency, $account2, $fiscal_year_id, $user_id, $post['note'], $post['delivery_charge'], $payment_method, $payment_status);
                     if ($added) {
                         $this->load->model('Transaction_item');
                         $total = 0;
@@ -691,5 +727,349 @@ class Checkout extends MY_Controller
                 )
             )
         );
+    }
+
+
+    public function create_whish_payment()
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        $formData = $input['formData'];
+        // var_dump($input);
+        // exit;
+        // Validate input here as needed
+        $this->session->unset_userdata('verification_code_direct_order');
+        $data['cartItems'] = $this->cart->contents();
+        $this->load->model(['Order', 'Account']);
+        $count = 0;
+        $this->load->model('Transaction');
+        $this->load->model('User');
+        //check if phone number exist start
+        $phone_without_code = $formData['phone'];
+
+        $firstTwoCharsOfPhone = substr($phone_without_code, 0, 2); // Get the first two characters
+
+        if ($firstTwoCharsOfPhone === '03' && $formData['phone_code'] == 961) {
+            $phone_without_code = '3' . substr($phone_without_code, 2); // Replace with '99' and concatenate the rest of the string
+        }
+
+        $phone_string = $formData['phone_code'] . $phone_without_code;
+        $phone = str_replace(' ', '', $phone_string);
+
+        $phone_code = $formData['phone_code'];
+        $phone_number = $formData['phone'];
+        $account_exist = $this->Account->check_if_account_exist($phone);
+
+        //check if account exist
+        if ($account_exist) {
+            //if exist use this account
+            $account = $account_exist;
+            $acc_id = $account['id'];
+            $phone2 = $formData['phone2_code'] . $formData['phone2'];
+            $info = array(
+                "fname" => $formData['fname'],
+                "lname" => $formData['lname'],
+                'phone' => $phone,
+                'phone2' => str_replace(' ', '', $phone2),
+                'email' => $formData['email'],
+                'country' => $formData['country_val'],
+                'city' => $formData['city'],
+                'place' => null,
+                'street' => $formData['street'],
+                'building' => null,
+                'floor' => null,
+                'direction' =>  $formData['directions']
+            );
+
+            $this->Account->update_user_account($acc_id, $info);
+
+            $user_exist = $this->User->user_account_exit($acc_id);
+
+            //check if account have user start
+            if ($user_exist) {
+                $user_data = array(
+                    "fname" => $formData['fname'],
+                    "lname" => $formData['lname'],
+                    "birthdate" => null,
+                );
+                $ecom_user = $user_exist;
+                $ecom_user_id = $ecom_user['id'];
+                $this->User->update_ecomerce_user($ecom_user_id, $user_data);
+            } else {
+                $user_data = array(
+                    "password" => "nopasswordCReaTE2024" . $acc_id,
+                    "fname" => $formData['fname'],
+                    "lname" => $formData['lname'],
+                    "birthdate" => null,
+                );
+                $ecom_user_id = $this->User->create_ecomerce_user($acc_id, $user_data);
+                $ecom_user = $this->User->load_all_user_data($ecom_user_id);
+            }
+            //check if account have user end
+        } else {
+            //if nut exist create new account
+            $phone2 = $formData['phone2_code'] . $formData['phone2'];
+            $info = array(
+                "fname" => $formData['fname'],
+                "lname" => $formData['lname'],
+                'phone' => $phone,
+                'phone2' => str_replace(' ', '', $phone2),
+                'email' => $formData['email'],
+                'country' => $formData['country_val'],
+                'city' => $formData['city'],
+                'place' => null,
+                'street' => $formData['street'],
+                'building' => null,
+                'floor' => null,
+                'direction' =>  $formData['directions']
+            );
+
+            $acc_id = $this->Account->create_account_for_user($info);
+            if ($acc_id !== '') {
+                $user_data = array(
+                    "password" => "nopasswordCReaTE2024" . $acc_id,
+                    "fname" => $formData['fname'],
+                    "lname" => $formData['lname'],
+                    "birthdate" => null,
+                );
+                $ecom_user_id = $this->User->create_ecomerce_user($acc_id, $user_data);
+                $ecom_user = $this->User->load_all_user_data($ecom_user_id);
+            }
+        }
+        //check if phone number exist end
+
+        foreach ($data['cartItems'] as $k => $item) {
+            if ($item['options']['size']) {
+                $size = $item['options']['size'];
+            } else {
+                $size = 'No';
+            }
+            $res = $this->Transaction->load_avialable_qty_of_item_specific_size($item['id'], $size);
+            if (intval($res['av_qty']) < intval($item['qty'])) {
+                $count++;
+                break;
+            }
+        }
+        if ($count == 0) {
+
+            $address = array(
+                'country' => $formData['country_val'],
+                'city' => $formData['city'],
+                'place' => null,
+                'street' => $formData['street'],
+                'building' => null,
+                'floor' => null,
+                'direction' =>  $formData['directions'],
+            );
+            //updated 2024-03-07
+            $updated = $this->Account->update_user_shipping_address_as_user($acc_id, $address);
+            if ($formData['discount_type'] === '0') {
+                $discount = 0;
+                $discount_item = $formData['discount'];
+            } else {
+                if ($formData['discount_type'] === '1') {
+                    $discount = $formData['discount'];
+                    $discount_item = 0;
+                } else {
+                    $discount = 0;
+                    $discount_item = 0;
+                }
+            }
+            $address = array(
+                'country' => $formData['country_val'],
+                'city' => $formData['city'],
+                'description' => $formData['directions'],
+            );
+            $opt_success = $formData['otp_success'];
+            $payment_method = $formData['payment_method'];
+            if ($payment_method == "cod") {
+                $payment_method = "C.O.D";
+                $payment_status = null;
+            }
+            if ($payment_method == "whish") {
+                $payment_status =  'Pending';
+            }
+            // echo $opt_success; exit;
+            $gest = 1;
+            $saved = $this->Order->create_new_order_as_user($ecom_user_id, $formData['coupon_id'], $discount, $formData['note'], $address, $formData['delivery_charge'], $opt_success, $gest, $payment_method, $payment_status);
+            if ($saved) {
+                $this->load->model('Order_item');
+                $order_id = $this->Order->get_field('id');
+                $iserted_order = $this->Order->load_order_data($order_id);
+                $delivery_charge = $formData['delivery_charge'];
+                $this->load->model('Coupon');
+                $coupon = $this->Coupon->get_coupon_data($iserted_order['coupon_id']);
+                $done = false;
+                foreach ($data['cartItems'] as $t) {
+                    $done = $this->Order_item->add_new_order_item($t, $this->Order->get_field('id'), $discount_item);
+                }
+                // var_dump($done);exit;
+                $inserted_order_items = $this->Order->load_order_items_as_order($order_id);
+                if ($done) {
+                    $local_currency = $this->Account->fetch_system_local_currency()['valueInt'];
+                    $account2 = $this->Account->fetch_sales_account_LC($local_currency);
+
+                    $user = $this->User->fetch_ecommerce_online_user_from_users_table();
+                    $fiscal_year_id = $user['fiscal_year_id'];
+                    $user_id = $user['id'];
+                    $requirementText = "";
+                    $this->load->model('Item');
+                    foreach ($data['cartItems'] as $item) {
+                        $itemData =    $this->Item->load_item_data($item['id']);
+                        $requirements = [];
+
+                        if ($itemData['cool_storage'] === "1") {
+                            $requirements[] = "Requires Cool Storage";
+                        }
+
+                        if ($itemData['flammable_handling'] === "1") {
+                            $requirements[] = "Requires Flammable Handling";
+                        }
+
+                        if ($itemData['fragile'] === "1") {
+                            $requirements[] = "Requires Fragile Handling";
+                        }
+
+                        $requirementText = implode('/ ', $requirements);
+                    }
+                    if ($requirementText != "") {
+                        $formData['note'] = $formData['note'] . " " . $requirementText;
+                    }
+
+                    //updated 2024-03-07
+                    $added = $this->Transaction->create_new_sale_invoice_for_order_as_user($acc_id, $discount, $local_currency, $account2, $fiscal_year_id, $user_id, $formData['note'], $formData['delivery_charge'], $payment_method, $payment_status);
+                    if ($added) {
+                        $this->load->model('Transaction_item');
+                        $total = 0;
+                        foreach ($data['cartItems'] as $item) {
+                            $done = $this->Transaction_item->add_new_trans_item_and_trans_item_sizes($item, $this->Transaction->get_field('id'), $discount_item);
+                            $total += (doubleval($item['qty']) * doubleval($item['price'])) * (1 - (doubleval($this->Transaction_item->get_field('discount')) / 100));
+                        }
+                        $total = $total + doubleval($this->Transaction->get_field('delivery_charge')) - doubleval($this->Transaction->get_field('discount'));
+                        $this->load->model('Journal');
+                        //updated 2024-03-07
+                        $this->Journal->save_trans_in_jounral_as_user($acc_id, $this->Transaction->get_field('auto_no'), $this->Transaction->get_field('id'), $account2, $local_currency, $fiscal_year_id, $user_id, $total);
+                        //updated 2024-03-07
+                        $name1 = $this->Account->fetch_account_data($acc_id);
+                        $name2 = $this->Account->fetch_account_data($account2['id']);
+
+                        $this->Journal->save_in_journal_accounts($this->Journal->get_field('id'), $account2['id'], $this->Transaction->get_field('auto_no'), $total, "-1", $name1["account_name"], "Sale");
+                        //updated 2024-03-07
+                        $this->Journal->save_in_journal_accounts($this->Journal->get_field('id'), $acc_id, $this->Transaction->get_field('auto_no'), $total, "1", $name2["account_name"], "Sale");
+                        $this->Transaction->update_items_qty($data['cartItems'], $fiscal_year_id);
+                        //update balance debit credit for account 1
+                        //updated 2024-03-07
+                        $balance = $this->Journal->calculate_account_balance($acc_id, $fiscal_year_id)["total"];
+                        //updated 2024-03-07
+                        $credit = $this->Journal->calculate_account_credit($acc_id, $fiscal_year_id)["total"];
+                        //updated 2024-03-07
+                        $debit = $this->Journal->calculate_account_debit($acc_id, $fiscal_year_id)["total"];
+                        //updated 2024-03-07
+                        $this->Account->update_account_credit_debit_balance($acc_id, $balance, $credit, $debit);
+                        //update balance debit credit for account 2
+                        $balance = $this->Journal->calculate_account_balance($account2['id'], $fiscal_year_id)["total"];
+                        $credit = $this->Journal->calculate_account_credit($account2['id'], $fiscal_year_id)["total"];
+                        $debit = $this->Journal->calculate_account_debit($account2['id'], $fiscal_year_id)["total"];
+                        $this->Account->update_account_credit_debit_balance($account2['id'], $balance, $credit, $debit);
+                        //update order with trans_id
+                        $this->Order->update_order_transaction_id($this->Order->get_field('id'), $this->Transaction->get_field('id'));
+                    }
+                    $this->session->set_flashdata('message', $this->lang->line('*Your_order_sent_successfully*'));
+                    $this->cart->destroy();
+
+                    $fireData = array(
+                        'order' => $iserted_order,
+                        'delivery_charge' => $delivery_charge,
+                        'order_items' => $inserted_order_items,
+                        'coupon' => $coupon
+                    );
+                    $response = $this->whish->createWHISHTOWHISH([
+                        'amount' => $input['amount'],
+                        'currency' => $input['currency'],
+                        'invoice' => $input['invoice'],
+                        'externalId' => $input['externalId'],
+                        'successCallbackUrl' => $input['successCallbackUrl'],
+                        'failureCallbackUrl' => $input['failureCallbackUrl'],
+                        'successRedirectUrl' => $input['successRedirectUrl'] . "?order_id=" . $order_id,
+                        'failureRedirectUrl' => $input['failureRedirectUrl'] . "?order_id=" . $order_id,
+                    ]);
+
+                    echo json_encode([
+                        "result" => true,
+                        "message" => "Success",
+                        "fireData" =>  $fireData,
+                        "whish" => $response
+                    ]);
+                }
+            } else {
+                echo json_encode(
+                    array(
+                        "result" => false,
+                        "message" => "*Your Order Rejected*"
+                    )
+                );
+                // $this->session->set_flashdata('message', $this->lang->line('*Your_order_rejected*'));
+                // redirect('checkout/direct_order');
+            }
+        } else {
+            //$this->session->set_flashdata('message', 'Sorry, the selected qty of one or more product is not available!');
+            echo json_encode(
+                array(
+                    "result" => false,
+                    "message" => "Sorry, the selected qty of one or more product is not available!"
+                )
+            );
+            // redirect('cart/index');
+        }
+    }
+    public function whish_success_redirect()
+    {
+        $get = $this->input->get(null, true);
+
+        if (isset($get['order_id'])) {
+            $this->load->model('Order');
+            $this->load->model('Transaction');
+            $order =   $this->Order->get_order_data($get['order_id']);
+            $transaction_id = $order['transaction_id'];
+            $status = 'Payment successful';
+            $this->Transaction->update_sale_invoice_payment_status($transaction_id, $status);
+            $this->Order->update_order_payment_status($get['order_id'], $status);
+            redirect('checkout/whish_success_redirect');
+            return;
+        }
+
+        $data['title'] = $this->lang->line('Checkout');
+        $this->load->view('templates/header', [
+            '_page_title' => $data['title'],
+            '_moreCss' => []
+        ]);
+        $this->load->view('payments/payment_success', $data);
+        $this->load->view('templates/footer', ['_moreJs' => []]);
+    }
+
+    public function whish_failure_redirect()
+    {
+        $get = $this->input->get(null, true);
+
+
+        if (isset($get['order_id'])) {
+            $this->load->model('Order');
+            $this->load->model('Transaction');
+            $order =   $this->Order->get_order_data($get['order_id']);
+            $transaction_id = $order['transaction_id'];
+            $status = 'Payment failed (insufficient balance)';
+            $this->Transaction->update_sale_invoice_payment_status($transaction_id, $status);
+            $this->Order->update_order_payment_status($get['order_id'], $status);
+            redirect('checkout/whish_failure_redirect');
+            return;
+        }
+
+        $data['title'] = $this->lang->line('Checkout');
+        $this->load->view('templates/header', [
+            '_page_title' => $data['title'],
+            '_moreCss' => []
+        ]);
+        $this->load->view('payments/payment_failed', $data);
+        $this->load->view('templates/footer', ['_moreJs' => []]);
     }
 }

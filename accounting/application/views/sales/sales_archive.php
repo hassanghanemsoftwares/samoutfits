@@ -45,40 +45,40 @@
 	</div>
 </div>
 <div class="row">
-<div class="row">
-	<div class="form-group col-sm-2">
-		<label class="col-sm-4 control-label" for="type"><?php echo $this->lang->line('trans_type') ?></label>
-		<div class="col-sm-8">
-			<?php
-			echo form_dropdown('type', array('' => '', 'SA' => 'SA', 'EX' => 'EX'), '', 'id="type" class="form-control input-sm"')
-			?>
+	<div class="row">
+		<div class="form-group col-sm-2">
+			<label class="col-sm-4 control-label" for="type"><?php echo $this->lang->line('trans_type') ?></label>
+			<div class="col-sm-8">
+				<?php
+				echo form_dropdown('type', array('' => '', 'SA' => 'SA', 'EX' => 'EX'), '', 'id="type" class="form-control input-sm"')
+				?>
+			</div>
+		</div>
+		<div class="form-group col-sm-3">
+			<label class="col-sm-4 control-label" for="trans_date_filter"><?php echo $this->lang->line('trans_date') ?></label>
+			<div class="col-sm-8">
+				<?php
+				echo form_input('trans_date', '', 'id="trans_date_filter" class="form-control input-sm" autocomplete="off"')
+				?>
+			</div>
+		</div>
+		<div class="form-group col-sm-3">
+			<label class="col-sm-4 control-label" for="dispatch_date_filter"><?php echo $this->lang->line('dispatch_date') ?></label>
+			<div class="col-sm-8">
+				<?php
+				echo form_input('dispatch_date', '', 'id="dispatch_date_filter" class="form-control input-sm" autocomplete="off"')
+				?>
+			</div>
+		</div>
+		<div class="form-group col-sm-4">
+			<label class="col-sm-4 control-label" for="status"><?php echo $this->lang->line('status') ?></label>
+			<div class="col-sm-8">
+				<?php
+				echo form_dropdown('status', $status2, '', 'id="status" class="form-control input-sm"')
+				?>
+			</div>
 		</div>
 	</div>
-	<div class="form-group col-sm-3">
-		<label class="col-sm-4 control-label" for="trans_date_filter"><?php echo $this->lang->line('trans_date') ?></label>
-		<div class="col-sm-8">
-			<?php
-			echo form_input('trans_date', '', 'id="trans_date_filter" class="form-control input-sm" autocomplete="off"')
-			?>
-		</div>
-	</div>
-	<div class="form-group col-sm-3">
-		<label class="col-sm-4 control-label" for="dispatch_date_filter"><?php echo $this->lang->line('dispatch_date') ?></label>
-		<div class="col-sm-8">
-			<?php
-			echo form_input('dispatch_date', '', 'id="dispatch_date_filter" class="form-control input-sm" autocomplete="off"')
-			?>
-		</div>
-	</div>
-	<div class="form-group col-sm-4">
-		<label class="col-sm-4 control-label" for="status"><?php echo $this->lang->line('status') ?></label>
-		<div class="col-sm-8">
-			<?php
-			echo form_dropdown('status', $status2, '', 'id="status" class="form-control input-sm"')
-			?>
-		</div>
-	</div>
-</div>
 </div>
 <table class="table table-bordered table-striped table-hover table-condensed table-responsive" id="archiveTbl" data-num-rows="<?php echo $this->Transaction->get('paginationTotalRows') ?>">
 	<thead>
@@ -91,6 +91,9 @@
 			<th><?php echo $this->lang->line('done') ?></th>
 			<th><?php echo $this->lang->line('auto_number') ?></th>
 			<th><?php echo $this->lang->line('account_name') ?></th>
+			<th><?php echo $this->lang->line('payment_method') ?></th>
+			<th><?php echo $this->lang->line('payment_status') ?></th>
+
 			<th><?php echo $this->lang->line('subtotal') ?></th>
 			<th><?php echo $this->lang->line('delivery_charge') ?></th>
 			<th><?php echo $this->lang->line('total') ?></th>
@@ -113,6 +116,8 @@
 				<td><?php echo $record['status'] ?></td>
 				<td><?php echo $record['auto_no'] ?></td>
 				<td><?php echo $record['account1'] ?></td>
+				<td><?php echo $record['payment_method_gateway'] ?></td>
+				<td><?php echo $record['payment_method_gateway_status'] ?></td>
 				<td><?php echo $record['subtotal'] ?></td>
 				<td><?php echo $record['delivery_charge'] ?></td>
 				<td><?php echo $record['total'] ?></td>
@@ -209,7 +214,7 @@
 						<button type="submit" class="btn btn-primary" id="bulk_wakilni_print" onclick='this.form.action="sales/bulk_wakilni_preview";'><?php echo $this->lang->line('Print_All_Wakilni') ?></button>
 					</div>
 					<div class="col-md-2" style="margin-left: 10px;">
-					<button type="submit" class="btn btn-primary" id="excel_btn" onclick='this.form.action="sales/excel_preview";'><?php echo $this->lang->line('Excel') ?></button>
+						<button type="submit" class="btn btn-primary" id="excel_btn" onclick='this.form.action="sales/excel_preview";'><?php echo $this->lang->line('Excel') ?></button>
 					</div>
 					<?php echo form_close() ?>
 					<div class="col-md-2" style="margin-left: 10px;">

@@ -65,7 +65,7 @@
 	<div class="col-sm-4">
 		<div class="form-group">
 			<label class="col-sm-4 control-label" for="acctLkupTo">
-			<?php echo $this->lang->line('Customer_Account') ?>
+				<?php echo $this->lang->line('Customer_Account') ?>
 			</label>
 			<div class="col-sm-8">
 				<?php echo form_input('', $account, 'id="acctLkupTo" maxlength="100" class="form-control"') ?>
@@ -79,7 +79,7 @@
 		</div>
 		<div class="form-group">
 			<label class="col-sm-4 control-label" for="acctLkupFrom">
-			<?php echo $this->lang->line('Sales_Account') ?>
+				<?php echo $this->lang->line('Sales_Account') ?>
 			</label>
 			<div class="col-sm-8">
 				<?php echo form_input('', $account2, 'id="acctLkupFrom" maxlength="100" class="form-control" readonly="true"') ?>
@@ -111,7 +111,7 @@
 	<div class="col-sm-4">
 		<div class="form-group">
 			<label class="col-sm-6 control-label" for="driver_id">
-			<?php echo $this->lang->line('Select_Driver') ?>
+				<?php echo $this->lang->line('Select_Driver') ?>
 			</label>
 			<div class="col-sm-6">
 				<?php echo form_dropdown('driver_list', $drivers, $this->Transaction->get_field('driver_id'), 'id="driver_list" class="form-control"') ?>
@@ -123,7 +123,7 @@
 	<div class="col-sm-4">
 		<div class="form-group">
 			<label class="col-sm-6 control-label" for="employee_id">
-			<?php echo $this->lang->line('Select_Employee') ?>
+				<?php echo $this->lang->line('Select_Employee') ?>
 			</label>
 			<div class="col-sm-6">
 				<?php echo form_dropdown('employee_list', $employees, $this->Transaction->get_field('employee_id'), 'id="employee_list" class="form-control"') ?>
@@ -156,7 +156,7 @@
 	<div class="clearfix"></div>
 	<div class="col-sm-4">
 		<div class="form-group">
-			<label class="col-sm-4 control-label" for="payment_method"><?php echo $this->lang->line('payment_method') ?></label>
+			<label class="col-sm-4 control-label" for="payment_method"><?php echo $this->lang->line('payment_currency') ?></label>
 			<div class="col-sm-8">
 				<?php
 				echo form_dropdown('trans[payment_method]', $payment_method, $this->Transaction->get_field('payment_method'), 'id="payment_method" class="form-control"')
@@ -164,7 +164,9 @@
 			</div>
 		</div>
 	</div>
-		<div class="col-sm-4">
+
+
+	<div class="col-sm-4">
 		<div class="form-group">
 			<label class="col-sm-6 control-label" for="try_on"><?php echo 'Try On' ?></label>
 			<div class="col-sm-6">
@@ -184,6 +186,26 @@
 			</div>
 		</div>
 	</div>
+	<div class="col-sm-4">
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="payment_method_gateway"><?php echo $this->lang->line('payment_method') ?></label>
+			<div class="col-sm-8">
+				<?php
+				echo form_dropdown('trans[payment_method_gateway]', $payment_method_gateway, $this->Transaction->get_field('payment_method_gateway'), 'id="payment_method_gateway" class="form-control"')
+				?>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-4">
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="payment_method_gateway_status"><?php echo $this->lang->line('payment_method') ?></label>
+			<div class="col-sm-8">
+				<?php
+				echo form_dropdown('trans[payment_method_gateway_status]', $payment_method_gateway_status, $this->Transaction->get_field('payment_method_gateway_status'), 'id="payment_method_gateway_status" class="form-control"')
+				?>
+			</div>
+		</div>
+	</div>
 	<div class="clearfix"></div>
 	<div class="col-sm-4">
 		<div class="form-group">
@@ -196,8 +218,8 @@
 				</div>
 			</div>
 		</div>
-	</div>	
-<div class="col-sm-4">
+	</div>
+	<div class="col-sm-4">
 		<div class="form-group">
 			<label class="col-sm-6 control-label" for="description"><?php echo $this->lang->line('Description') ?></label>
 			<div class="col-sm-6">
@@ -212,7 +234,7 @@
 				<?php echo form_textarea('trans[delivery_note]', $this->Transaction->get_field('delivery_note'), 'id="delivery_note" class="form-control" style="height:100px;"') ?>
 			</div>
 		</div>
-	</div>	
+	</div>
 	<div class="clearfix"></div>
 	<div class="col-sm-12 table-responsive">
 		<table class="table table-bordered table-condensed table-striped table-hover">
@@ -227,11 +249,11 @@
 					<th><?php echo $this->lang->line('Quantity') ?></th>
 					<th><?php echo $this->lang->line('Price') ?></th>
 					<th><?php echo $this->lang->line('Discount') ?></th>
-						<?php if ($_SESSION['vauth_user_type'] == "Admin") {
+					<?php if ($_SESSION['vauth_user_type'] == "Admin") {
 					?>
 						<th><?php echo $this->lang->line('Profit') ?></th>
 					<?php } ?>
-				
+
 					<th class="text-right"><?php echo $this->lang->line('Total') ?></th>
 				</tr>
 			</thead>
@@ -285,7 +307,7 @@
 					?>
 				</div>
 			</div>
-		</div>		
+		</div>
 		<div class="col-sm-2">
 			<div class="form-group">
 				<label class="col-sm-4 control-label" for="final_qty"><?php echo $this->lang->line('Qty') ?></label>

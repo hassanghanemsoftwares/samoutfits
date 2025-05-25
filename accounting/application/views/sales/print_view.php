@@ -2,7 +2,7 @@
     <button type="button" onclick="window.print();" name="print" class="btn-style">Print</button>
 </div>
 <div id="printdiv" style="float: left; margin-bottom:20px;">
-    <a href="<?php echo "sales/edit/".$trans_id ?>" class="btn-style a-style">Back</a>
+    <a href="<?php echo "sales/edit/" . $trans_id ?>" class="btn-style a-style">Back</a>
 </div>
 <center>
     <div class="row form-group" style="clear:both; background-color: #d1a3ff; color:black; width: 100%; height:420px; font-family: Arial, Helvetica, sans-serif;">
@@ -63,9 +63,9 @@
             </tbody>
         </table>
     </div>
-    <div style="margin-bottom: 20px; height: 140px; float: right; margin-right: 5%;">
+    <div style="margin-bottom: 5px; height: 110px; float: right; margin-right: 5%;">
         <div class="row form-group" style="width: 320px;">
-            <div class="col-sm-4 col-sm-offset-7" style="background-color: #d1a3ff; height:120px; padding-left:60px; padding-top:20px; margin-left:3%; text-align:center;">
+            <div class="col-sm-4 col-sm-offset-7" style="background-color: #d1a3ff; height:100px; padding-left:60px; padding-top:10px; margin-left:3%; text-align:center;">
                 <div style="float: left;">
                     <h4 class="col-sm-6"><strong>Subtotal:</strong></h4>
                     <h4 class="col-sm-6"><strong>Total:</strong></h4>
@@ -76,8 +76,22 @@
                 </div>
 
             </div>
+
         </div>
     </div>
+    <?php
+    if ($trans["payment_method_gateway"] == "whish" && $trans["payment_method_gateway_status"] == "Payment successful") {
+    ?>
+        <div style="width: 100%; display: flex; justify-content: flex-end; height: 50px; margin-right: 5%;">
+            <div style="width: 320px; background-color: #d1a3ff; height: 50px; padding: 0 20px; text-align: left; display: flex; align-items: center; gap: 10px;margin-right: 5%;">
+                <img style="height: 25px; width: auto;" src="<?php echo site_url('assets/images/wish.png') ?>" alt="Whish">
+                <h4 style="margin: 0;">Amount fully paid through Whish</h4>
+            </div>
+        </div>
+    <?php
+    }
+    ?>
+
     <div style="clear:both;">
         <div class="col-sm-4" style="float: left; margin-left:5%;">
             <h4><strong>ADMINISTRATIONS</strong></h4>

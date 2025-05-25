@@ -213,8 +213,14 @@ class Sales extends MY_Controller
 		$this->load->view('sales/sales_form', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'transactions/form', 'bootstrap-select.min', 'bootstrap-select-country.min', 'accounts/account_modal', 'items/item_modal'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'transactions/form',
+				'bootstrap-select.min',
+				'bootstrap-select-country.min',
+				'accounts/account_modal',
+				'items/item_modal'
 			]
 		]);
 	}
@@ -230,13 +236,29 @@ class Sales extends MY_Controller
 		$drivers = $this->User->load_all_users_with_type_driver();
 		$employees = $this->User->load_all_users_with_type_employee();
 		$data['account_type'] = array(
-			"Customer" => "Customer", "Supplier" => "Supplier",
-			"Cash" => "Cash", "Expenses" => "Expenses",
-			"Bank" => "Bank", "Sale VAT" => "Sale VAT",
+			"Customer" => "Customer",
+			"Supplier" => "Supplier",
+			"Cash" => "Cash",
+			"Expenses" => "Expenses",
+			"Bank" => "Bank",
+			"Sale VAT" => "Sale VAT",
 			"Purchase VAT" => "Purchase VAT"
 		);
 		$data['payment_method'] = array(
-			"BOTH" => "BOTH", "LBP" => "LBP", "USD" => "USD"
+			"BOTH" => "BOTH",
+			"LBP" => "LBP",
+			"USD" => "USD"
+		);
+		$data['payment_method_gateway'] = array(
+			"C.O.D" => "C.O.D",
+			"whish" => "whish"
+		);
+		$data['payment_method_gateway_status'] = array(
+			"" => "",
+			"Pending" => "Pending",
+			"Payment successful" => "Payment successful",
+			"Payment failed (insufficient balance)" => "Payment failed (insufficient balance)"
+
 		);
 		$this->load->model('Configuration');
 		$TVA1 = $this->Configuration->fetch_TVA1()["valueStr"];
@@ -271,19 +293,21 @@ class Sales extends MY_Controller
 		// var_dump($data['delivery_charge']);
 		// exit;
 		$data['try_on_list'] = array(
-			"0" => "No", "1" => "Yes"
+			"0" => "No",
+			"1" => "Yes"
 		);
 		$data['exchange_list'] = array(
-			"0" => "No", "1" => "Yes"
+			"0" => "No",
+			"1" => "Yes"
 		);
 		$data['try_on'] = '0';
 		$data['exchange'] = '0';
-		if($transType == 'EX'){
-		    	$data['exchange'] = '1';
+		if ($transType == 'EX') {
+			$data['exchange'] = '1';
 		}
 		if ($fetched) {
-		    $data['try_on'] = $this->Transaction->get_field('try_on');
-		    $data['exchange'] = $this->Transaction->get_field('exchange');
+			$data['try_on'] = $this->Transaction->get_field('try_on');
+			$data['exchange'] = $this->Transaction->get_field('exchange');
 			$this->load->model('Account');
 			$account = $this->Account->load($this->Transaction->get_field('account_id'));
 			$data['account'] = "{$account['account_number']} - {$account['account_name']}";
@@ -328,7 +352,7 @@ class Sales extends MY_Controller
 			$data['value_date'] = $this->Transaction->get_field('value_date');
 			$data['status'] = $this->Transaction->get_field('status');
 			$this->load->model("User");
-			$data['driver'] = $this->User->get_user_name($this->Transaction->get_field('driver_id'))["user_name"];
+			$data['driver'] = $this->User->get_user_name($this->Transaction->get_field('driver_id'))["user_name"] ?? "";
 		} else {
 			$data['account'] = '';
 			$data['account2'] = '';
@@ -435,8 +459,11 @@ class Sales extends MY_Controller
 		$this->load->view('sales/invoice_preview', $data);
 		$this->load->view('templates/' . ($print ? 'print_f' : 'footer'), [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'qrcode.min', 'sales/preview'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'qrcode.min',
+				'sales/preview'
 			]
 		]);
 	}
@@ -527,8 +554,10 @@ class Sales extends MY_Controller
 		$this->load->view('transactions/check_items', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'transactions/check'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'transactions/check'
 			]
 		]);
 	}
@@ -634,8 +663,10 @@ class Sales extends MY_Controller
 		$this->load->view('pickup_notes/pickup_note', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'delivery_notes/preview',
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'delivery_notes/preview',
 			]
 		]);
 	}
@@ -794,8 +825,11 @@ class Sales extends MY_Controller
 		$this->load->view('sales/bulk_preview', $data);
 		$this->load->view('templates/print_f', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'qrcode.min', 'sales/bulk_preview'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'qrcode.min',
+				'sales/bulk_preview'
 			]
 		]);
 	}
@@ -936,8 +970,11 @@ class Sales extends MY_Controller
 		$this->load->view('sales/wakilni_preview', $data);
 		$this->load->view('templates/print_f', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'qrcode.min', 'sales/wakilni_preview'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'qrcode.min',
+				'sales/wakilni_preview'
 			]
 		]);
 	}
@@ -998,8 +1035,14 @@ class Sales extends MY_Controller
 		$this->load->view('exchange/form', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'transactions/exchange', 'bootstrap-select.min', 'bootstrap-select-country.min', 'accounts/account_modal', 'items/item_modal'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'transactions/exchange',
+				'bootstrap-select.min',
+				'bootstrap-select-country.min',
+				'accounts/account_modal',
+				'items/item_modal'
 			]
 		]);
 	}
@@ -1062,8 +1105,14 @@ class Sales extends MY_Controller
 		$this->load->view('sales/return_sales_form', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'bootstrap-select.min', 'bootstrap-select-country.min', 'transactions/return_sale', 'accounts/account_modal', 'items/item_modal'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'bootstrap-select.min',
+				'bootstrap-select-country.min',
+				'transactions/return_sale',
+				'accounts/account_modal',
+				'items/item_modal'
 			]
 		]);
 	}
@@ -1077,9 +1126,12 @@ class Sales extends MY_Controller
 		$data['transType'] = $this->Transaction->get_transaction_types_list()[$transType];
 		$data['currenciesList'] = $this->Currency->load_currencies_list();
 		$data['account_type'] = array(
-			"Customer" => "Customer", "Supplier" => "Supplier",
-			"Cash" => "Cash", "Expenses" => "Expenses",
-			"Bank" => "Bank", "Sale VAT" => "Sale VAT",
+			"Customer" => "Customer",
+			"Supplier" => "Supplier",
+			"Cash" => "Cash",
+			"Expenses" => "Expenses",
+			"Bank" => "Bank",
+			"Sale VAT" => "Sale VAT",
 			"Purchase VAT" => "Purchase VAT"
 		);
 		$this->load->model('Configuration');
@@ -1167,8 +1219,11 @@ class Sales extends MY_Controller
 		$this->load->view('sales/bulk_wakilni_preview', $data);
 		$this->load->view('templates/print_f', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'qrcode.min', 'sales/bulk_wakilni_preview'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'qrcode.min',
+				'sales/bulk_wakilni_preview'
 			]
 		]);
 	}
@@ -1266,23 +1321,23 @@ class Sales extends MY_Controller
 		$this->load->view('sales/excel_view', $data);
 		$this->load->view('templates/footer', ['_moreJs' => ['xlsx.full.min', 'sales/excel_preview']]);
 	}
-	
+
 	public function open_customer_whatsapp($sale_id)
 	{
 		$this->load->model(['Account']);
 		$trans = $this->Transaction->load($sale_id);
 		$acc = $this->Account->load($trans['account_id']);
 		$phone = str_replace('+', '', $acc['phone']);
-		redirect("https://wa.me/".$phone);
+		redirect("https://wa.me/" . $phone);
 	}
-	
-	public function load_sales_items_qty_validation() 
+
+	public function load_sales_items_qty_validation()
 	{
 		$this->load->model('Warehouse');
 		$records = $this->input->post('records');
 		$trans_id = $this->input->post('trans_id');
 		$errors = [];
-		foreach($records as $k=>$r){
+		foreach ($records as $k => $r) {
 			$warehouse_id = $this->Warehouse->fetch_warehouse_id_by_warehouse_shelf($r['warehouse'], $r['shelf'])["id"];
 			if ($trans_id) {
 				$item = $this->Warehouse->calculate_item_max_qty_by_warehouse_id_and_size_for_validation_in_edit_sale($trans_id, $r['item_id'], $r['warehouse'], $r['shelf'], $r['size']);
@@ -1291,10 +1346,10 @@ class Sales extends MY_Controller
 			}
 			// echo($this->db->last_query());exit;
 			$records[$k]['av_qty'] = 0;
-			if(isset($item['qty'])){
+			if (isset($item['qty'])) {
 				$records[$k]['av_qty'] = $item['qty'];
 			}
-			if(doubleval($r['qty']) > doubleval($records[$k]['av_qty'])){
+			if (doubleval($r['qty']) > doubleval($records[$k]['av_qty'])) {
 				$errors[] = $records[$k];
 			}
 		}
@@ -1302,8 +1357,8 @@ class Sales extends MY_Controller
 			$errors
 		);
 	}
-	
-		public function pending()
+
+	public function pending()
 	{
 		if ($this->input->is_ajax_request()) {
 			$this->_render_json($this->Transaction->load_pending_sales_data_tables(Transaction::SaleTransType));

@@ -18,9 +18,11 @@
             <th><?php echo $this->lang->line('order_date') ?></th>
             <th><?php echo $this->lang->line('description') ?></th>
             <th data-no-search="0"><?php echo $this->lang->line('qty') ?></th>
-            <th data-no-search="0"><?php echo $this->lang->line('discount')."(%)" ?></th>
+            <th data-no-search="0"><?php echo $this->lang->line('discount') . "(%)" ?></th>
             <th data-no-search="0"><?php echo $this->lang->line('total') ?></th>
             <th><?php echo $this->lang->line('status') ?></th>
+            <th><?php echo $this->lang->line('payment_method') ?></th>
+            <th><?php echo $this->lang->line('payment_status') ?></th>
             <th data-no-search="0"><?php echo $this->lang->line('actions') ?></th>
         </tr>
     </thead>
@@ -36,11 +38,14 @@
                 <td><?php echo $record['percent_disc'] ?></td>
                 <td><?php echo $record['total'] ?></td>
                 <td><?php echo $record['status'] ?></td>
+                <td><?php echo $record['payment_method'] ?></td>
+                <td><?php echo $record['payment_status'] ?></td>
                 <td><?php echo $record['id'] ?></td>
             </tr>
         <?php } ?>
     </tbody>
 </table>
+  <div id="order-summary-root"></div>
 <!-- Edit Order Status Modal -->
 <div id="statusModalForm" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
@@ -127,10 +132,19 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-primary"><?php echo $this->lang->line('Submit') ?></button>
+            <div class="modal-footer px-0">
+                <button type="button" class="btn btn-primary " style="width:20% !important;" id="accept_order">
+                    <?php echo $this->lang->line('accept_order') ?>
+                </button>
+                <button type="button" class="btn btn-success" id="whatsapp_btn">
+                    <img src="https://img.icons8.com/color/24/000000/whatsapp.png" alt="WhatsApp Icon">
+                </button>
+                <button type="button" class="btn btn-primary" style="width:20% !important;" id="order_summery">
+                    <?php echo $this->lang->line('order_summery') ?>
+                </button>
+                <button type="submit" class="btn btn-primary " style="width:20% !important;"><?php echo $this->lang->line('Submit') ?></button>
                 <?php echo form_close(); ?>
-                <a href="" class="btn btn-primary" id="waybil_preview"><?php echo $this->lang->line('Private_Waybil') ?></a>
+                <a href="" class="btn btn-primary" style="width:20% !important;" id="waybil_preview"><?php echo $this->lang->line('Private_Waybil') ?></a>
                 <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo $this->lang->line('Close') ?></button>
             </div>
         </div>

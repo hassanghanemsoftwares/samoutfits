@@ -9,7 +9,7 @@
 	</div>
 <?php } ?>
 <p class="text-right">
-    <button type="button" id="export_pixcel_excel"
+	<button type="button" id="export_pixcel_excel"
 		class="btn btn-primary"><i class="glyphicon glyphicon-save-file" style="margin-right: 10px;"></i><?php echo $this->lang->line('Pixel_Excel'); ?></button>
 	<button type="button" name="reset_filters" id="reset_filters" class="btn bt-link btn-s btn-small-design"><i class="glyphicon glyphicon-refresh"></i></button>
 	<button type="button" id="bulk" class="btn btn-primary btnbulk"><?php echo $this->lang->line('Bulk_Actions'); ?></button>
@@ -271,6 +271,42 @@
 							</div>
 						</div>
 					</div>
+				</div>
+				<div class="col-sm-12 form-group">
+					<div class="col-sm-6">
+						<div class="form-group">
+							<input class="col-sm-1" type="checkbox" id="edit_cool_storage" name="edit_cool_storage" value="1">
+							<label class="col-sm-2 control-label" for="edit_cool_storage"><?php echo $this->lang->line('cool_storage'); ?></label>
+							<div class="col-sm-9">
+								<?php
+								echo form_dropdown('cool_storage', array('0' => $this->lang->line('No'), '1' => $this->lang->line('Yes')), '', 'id="cool_storage" class="form-control"')
+								?>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6">
+						<div class="form-group">
+							<input class="col-sm-1" type="checkbox" id="edit_flammable_handling" name="edit_flammable_handling" value="1">
+							<label class="col-sm-2 control-label" for="edit_flammable_handling"><?php echo $this->lang->line('flammable_handling'); ?></label>
+							<div class="col-sm-9">
+								<?php
+								echo form_dropdown('flammable_handling', array('0' => $this->lang->line('No'), '1' => $this->lang->line('Yes')), '', 'id="flammable_handling" class="form-control"')
+								?>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6">
+						<div class="form-group">
+							<input class="col-sm-1" type="checkbox" id="edit_fragile" name="edit_fragile" value="1">
+							<label class="col-sm-2 control-label" for="edit_fragile"><?php echo $this->lang->line('fragile'); ?></label>
+							<div class="col-sm-9">
+								<?php
+								echo form_dropdown('fragile', array('0' => $this->lang->line('No'), '1' => $this->lang->line('Yes')), '', 'id="fragile" class="form-control"')
+								?>
+							</div>
+						</div>
+					</div>
+
 				</div>
 				<table id="table_bulk" class="table table-bordered table-striped table-hover table-condensed table-responsive"></table>
 				<table id="table_bulk_ids" class="table table-bordered table-striped table-hover table-condensed table-responsive" hidden></table>

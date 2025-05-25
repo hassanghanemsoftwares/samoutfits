@@ -9,7 +9,7 @@
 					<h6 id="multi_text"></h6>
 					<?php echo form_input('multi_auto_no', '', ' placeholder="ex: 1,2,3" class="form-control hide" id="multi_auto_no"') ?>
 				</div>
-			</div> 
+			</div>
 		</div>
 		<div class="col-sm-1">
 			<button type="submit" name="search" id="filter" class="btn bt-link btn-s btn-small-design"><i class="glyphicon glyphicon-filter"></i></button>
@@ -93,6 +93,8 @@
 			<th><?php echo $this->lang->line('done') ?></th>
 			<th><?php echo $this->lang->line('tracking_#') ?></th>
 			<th><?php echo $this->lang->line('account_name') ?></th>
+			<th><?php echo $this->lang->line('payment_method') ?></th>
+			<th><?php echo $this->lang->line('payment_status') ?></th>
 			<th><?php echo $this->lang->line('subtotal') ?></th>
 			<th><?php echo $this->lang->line('delivery_charge') ?></th>
 			<th><?php echo $this->lang->line('total') ?></th>
@@ -113,6 +115,8 @@
 				<td><?php echo $record['status'] ?></td>
 				<td><?php echo $record['auto_no'] ?></td>
 				<td><?php echo $record['account1'] ?></td>
+				<td><?php echo $record['payment_method_gateway'] ?></td>
+				<td><?php echo $record['payment_method_gateway_status'] ?></td>
 				<td><?php echo $record['subtotal'] ?></td>
 				<td><?php echo $record['delivery_charge'] ?></td>
 				<td><?php echo $record['total'] ?></td>
@@ -126,7 +130,7 @@
 		<?php } ?>
 	</tbody>
 	<tr>
-		<td colspan="6"></td>
+		<td colspan="8"></td>
 		<td style="font-weight: bold; color:black;" id="subtotal"></td>
 		<td style="font-weight: bold; color:black;" id="delivery_charge"></td>
 		<td style="font-weight: bold; color:black;" id="total"></td>
@@ -216,7 +220,7 @@
 						<button type="submit" class="btn btn-primary" id="bulk_wakilni_print" onclick='this.form.action="sales/bulk_wakilni_preview";'><?php echo $this->lang->line('Print_All_Wakilni') ?></button>
 					</div>
 					<div class="col-md-2" style="margin-left: 10px;">
-					<button type="submit" class="btn btn-primary" id="excel_btn" onclick='this.form.action="sales/excel_preview";'><?php echo $this->lang->line('Excel') ?></button>
+						<button type="submit" class="btn btn-primary" id="excel_btn" onclick='this.form.action="sales/excel_preview";'><?php echo $this->lang->line('Excel') ?></button>
 					</div>
 					<?php echo form_close() ?>
 					<div class="col-md-2" style="margin-left: 10px;">

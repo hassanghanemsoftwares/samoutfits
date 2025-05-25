@@ -343,10 +343,14 @@ class Ecommerce extends MY_Controller
     public function get_order_data_and_items()
     {
         $this->load->model('Order');
+        $this->load->model('Account');
+
         $order_id = $this->input->post('order_id');
-        $order['order_data'] = $this->Order->load_order_data($order_id);
+        $order['order_data'] = $this->Order->load_order_data_with_total($order_id);
         $order['order_data']['address_details'] = explode("-", $order['order_data']['address']);
         $order['items'] = $this->Order->load_order_items($order_id);
+        $order['customer'] =  $this->Account->get_ecommerce_user_info($order['order_data']['customer_id']);
+
         $this->_render_json($order);
     }
 
@@ -472,7 +476,6 @@ class Ecommerce extends MY_Controller
         ]);
         $this->load->view('sections/form', $data);
         $this->load->view('templates/footer', ['_moreJs' => []]);
-  
     }
     public function update_sections()
     {
@@ -514,7 +517,7 @@ class Ecommerce extends MY_Controller
                         $this->Section->update_section_value($post['id'], $filename);
                     } else {
                         $errors = array('error' => $this->upload->display_errors());
-                        if(isset($errors["error"])){
+                        if (isset($errors["error"])) {
                             $this->session->set_flashdata('message_error', trim($errors["error"]));
                         }
                     }
@@ -531,7 +534,7 @@ class Ecommerce extends MY_Controller
         // ]);
         // $this->load->view('sections/form', $data);
         // $this->load->view('templates/footer', ['_moreJs' => []]);
-        $cat_id = $post['id']-10;
+        $cat_id = $post['id'] - 10;
         redirect('ecommerce/landing_page/' . $cat_id);
     }
     public function check_if_their_orders_unhided()
@@ -545,7 +548,7 @@ class Ecommerce extends MY_Controller
         }
     }
 
- public function landing_page($category = null)
+    public function landing_page($category = null)
     {
         $this->load->model(['Landing_page']);
         // $data['categories'] = ['', 'shoes', 'Bags & Wallets', 'Hats', 'Sunglasses', 'Perfume', 'Clothing', 'Bracelets', 'Hair & Skin Products', 'Socks'];
@@ -559,7 +562,7 @@ class Ecommerce extends MY_Controller
         $data['selected_category'] = $category;
         $data['items'] = [];
         $data['section_nb'] = [];
-        $data['banner_data']=[];
+        $data['banner_data'] = [];
         if ($category) {
             if (isset($data['categories'][$category])) {
                 $data['items'] = $this->Landing_page->load_all_landing_page_items_by_category($data['categories'][$category]);
@@ -567,18 +570,18 @@ class Ecommerce extends MY_Controller
                 // var_dump($data['categories'][$category] );exit;
                 $data['section_nb'] = $this->Landing_page->load_all_landing_page_sections_by_category($data['categories'][$category]);
                 // var_dump($data['section_nb']);exit;
-                if($category == 10){
+                if ($category == 10) {
                     $load_section_id = 26;
-                }else{
+                } else {
                     $load_section_id = $category + 10;
                 }
 
-                $data['banner_data'] = $this->Landing_page->load_section($data['section_nb'][0]['banner_id']+1);
+                $data['banner_data'] = $this->Landing_page->load_section($data['section_nb'][0]['banner_id'] + 1);
                 // var_dump($data['items']);exit;
             }
         }
 
-        
+
         // var_dump($data['section_nb']);exit;
         $data['title'] = $this->lang->line('landing_page');
         $this->load->view('templates/eco_header', [
@@ -615,7 +618,7 @@ class Ecommerce extends MY_Controller
     public function change_landing_page_items()
     {
         $post = $this->input->post(null, true);
-        
+
         if ($post) {
             $this->load->model(['Landing_page']);
 
@@ -639,7 +642,7 @@ class Ecommerce extends MY_Controller
             redirect('ecommerce/landing_page');
         }
     }
-    
+
     public function newsletter_subscribers()
     {
         $this->load->model('NewsletterModel');
@@ -648,7 +651,7 @@ class Ecommerce extends MY_Controller
         if ($this->input->is_ajax_request()) {
             $this->_render_json($this->NewsletterModel->load_newsletter_subscribers_data_tables());
         } else {
-       
+
             $data['records'] = $this->NewsletterModel->paginate_newsletter_subscribers();
             $data['title'] = $this->lang->line('newsletter_subscribers');
             $this->load->view('templates/eco_header', [
@@ -659,6 +662,6 @@ class Ecommerce extends MY_Controller
             $this->load->view('templates/footer', ['_moreJs' => ['jquery.dataTables.min', 'dataTables.bootstrap.min', 'newsletter_subscribers/index', 'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en']]);
         }
     }
+
+
 }
-
-

@@ -8,7 +8,7 @@ class Item extends MY_Model
 	protected $modelName = 'Item';
 	protected $_table = 'items';
 	protected $_listFieldName = 'description';
-	protected $_fieldsNames = ['id', 'barcode', 'description', 'category', 'open_cost', 'cost', 'purchase_cost', 'open_qty', 'qty', 'price', 'profit', 'TVA', 'description2', 'brand', 'color', 'gender', 'publish', 'size_chart', 'link'];
+	protected $_fieldsNames = ['id', 'barcode', 'description', 'category', 'open_cost', 'cost', 'purchase_cost', 'open_qty', 'qty', 'price', 'profit', 'TVA', 'description2', 'brand', 'color', 'gender', 'publish', 'size_chart', 'link','cool_storage','flammable_handling','fragile'];
 	protected $allowedNulls = ['link'];
 
 	public function __construct()

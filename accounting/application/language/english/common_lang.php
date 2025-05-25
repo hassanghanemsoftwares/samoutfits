@@ -614,3 +614,15 @@ $lang['Pixel_Excel'] = "Pixel Excel";
 
 
 $lang['newsletter_subscribers'] = "Newsletter subscribers";
+$lang['payment_status'] = "Payment Status";
+$lang['payment_currency'] = "Payment Currency";
+
+$lang['payment_currency'] = "Payment Currency";
+
+
+$lang['cool_storage'] = "Cool Storage";
+
+$lang['flammable_handling'] = "Flammable Handling";
+$lang['fragile'] = "Fragile";
+$lang['accept_order'] = "Accept Order";
+$lang['order_summery'] = "Order Summery";

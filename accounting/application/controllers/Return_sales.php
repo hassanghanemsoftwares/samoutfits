@@ -194,6 +194,17 @@ class Return_sales extends MY_Controller
 			"Bank" => "Bank", "Sale VAT" => "Sale VAT",
 			"Purchase VAT" => "Purchase VAT"
 		);
+			$data['payment_method_gateway'] = array(
+			"C.O.D" => "C.O.D",
+			"whish" => "whish"
+		);
+		$data['payment_method_gateway_status'] = array(
+			"" => "",
+			"Pending" => "Pending",
+			"Payment successful" => "Payment successful",
+			"Payment failed (insufficient balance)" => "Payment failed (insufficient balance)"
+
+		);
 		$this->load->model('Configuration');
 		$TVA1 = $this->Configuration->fetch_TVA1()["valueStr"];
 		$TVA2 = $this->Configuration->fetch_TVA2()["valueStr"];

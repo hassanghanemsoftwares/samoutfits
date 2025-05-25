@@ -15,9 +15,9 @@ class Transaction extends MY_Model
 	protected $modelName = 'Transaction';
 	protected $_table = 'transactions';
 	protected $_listFieldName = 'auto_no';
-	protected $_fieldsNames = ['id', 'fiscal_year_id', 'trans_type', 'auto_no', 'trans_date', 'value_date', 'account_id', 'account2_id', 'currency_id', 'currency_rate', 'discount', 'user_id', 'driver_id', 'employee_id', 'status', 'delivered', 'pickup', 'description', 'relation_id', 'delivery_charge', 'status2', 'source', 'delivery_note', 'payment_method', 'hide'];
+	protected $_fieldsNames = ['id', 'fiscal_year_id', 'trans_type', 'auto_no', 'trans_date', 'value_date', 'account_id', 'account2_id', 'currency_id', 'currency_rate', 'discount', 'user_id', 'driver_id', 'employee_id', 'status', 'delivered', 'pickup', 'description', 'relation_id', 'delivery_charge', 'status2', 'source', 'delivery_note', 'payment_method', 'hide', 'payment_method_gateway', 'payment_method_gateway_status'];
 	protected $_dateFields = ['trans_date', 'value_date'];
-	protected $allowedNulls = ['value_date', 'discount'];
+	protected $allowedNulls = ['value_date', 'discount', 'payment_method_gateway', 'payment_method_gateway_status'];
 
 	public function __construct()
 	{
@@ -69,7 +69,7 @@ class Transaction extends MY_Model
 
 
 	//created 2024-03-07
-	public function create_new_sale_invoice_for_order_as_user($acc_id,$discount, $local_currency, $account2, $fiscal_year_id, $user_id, $description, $delivery_charge)
+	public function create_new_sale_invoice_for_order_as_user($acc_id, $discount, $local_currency, $account2, $fiscal_year_id, $user_id, $description, $delivery_charge, $payment_method_gateway, $payment_method_gateway_status)
 	{
 		// $disc = 0;
 		// if($coupon_id){			
@@ -96,7 +96,11 @@ class Transaction extends MY_Model
 			'fiscal_year_id' => $fiscal_year_id,
 			'user_id' => $user_id,
 			'delivery_note' => $description,
-			'hide' => 1
+			'hide' => 1,
+			'payment_method_gateway' => $payment_method_gateway,
+			'payment_method_gateway_status' => $payment_method_gateway_status,
+
+
 		);
 		$this->Transaction->set_fields($data);
 		$saved = $this->Transaction->insert();
@@ -250,7 +254,7 @@ class Transaction extends MY_Model
 			}
 		}
 		if ($sub_cat && $sub_cat !== 'All') {
-			$sub_f = str_replace('%and', '&', $sub_cat);		
+			$sub_f = str_replace('%and', '&', $sub_cat);
 			if (is_array($sub_f)) {
 				if (in_array('Deodorant%20&%20Roll', $sub_f)) {
 					$this->db->where_in('items.sub_category', ['Deodorant & Roll-on']);
@@ -263,7 +267,7 @@ class Transaction extends MY_Model
 			}
 		}
 		$this->db->having('total_qty >', 0);
-		$query = $this->db->get()->result_array();	
+		$query = $this->db->get()->result_array();
 		// var_dump($query);exit;
 		return $query;
 	}
@@ -278,10 +282,20 @@ class Transaction extends MY_Model
 		$this->db->where('warehouses.warehouse', "Primary Warehouse");
 		$this->db->where('items.publish', 1);
 		$this->db->where('items.stock_clearance', 1);
-		$this->db->group_by(['items.id', 'transaction_item_sizes.size']);		
+		$this->db->group_by(['items.id', 'transaction_item_sizes.size']);
 		$this->db->having('total_qty >', 0);
-		$query = $this->db->get()->result_array();	
+		$query = $this->db->get()->result_array();
 		// var_dump($query);exit;
 		return $query;
+	}
+
+
+	public function update_sale_invoice_payment_status($transaction_id, $status)
+	{
+		$data = array(
+			'payment_method_gateway_status' => $status
+		);
+		$this->db->where('transactions.id', $transaction_id);
+		return $this->db->update('transactions', $data);
 	}
 }

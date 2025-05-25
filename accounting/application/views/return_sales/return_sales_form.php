@@ -34,6 +34,8 @@
 			</div>
 		</div>
 	</div>
+
+
 	<div class="col-sm-4">
 		<div class="form-group">
 			<label class="col-sm-6 control-label" for="currency_rate"><?php echo $this->lang->line('Currency_Rate') ?></label>
@@ -46,11 +48,33 @@
 			</div>
 		</div>
 	</div>
+	<div class="col-sm-4"></div>
+
+	<div class="col-sm-4">
+		<div class="form-group">
+			<label class="col-sm-6  control-label" for="payment_method_gateway"><?php echo $this->lang->line('payment_method') ?></label>
+			<div class="col-sm-6 ">
+				<?php
+				echo form_dropdown('trans[payment_method_gateway]', $payment_method_gateway, $this->Transaction->get_field('payment_method_gateway'), 'id="payment_method_gateway" class="form-control"')
+				?>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-4">
+		<div class="form-group">
+			<label class="col-sm-6  control-label" for="payment_method_gateway_status"><?php echo $this->lang->line('payment_method') ?></label>
+			<div class="col-sm-6 ">
+				<?php
+				echo form_dropdown('trans[payment_method_gateway_status]', $payment_method_gateway_status, $this->Transaction->get_field('payment_method_gateway_status'), 'id="payment_method_gateway_status" class="form-control"')
+				?>
+			</div>
+		</div>
+	</div>
 	<div class="clearfix"></div>
 	<div class="col-sm-4">
 		<div class="form-group">
 			<label class="col-sm-4 control-label" for="acctLkupTo">
-			<?php echo $this->lang->line('Customer_Account') ?>
+				<?php echo $this->lang->line('Customer_Account') ?>
 			</label>
 			<div class="col-sm-8">
 				<?php echo form_input('', $account, 'id="acctLkupTo" maxlength="10" class="form-control"') ?>
@@ -64,7 +88,7 @@
 		</div>
 		<div class="form-group">
 			<label class="col-sm-4 control-label" for="acctLkupFrom">
-			<?php echo $this->lang->line('Sales_Account') ?>
+				<?php echo $this->lang->line('Sales_Account') ?>
 			</label>
 			<div class="col-sm-8">
 				<?php echo form_input('', $account2, 'id="acctLkupFrom" maxlength="10" class="form-control" readonly="true"') ?>
@@ -122,7 +146,7 @@
 					<th class="col-sm-2"><?php echo $this->lang->line('Description') ?></th>
 					<th class="col-sm-2"><?php echo $this->lang->line('Barcode') ?></th>
 					<th class="col-sm-2"><?php echo $this->lang->line('Warehouse') ?></th>
-					<th class="col-sm-2"><?php echo $this->lang->line('Shelf') ?></th>					
+					<th class="col-sm-2"><?php echo $this->lang->line('Shelf') ?></th>
 					<th class="col-sm-1"><?php echo $this->lang->line('Sizes') ?></th>
 					<th class="col-sm-1"><?php echo $this->lang->line('Quantity') ?></th>
 					<th class="col-sm-2"><?php echo $this->lang->line('Price') ?></th>

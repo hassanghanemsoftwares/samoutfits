@@ -175,6 +175,26 @@
 			</div>
 		</div>
 	</div>
+	<div class="col-sm-4">
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="payment_method_gateway"><?php echo $this->lang->line('payment_method') ?></label>
+			<div class="col-sm-8">
+				<?php
+				echo form_dropdown('trans[payment_method_gateway]', $payment_method_gateway, $this->Transaction->get_field('payment_method_gateway'), 'id="payment_method_gateway" class="form-control"')
+				?>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-4">
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="payment_method_gateway_status"><?php echo $this->lang->line('payment_method') ?></label>
+			<div class="col-sm-8">
+				<?php
+				echo form_dropdown('trans[payment_method_gateway_status]', $payment_method_gateway_status, $this->Transaction->get_field('payment_method_gateway_status'), 'id="payment_method_gateway_status" class="form-control"')
+				?>
+			</div>
+		</div>
+	</div>
 	<div class="clearfix"></div>
 	<div class="col-sm-4">
 		<div class="form-group">

@@ -56,7 +56,7 @@
                     </div>
                 </div>
             </div>
-            <h5 class="section-title position-relative text-uppercase mb-3"><span
+            <!-- <h5 class="section-title position-relative text-uppercase mb-3"><span
                     class="bg-secondary pr-3">Payment</span></h5>
             <div class="bg-light p-30 mb-5">
                 <div class="row">
@@ -64,10 +64,10 @@
                         <small class="text-danger">All Transactions Are Secure And Encrypted</small>
                         <input type="text" class="form-control " id="" placeholder="Cash On Delivery"
                             value="Cash On Delivery" readonly />
-                        <!-- </div> -->
+                    
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <div class="mb-5" id="shipping-address">
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Billing
@@ -93,7 +93,7 @@
                             </datalist>
                         </div>
                         <div class="col-md-12 form-group">
-                            <label>Street <span id="msg_direction"></span></label>
+                            <label>Street <span id="msg_street"></span></label>
                             <input class="form-control" type="text" value="" id="street" name="street">
                         </div>
                         <!-- <div class="col-md-12 form-group">
@@ -196,9 +196,30 @@
                 </div>
             </div>
             <div class="mb-5">
+
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-light">
+                    <div class="mb-3">
+                        <h5 class="fw-bold mb-1 text-primary">Payment Method</h5>
+                        <small class="text-danger">All transactions are secure and encrypted.</small>
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-radio mb-4">
+                            <input type="radio" class="custom-control-input" name="payment_method" id="cod" value="cod" checked>
+                            <label class="custom-control-label" for="cod"><img src="<?php echo base_url(); ?>assets/img/cod.png" style="height: 30px; width: auto;" alt="Cash on Delivery (COD)"></label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" name="payment_method" id="whish" value="whish">
+                            <label class="custom-control-label" for="whish"><img src="<?php echo base_url(); ?>assets/img/wish.png" style="height: 30px; width: auto;" alt="Wish"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5">
                 <div class="bg-light p-30">
                     <input type="number" name="otp_success" id="otp_success" value="0" hidden>
-                    <input type="text" id="subtotal" value="<?php echo $subtotal; ?>" hidden>
+                    <input type="text" id="total" name="total" value="<?php echo $total; ?>" hidden>
+                    <input type="text" id="subtotal" name="subtotal" value="<?php echo $subtotal; ?>" hidden>
                     <input type="text" id="delivery_charge" name="delivery_charge"
                         value="<?php echo $delivery_charge; ?>" hidden>
                     <input type="text" id="coupon_id" name="coupon_id" value="<?php echo $coupon_id; ?>" hidden>

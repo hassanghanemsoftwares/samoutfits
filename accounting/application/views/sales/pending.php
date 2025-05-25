@@ -93,6 +93,8 @@
 			<th><?php echo $this->lang->line('done') ?></th>
 			<th><?php echo $this->lang->line('tracking_#') ?></th>
 			<th><?php echo $this->lang->line('account_name') ?></th>
+			<th><?php echo $this->lang->line('payment_method') ?></th>
+			<th><?php echo $this->lang->line('payment_status') ?></th>
 			<th><?php echo $this->lang->line('subtotal') ?></th>
 			<th><?php echo $this->lang->line('delivery_charge') ?></th>
 			<th><?php echo $this->lang->line('total') ?></th>
@@ -113,6 +115,9 @@
 				<td><?php echo $record['status'] ?></td>
 				<td><?php echo $record['auto_no'] ?></td>
 				<td><?php echo $record['account1'] ?></td>
+				<td><?php echo $record['payment_method_gateway'] ?></td>
+				<td><?php echo $record['payment_method_gateway_status'] ?></td>
+
 				<td><?php echo $record['subtotal'] ?></td>
 				<td><?php echo $record['delivery_charge'] ?></td>
 				<td><?php echo $record['total'] ?></td>
@@ -126,7 +131,7 @@
 		<?php } ?>
 	</tbody>
 	<tr>
-		<td colspan="6"></td>
+		<td colspan="8"></td>
 		<td style="font-weight: bold; color:black;" id="subtotal"></td>
 		<td style="font-weight: bold; color:black;" id="delivery_charge"></td>
 		<td style="font-weight: bold; color:black;" id="total"></td>

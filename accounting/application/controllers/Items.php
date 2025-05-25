@@ -62,77 +62,78 @@ class Items extends MY_Controller
 			foreach ($tags as $c) {
 				$data['tags'][$c['id']] = $c['tag'];
 			}
-			$data['variant1']=[
-		     "NULL"=>" ",
-		    "Apparel & Accessories > Shoes & Footwear"=>"Apparel & Accessories > Shoes & Footwear",
-		    "Apparel & Accessories > Clothing"=>"Apparel & Accessories > Clothing",
-		    "Apparel & Accessories > Clothing Accessories"=>"Apparel & Accessories > Clothing Accessories",
-		    "Health & Beauty > Beauty > Skin Care"=>"Health & Beauty > Beauty > Skin Care",
-		    "Health & Beauty > Beauty > Hair care & Styling"=>"Health & Beauty > Beauty > Hair care & Styling",
-		    "Health & Beauty > Personal Care > Fragrances"=>"Health & Beauty > Personal Care > Fragrances",
-		    "Jewelry & watches > jewelry"=>"Jewelry & watches > jewelry",
-		    "Travel & Luggage > Hanbags & Wallets"=>"Travel & Luggage > Hanbags & Wallets",
-		    ];
+			$data['variant1'] = [
+				"NULL" => " ",
+				"Apparel & Accessories > Shoes & Footwear" => "Apparel & Accessories > Shoes & Footwear",
+				"Apparel & Accessories > Clothing" => "Apparel & Accessories > Clothing",
+				"Apparel & Accessories > Clothing Accessories" => "Apparel & Accessories > Clothing Accessories",
+				"Health & Beauty > Beauty > Skin Care" => "Health & Beauty > Beauty > Skin Care",
+				"Health & Beauty > Beauty > Hair care & Styling" => "Health & Beauty > Beauty > Hair care & Styling",
+				"Health & Beauty > Personal Care > Fragrances" => "Health & Beauty > Personal Care > Fragrances",
+				"Jewelry & watches > jewelry" => "Jewelry & watches > jewelry",
+				"Travel & Luggage > Hanbags & Wallets" => "Travel & Luggage > Hanbags & Wallets",
+			];
 			$data['title'] = $this->lang->line('products');
 			$this->load->view('templates/header', [
 				'_page_title' => $data['title'],
 				'_moreCss' => ['css/dataTables.bootstrap.min', 'css/fixedHeader.dataTables.min', 'css/bootstrap-select.min', 'css/jquery-tag-this']
 			]);
 			$this->load->view('items/index', $data);
-			$this->load->view('templates/footer', ['_moreJs' => ['jquery.dataTables.min', 'dataTables.bootstrap.min', 'jquery.tagthis', 'bootstrap-select.min','my_lib_js/exceljs4.0.1.min', 'my_lib_js/filesaver', 'items/index']]);
+			$this->load->view('templates/footer', ['_moreJs' => ['jquery.dataTables.min', 'dataTables.bootstrap.min', 'jquery.tagthis', 'bootstrap-select.min', 'my_lib_js/exceljs4.0.1.min', 'my_lib_js/filesaver', 'items/index']]);
 		}
 	}
-	
-	public function generate_pixel_excel(){
-		if ($this->input->is_ajax_request()) { 
-			$excel=[];
-			$excel[]=["# Required | A unique content ID for the item. Use the item's SKU if you can. Each content ID must appear only once in your catalog. To run dynamic ads this ID must exactly match the content ID for the same item in your Meta Pixel code. Character limit: 100","# Required | A specific and relevant title for the item. See title specifications: https://www.facebook.com/business/help/2104231189874655 Character limit: 200","# Required | A short and relevant description of the item. Include specific or unique product features like material or color. Use plain text and don't enter text in all capital letters. See description specifications: https://www.facebook.com/business/help/2302017289821154 Character limit: 9999","# Required | The current availability of the item. | Supported values: in stock; out of stock","# Required | The current condition of the item. | Supported values: new; used","# Required | The price of the item. Format the price as a number followed by the 3-letter currency code (ISO 4217 standards). Use a period (.) as the decimal point; don't use a comma.","# Required | The URL of the specific product page where people can buy the item.","# Required | The URL for the main image of your item. Images must be in a supported format (JPG/GIF/PNG) and at least 500 x 500 pixels.","# Required | The brand name of the item. Character limit: 100.","# Optional | The Google product category for the item. Learn more about product categories: https://www.facebook.com/business/help/526764014610932.","# Optional | The Facebook product category for the item. Learn more about product categories: https://www.facebook.com/business/help/526764014610932.","# Optional | The quantity of this item you have to sell on Facebook and Instagram with checkout. Must be 1 or higher or the item won't be buyable","# Optional | The discounted price of the item if it's on sale. Format the price as a number followed by the 3-letter currency code (ISO 4217 standards). Use a period (.) as the decimal point; don't use a comma. A sale price is required if you want to use an overlay for discounted prices.","# Optional | The time range for your sale period. Includes the date and time/time zone when your sale starts and ends. If this field is blank any items with a sale_price remain on sale until you remove the sale price. Use this format: YYYY-MM-DDT23:59+00:00/YYYY-MM-DDT23:59+00:00. Enter the start date as YYYY-MM-DD. Enter a 'T'. Enter the start time in 24-hour format (00:00 to 23:59) followed by the UTC time zone (-12:00 to +14:00). Enter '/' and then repeat the same format for your end date and time. The example row below uses PST time zone (-08:00).","# Optional | Use this field to create variants of the same item. Enter the same group ID for all variants within a group. Learn more about variants: https://www.facebook.com/business/help/2256580051262113 Character limit: 100.","# Optional | The gender of a person that the item is targeted towards. | Supported values: female; male; unisex","# Optional | The color of the item. Use one or more words to describe the color. Don't use a hex code. Character limit: 200.","# Optional | The size of the item written as a word or abbreviation or number. For example: small; XL; 12. Character limit: 200.","# Optional | The age group that the item is targeted towards. | Supported values: adult; all ages; infant; kids; newborn; teen; toddler","# Optional | The material the item is made from; such as cotton; denim or leather. Character limit: 200.","# Optional | The pattern or graphic print on the item. Character limit: 100.","# Optional | Shipping details for the item. Format as Country:Region:Service:Price. Include the 3-letter ISO 4217 currency code in the price. Enter the price as 0.0 to use the free shipping overlay in your ads. Use a semi-colon ';' or a comma "," to separate multiple shipping details for different regions or countries. Only people in the specified region or country will see shipping details for that region or country. You can leave out the region (keep the double '::') if your shipping details are the same for an entire country.","# Optional | The shipping weight of the item. Include the unit of measurement (lb/oz/g/kg).","# Optional | The item’s Global Trade Item Number (GTIN). Recommended to help classify the item. May appear on the barcode; packaging or book cover. Only provide GTIN if you’re sure it’s correct. GTIN types include UPC (12 digits); EAN (13 digits); JAN (8 or 13 digits); ISBN (13 digits) or ITF-14 (14 digits)","# Optional | URLs and tags for videos to be used in your ads or in shops. Supports up to 20 different videos. Must be a direct link to download the video file; not a link to a video player such as YouTube. Tags are optional and; if used; should describe what is in the video. Learn more about video field specifications at: https://www.facebook.com/business/help/120325381656392","# Optional | URLs and tags for videos to be used in your ads or in shops. Supports up to 20 different videos. Must be a direct link to download the video file; not a link to a video player such as YouTube. Tags are optional and; if used; should describe what is in the video. Learn more about video field specifications at: https://www.facebook.com/business/help/120325381656392","# Optional | Add labels to products to help filter them into product sets. Max characters: 110 per label; 5000 labels per product","# Optional | Add labels to products to help filter them into product sets. Max characters: 110 per label; 5000 labels per product","# Optional | Describe the fashion style of this item."];
-			$excel[]=["id","title","description","availability","condition","price","link","image_link","brand","google_product_category","fb_product_category","quantity_to_sell_on_facebook","sale_price","sale_price_effective_date","item_group_id","gender","color","size","age_group","material","pattern","shipping","shipping_weight","gtin","video[0].url","video[0].tag[0]","product_tags[0]","product_tags[1]","style[0]"];
-			$pixel_items=$this->Item->get_all_items_for_pixels();
-			$count=0;
-			foreach($pixel_items as $item){
-			    if($item->availabile_qty>0){
-			        $excel_row=[
-					$item->id,
-					$item->description,
-					$item->note.". ".strtolower($item->barcode),
-					($item->availabile_qty>0) ? "in stock":"out of stock",
-					"new",
-					($item->old_price!=0 && $item->old_price!=NULL) ? number_format($item->old_price,2)." USD":number_format($item->price,2)." USD",
-					"https://samoutfits.com/products/view/".$item->id,
-					"https://samoutfits.com/accounting/assets/uploads/".$item->first_image,
-					"N\A",
-					($item->variant1!=NULL) ? $item->variant1:"",
-					($item->variant1!=NULL) ? $item->variant1:"",
-					"",
-					($item->old_price==0 || $item->old_price==NULL)? "":number_format($item->price,2)." USD",
-					"",
-					"",
-					"",
-					$item->color,
-					"",
-					"",
-					"",
-					"",
-					"",
-					"",
-					"",
-					"",
-					"",
-					$item->category,
-					($item->sub_category!="0") ? $item->sub_category:"",
-					""
-				];
-				$excel[]=$excel_row;
-				$count++;
-			    }
+
+	public function generate_pixel_excel()
+	{
+		if ($this->input->is_ajax_request()) {
+			$excel = [];
+			$excel[] = ["# Required | A unique content ID for the item. Use the item's SKU if you can. Each content ID must appear only once in your catalog. To run dynamic ads this ID must exactly match the content ID for the same item in your Meta Pixel code. Character limit: 100", "# Required | A specific and relevant title for the item. See title specifications: https://www.facebook.com/business/help/2104231189874655 Character limit: 200", "# Required | A short and relevant description of the item. Include specific or unique product features like material or color. Use plain text and don't enter text in all capital letters. See description specifications: https://www.facebook.com/business/help/2302017289821154 Character limit: 9999", "# Required | The current availability of the item. | Supported values: in stock; out of stock", "# Required | The current condition of the item. | Supported values: new; used", "# Required | The price of the item. Format the price as a number followed by the 3-letter currency code (ISO 4217 standards). Use a period (.) as the decimal point; don't use a comma.", "# Required | The URL of the specific product page where people can buy the item.", "# Required | The URL for the main image of your item. Images must be in a supported format (JPG/GIF/PNG) and at least 500 x 500 pixels.", "# Required | The brand name of the item. Character limit: 100.", "# Optional | The Google product category for the item. Learn more about product categories: https://www.facebook.com/business/help/526764014610932.", "# Optional | The Facebook product category for the item. Learn more about product categories: https://www.facebook.com/business/help/526764014610932.", "# Optional | The quantity of this item you have to sell on Facebook and Instagram with checkout. Must be 1 or higher or the item won't be buyable", "# Optional | The discounted price of the item if it's on sale. Format the price as a number followed by the 3-letter currency code (ISO 4217 standards). Use a period (.) as the decimal point; don't use a comma. A sale price is required if you want to use an overlay for discounted prices.", "# Optional | The time range for your sale period. Includes the date and time/time zone when your sale starts and ends. If this field is blank any items with a sale_price remain on sale until you remove the sale price. Use this format: YYYY-MM-DDT23:59+00:00/YYYY-MM-DDT23:59+00:00. Enter the start date as YYYY-MM-DD. Enter a 'T'. Enter the start time in 24-hour format (00:00 to 23:59) followed by the UTC time zone (-12:00 to +14:00). Enter '/' and then repeat the same format for your end date and time. The example row below uses PST time zone (-08:00).", "# Optional | Use this field to create variants of the same item. Enter the same group ID for all variants within a group. Learn more about variants: https://www.facebook.com/business/help/2256580051262113 Character limit: 100.", "# Optional | The gender of a person that the item is targeted towards. | Supported values: female; male; unisex", "# Optional | The color of the item. Use one or more words to describe the color. Don't use a hex code. Character limit: 200.", "# Optional | The size of the item written as a word or abbreviation or number. For example: small; XL; 12. Character limit: 200.", "# Optional | The age group that the item is targeted towards. | Supported values: adult; all ages; infant; kids; newborn; teen; toddler", "# Optional | The material the item is made from; such as cotton; denim or leather. Character limit: 200.", "# Optional | The pattern or graphic print on the item. Character limit: 100.", "# Optional | Shipping details for the item. Format as Country:Region:Service:Price. Include the 3-letter ISO 4217 currency code in the price. Enter the price as 0.0 to use the free shipping overlay in your ads. Use a semi-colon ';' or a comma ", " to separate multiple shipping details for different regions or countries. Only people in the specified region or country will see shipping details for that region or country. You can leave out the region (keep the double '::') if your shipping details are the same for an entire country.", "# Optional | The shipping weight of the item. Include the unit of measurement (lb/oz/g/kg).", "# Optional | The item’s Global Trade Item Number (GTIN). Recommended to help classify the item. May appear on the barcode; packaging or book cover. Only provide GTIN if you’re sure it’s correct. GTIN types include UPC (12 digits); EAN (13 digits); JAN (8 or 13 digits); ISBN (13 digits) or ITF-14 (14 digits)", "# Optional | URLs and tags for videos to be used in your ads or in shops. Supports up to 20 different videos. Must be a direct link to download the video file; not a link to a video player such as YouTube. Tags are optional and; if used; should describe what is in the video. Learn more about video field specifications at: https://www.facebook.com/business/help/120325381656392", "# Optional | URLs and tags for videos to be used in your ads or in shops. Supports up to 20 different videos. Must be a direct link to download the video file; not a link to a video player such as YouTube. Tags are optional and; if used; should describe what is in the video. Learn more about video field specifications at: https://www.facebook.com/business/help/120325381656392", "# Optional | Add labels to products to help filter them into product sets. Max characters: 110 per label; 5000 labels per product", "# Optional | Add labels to products to help filter them into product sets. Max characters: 110 per label; 5000 labels per product", "# Optional | Describe the fashion style of this item."];
+			$excel[] = ["id", "title", "description", "availability", "condition", "price", "link", "image_link", "brand", "google_product_category", "fb_product_category", "quantity_to_sell_on_facebook", "sale_price", "sale_price_effective_date", "item_group_id", "gender", "color", "size", "age_group", "material", "pattern", "shipping", "shipping_weight", "gtin", "video[0].url", "video[0].tag[0]", "product_tags[0]", "product_tags[1]", "style[0]"];
+			$pixel_items = $this->Item->get_all_items_for_pixels();
+			$count = 0;
+			foreach ($pixel_items as $item) {
+				if ($item->availabile_qty > 0) {
+					$excel_row = [
+						$item->id,
+						$item->description,
+						$item->note . ". " . strtolower($item->barcode),
+						($item->availabile_qty > 0) ? "in stock" : "out of stock",
+						"new",
+						($item->old_price != 0 && $item->old_price != NULL) ? number_format($item->old_price, 2) . " USD" : number_format($item->price, 2) . " USD",
+						"https://samoutfits.com/products/view/" . $item->id,
+						"https://samoutfits.com/accounting/assets/uploads/" . $item->first_image,
+						"N\A",
+						($item->variant1 != NULL) ? $item->variant1 : "",
+						($item->variant1 != NULL) ? $item->variant1 : "",
+						"",
+						($item->old_price == 0 || $item->old_price == NULL) ? "" : number_format($item->price, 2) . " USD",
+						"",
+						"",
+						"",
+						$item->color,
+						"",
+						"",
+						"",
+						"",
+						"",
+						"",
+						"",
+						"",
+						"",
+						$item->category,
+						($item->sub_category != "0") ? $item->sub_category : "",
+						""
+					];
+					$excel[] = $excel_row;
+					$count++;
+				}
 			}
-// 			"Apparel & Accessories",
-				// 	"Clothing & Accessories",
+			// 			"Apparel & Accessories",
+			// 	"Clothing & Accessories",
 			$this->_render_json([
-				"result"=>true,
-				"count"=>$count,
-				"data"=>$excel
+				"result" => true,
+				"count" => $count,
+				"data" => $excel
 			]);
 		}
 	}
@@ -147,7 +148,7 @@ class Items extends MY_Controller
 		$this->save($id, $this->lang->line('edit_product'));
 	}
 
-private function save($id = '0', $page_title)
+	private function save($id = '0', $page_title)
 	{
 		$fetched = ($id > 0 ? $this->Item->fetch(_gnv($id)) : false);
 		$post = $this->input->post(null, true);
@@ -156,26 +157,26 @@ private function save($id = '0', $page_title)
 		if (!empty($post)) {
 			// var_dump($post);
 			// exit;
-			
-			//mohammad code if isset 2024-09-17
-			if(isset($_FILES['size_chart'])){
-			if ($_FILES['size_chart']['name'] != "") {
-				$config['upload_path'] =  './assets/uploads';
-				$config['allowed_types'] = 'jpg|jpeg|png|gif';
-				$config['max_size'] = '5000'; // max_size in kb
-				$config['file_name'] = $_FILES['size_chart']['name'];
-				$this->load->library('upload', $config);
 
-				// File upload
-				if ($this->upload->do_upload('size_chart')) {
-					// Get data about the file
-					$uploadDatasize_chart = $this->upload->data();
-					$filenamesize_chart = $uploadDatasize_chart['file_name'];
-					$post['size_chart'] = $filenamesize_chart;
-				} else {
-					$errors = array('error' => $this->upload->display_errors());
+			//mohammad code if isset 2024-09-17
+			if (isset($_FILES['size_chart'])) {
+				if ($_FILES['size_chart']['name'] != "") {
+					$config['upload_path'] =  './assets/uploads';
+					$config['allowed_types'] = 'jpg|jpeg|png|gif';
+					$config['max_size'] = '5000'; // max_size in kb
+					$config['file_name'] = $_FILES['size_chart']['name'];
+					$this->load->library('upload', $config);
+
+					// File upload
+					if ($this->upload->do_upload('size_chart')) {
+						// Get data about the file
+						$uploadDatasize_chart = $this->upload->data();
+						$filenamesize_chart = $uploadDatasize_chart['file_name'];
+						$post['size_chart'] = $filenamesize_chart;
+					} else {
+						$errors = array('error' => $this->upload->display_errors());
+					}
 				}
-			}
 			}
 
 			// Count total files
@@ -218,7 +219,7 @@ private function save($id = '0', $page_title)
 			// var_dump($filenamesize_chart);exit;
 			$this->Item->set_fields($post);
 			if ($post["variant1"] == "NULL") {
-					$this->Item->set_field('variant1', NULL);
+				$this->Item->set_field('variant1', NULL);
 			}
 			if (!$fetched) {
 				$this->Item->set_field('open_cost', 0);
@@ -336,16 +337,16 @@ private function save($id = '0', $page_title)
 		foreach ($tags as $c) {
 			$data['tags'][$c['id']] = $c['tag'];
 		}
-		$data['variant1']=[
-		    "NULL"=>" ",
-		    "Apparel & Accessories > Shoes & Footwear"=>"Apparel & Accessories > Shoes & Footwear",
-		    "Apparel & Accessories > Clothing"=>"Apparel & Accessories > Clothing",
-		    "Apparel & Accessories > Clothing Accessories"=>"Apparel & Accessories > Clothing Accessories",
-		    "Health & Beauty > Beauty > Skin Care"=>"Health & Beauty > Beauty > Skin Care",
-		    "Health & Beauty > Beauty > Hair care & Styling"=>"Health & Beauty > Beauty > Hair care & Styling",
-		    "Health & Beauty > Personal Care > Fragrances"=>"Health & Beauty > Personal Care > Fragrances",
-		    "Jewelry & watches > jewelry"=>"Jewelry & watches > jewelry",
-		    "Travel & Luggage > Hanbags & Wallets"=>"Travel & Luggage > Hanbags & Wallets",
+		$data['variant1'] = [
+			"NULL" => " ",
+			"Apparel & Accessories > Shoes & Footwear" => "Apparel & Accessories > Shoes & Footwear",
+			"Apparel & Accessories > Clothing" => "Apparel & Accessories > Clothing",
+			"Apparel & Accessories > Clothing Accessories" => "Apparel & Accessories > Clothing Accessories",
+			"Health & Beauty > Beauty > Skin Care" => "Health & Beauty > Beauty > Skin Care",
+			"Health & Beauty > Beauty > Hair care & Styling" => "Health & Beauty > Beauty > Hair care & Styling",
+			"Health & Beauty > Personal Care > Fragrances" => "Health & Beauty > Personal Care > Fragrances",
+			"Jewelry & watches > jewelry" => "Jewelry & watches > jewelry",
+			"Travel & Luggage > Hanbags & Wallets" => "Travel & Luggage > Hanbags & Wallets",
 		];
 		$data['title'] = $page_title;
 		$this->load->view('templates/header', [
@@ -357,7 +358,9 @@ private function save($id = '0', $page_title)
 		$this->load->view('items/form', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'bootstrap-select.min', 'items/generate', 'items/form'
+				'bootstrap-select.min',
+				'items/generate',
+				'items/form'
 			]
 		]);
 	}
@@ -447,8 +450,10 @@ private function save($id = '0', $page_title)
 		$this->load->view('items/warehouses', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'items/warehouses'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'items/warehouses'
 			]
 		]);
 	}
@@ -533,8 +538,10 @@ private function save($id = '0', $page_title)
 			$this->load->view('opening_items/form', $data);
 			$this->load->view('templates/footer', [
 				'_moreJs' => [
-					'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-					'jquery.autocomplete.min', 'items/opening_items'
+					'air-datepicker/js/datepicker.min',
+					'air-datepicker/js/i18n/datepicker.en',
+					'jquery.autocomplete.min',
+					'items/opening_items'
 				]
 			]);
 		} else {
@@ -839,6 +846,34 @@ private function save($id = '0', $page_title)
 		echo $res;
 	}
 
+	public function bulk_product_cool_storage_edit()
+	{
+		$item_ids = $this->input->post('ids');
+		$cool_storage = $this->input->post('cool_storage');
+		foreach ($item_ids as $i) {
+			$res = $this->Item->update_product_cool_storage($i, $cool_storage);
+		}
+		echo $res;
+	}
+	public function bulk_product_flammable_handling_edit()
+	{
+		$item_ids = $this->input->post('ids');
+		$flammable_handling = $this->input->post('flammable_handling');
+		foreach ($item_ids as $i) {
+			$res = $this->Item->update_product_flammable_handling($i, $flammable_handling);
+		}
+		echo $res;
+	}
+	public function bulk_product_fragile_edit()
+	{
+		$item_ids = $this->input->post('ids');
+		$fragile = $this->input->post('fragile');
+		foreach ($item_ids as $i) {
+			$res = $this->Item->update_product_fragile($i, $fragile);
+		}
+		echo $res;
+	}
+
 	public function bulk_product_category_edit()
 	{
 		$item_ids = $this->input->post('ids');
@@ -862,8 +897,8 @@ private function save($id = '0', $page_title)
 	{
 		$item_ids = $this->input->post('ids');
 		$variant1 = $this->input->post('variant1');
-		if($variant1=="NULL" || $variant1==''){
-		    $variant1=NULL;
+		if ($variant1 == "NULL" || $variant1 == '') {
+			$variant1 = NULL;
 		}
 		foreach ($item_ids as $i) {
 			$res = $this->Item->update_product_variant1($i, $variant1);
@@ -908,9 +943,9 @@ private function save($id = '0', $page_title)
 		$this->load->model('Tag');
 		foreach ($item_ids as $i) {
 			$item_tags = $this->Tag->load_item_tags($i);
-			foreach($tags as $t){
-				if (!in_array($t, $item_tags)){
-					$res =$this->Tag->insert_item_tag($t, $i);
+			foreach ($tags as $t) {
+				if (!in_array($t, $item_tags)) {
+					$res = $this->Tag->insert_item_tag($t, $i);
 				}
 			}
 		}
@@ -919,13 +954,13 @@ private function save($id = '0', $page_title)
 
 	public function lookup_items_by_category_landing_page_editor($category)
 	{
-		$data['categories'] = ['', 'shoes', 'Bags & Wallets', 'Hats', 'Sunglasses', 'Perfume', 'Clothing', 'Bracelets', 'Hair & Skin Products', 'Socks','Other'];
+		$data['categories'] = ['', 'shoes', 'Bags & Wallets', 'Hats', 'Sunglasses', 'Perfume', 'Clothing', 'Bracelets', 'Hair & Skin Products', 'Socks', 'Other'];
 		$this->load->model('Item');
 		$this->_render_json(
 			$this->Item->search_suggestions_new(trim($this->input->get('query', true)), $data['categories'][$category])
 		);
 	}
-		public function delete_item_size_chart()
+	public function delete_item_size_chart()
 	{
 		$image_name = $this->input->post('image_name');
 		$item_id = $this->input->post('item_id');

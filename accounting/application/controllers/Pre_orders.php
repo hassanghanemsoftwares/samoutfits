@@ -117,8 +117,14 @@ class Pre_orders extends MY_Controller
 		$this->load->view('pre_orders/pre_orders_form', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'bootstrap-select.min', 'bootstrap-select-country.min', 'transactions/pre_order', 'accounts/account_modal', 'items/item_modal'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'bootstrap-select.min',
+				'bootstrap-select-country.min',
+				'transactions/pre_order',
+				'accounts/account_modal',
+				'items/item_modal'
 			]
 		]);
 	}
@@ -134,13 +140,29 @@ class Pre_orders extends MY_Controller
 		$drivers = $this->User->load_all_users_with_type_driver();
 		$employees = $this->User->load_all_users_with_type_employee();
 		$data['account_type'] = array(
-			"Customer" => "Customer", "Supplier" => "Supplier",
-			"Cash" => "Cash", "Expenses" => "Expenses",
-			"Bank" => "Bank", "Sale VAT" => "Sale VAT",
+			"Customer" => "Customer",
+			"Supplier" => "Supplier",
+			"Cash" => "Cash",
+			"Expenses" => "Expenses",
+			"Bank" => "Bank",
+			"Sale VAT" => "Sale VAT",
 			"Purchase VAT" => "Purchase VAT"
 		);
 		$data['payment_method'] = array(
-			"BOTH" => "BOTH", "LBP" => "LBP", "USD" => "USD"
+			"BOTH" => "BOTH",
+			"LBP" => "LBP",
+			"USD" => "USD"
+		);
+		$data['payment_method_gateway'] = array(
+			"C.O.D" => "C.O.D",
+			"whish" => "whish"
+		);
+		$data['payment_method_gateway_status'] = array(
+			"" => "",
+			"Pending" => "Pending",
+			"Payment successful" => "Payment successful",
+			"Payment failed (insufficient balance)" => "Payment failed (insufficient balance)"
+
 		);
 		$this->load->model('Configuration');
 		$TVA1 = $this->Configuration->fetch_TVA1()["valueStr"];
@@ -175,21 +197,23 @@ class Pre_orders extends MY_Controller
 		$data['delivery_charge'] = array_combine($delivery_charge, $delivery_charge);
 		$sizes = explode(",", $this->Configuration->fetch_sizes()["valueStr"]);
 		$data['sizes']['No'] = 'No';
-		foreach($sizes as $s){
+		foreach ($sizes as $s) {
 			$data['sizes'][$s] = $s;
 		}
 		// var_dump($data['sizes']);exit;
 		$data['try_on_list'] = array(
-			"0" => "No", "1" => "Yes"
+			"0" => "No",
+			"1" => "Yes"
 		);
 		$data['exchange_list'] = array(
-			"0" => "No", "1" => "Yes"
+			"0" => "No",
+			"1" => "Yes"
 		);
 		$data['try_on'] = '1';
 		$data['exchange'] = '0';
 		if ($fetched) {
-		    $data['try_on'] = $this->Transaction->get_field('try_on');
-		    $data['exchange'] = $this->Transaction->get_field('exchange');
+			$data['try_on'] = $this->Transaction->get_field('try_on');
+			$data['exchange'] = $this->Transaction->get_field('exchange');
 			// var_dump(1);exit;
 			$this->load->model('Account');
 			$account = $this->Account->load($this->Transaction->get_field('account_id'));
@@ -217,7 +241,7 @@ class Pre_orders extends MY_Controller
 				$data['size'][$k] = $size;
 				$data['sizes_list'][$k] = $data['sizes'];
 				// $data['sizes_list'][$k] =
-				
+
 				// $data['warehouses_list'][$k][$t['warehouse']] = $t['warehouse'];
 				// $data['warehouses'][$k][$t['warehouse']] = $t['warehouse'];
 				// $data['shelf_list'][$k][$t['shelf']] = $t['shelf'];
@@ -231,7 +255,7 @@ class Pre_orders extends MY_Controller
 			$data['selected_status2'] = $this->Transaction->get_field('status2');
 			$data['status'] = $this->Transaction->get_field('status');
 			$this->load->model("User");
-			$data['driver'] = $this->User->get_user_name($this->Transaction->get_field('driver_id'))["user_name"];
+			$data['driver'] = $this->User->get_user_name($this->Transaction->get_field('driver_id'))["user_name"]??"";
 		} else {
 			$data['account'] = '';
 			$data['account2'] = '';
@@ -387,8 +411,10 @@ class Pre_orders extends MY_Controller
 		$this->load->view('order_to_invoice/form', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'transactions/ordertoinvoice'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'transactions/ordertoinvoice'
 			]
 		]);
 	}
@@ -419,7 +445,7 @@ class Pre_orders extends MY_Controller
 			$data['shelfs'] = [];
 			$data['shelf_list'] = [];
 			$data['warehouses_list'] = [];
-			foreach ($data['trans_items'] as $k=>$t) {
+			foreach ($data['trans_items'] as $k => $t) {
 				$result = $this->Warehouse->fetch_warehouse_and_shelf($t["warehouse_id"]);
 				$data['warehouses'][$k][$result['warehouse']] = $result['warehouse'];
 				$data['shelfs'][$k][$result['shelf']] = $result['shelf'];
@@ -435,9 +461,9 @@ class Pre_orders extends MY_Controller
 				// $data['warehouses_list'] = array_combine($w, $w);
 			}
 			foreach ($data['trans_items'] as $k => $t) {
-				 $res = $this->Transaction_item->fetch_trans_item_selected_size_without_warehouse($t["id"])["size"];
-				 $data['size'][$k] = $res;
-				 $data['item_sizes'][$k][$res] = $res;
+				$res = $this->Transaction_item->fetch_trans_item_selected_size_without_warehouse($t["id"])["size"];
+				$data['size'][$k] = $res;
+				$data['item_sizes'][$k][$res] = $res;
 			}
 		} else {
 			$data['account'] = '';
@@ -492,8 +518,10 @@ class Pre_orders extends MY_Controller
 			$this->load->view('order_to_invoice/bulk_os_to_sa', $data);
 			$this->load->view('templates/footer', [
 				'_moreJs' => [
-					'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-					'jquery.autocomplete.min', 'transactions/ordertoinvoice'
+					'air-datepicker/js/datepicker.min',
+					'air-datepicker/js/i18n/datepicker.en',
+					'jquery.autocomplete.min',
+					'transactions/ordertoinvoice'
 				]
 			]);
 		} else {
@@ -638,7 +666,8 @@ class Pre_orders extends MY_Controller
 		);
 	}
 
-	public function get_all_sizes(){
+	public function get_all_sizes()
+	{
 		$this->load->model('Configuration');
 		$res = explode(",", $this->Configuration->fetch_sizes()["valueStr"]);
 		$this->_render_json(

@@ -13,7 +13,12 @@
 		display: block;
 	}
 </style>
-
+<?php
+$yes_no = [
+	'0' => $this->lang->line('no'),
+	'1' => $this->lang->line('yes'),
+];
+?>
 <?php if ($this->session->flashdata('message_success')) { ?>
 	<div id="save_msg" class="alert alert-success" style="text-align:center" onclick="document.getElementById('save_msg').style.display = 'none'">
 		<strong><?php echo $this->session->flashdata('message_success') ?></strong>
@@ -114,6 +119,10 @@
 				?>
 			</div>
 		</div>
+
+
+
+
 		<div class="form-group">
 			<label class="col-sm-3 control-label" for="color"><?php echo $this->lang->line('color') ?></label>
 			<div class="col-sm-9">
@@ -252,6 +261,31 @@
 				<div id="error_rmb" style="text-align:center" onclick="document.getElementById('error_rmb').style.display = 'none'"></div>
 			</div>
 		</div>
+		<div class="form-group">
+			<label class="col-sm-2 control-label" for="cool_storage"><?php echo $this->lang->line('cool_storage'); ?></label>
+			<div class="col-sm-4">
+				<?php
+				echo form_dropdown('cool_storage', $yes_no, $this->Item->get_field('cool_storage'), 'id="cool_storage" class="form-control"');
+				?>
+			</div>
+
+			<label class="col-sm-2 control-label" for="flammable_handling"><?php echo $this->lang->line('flammable_handling'); ?></label>
+			<div class="col-sm-4">
+				<?php
+				echo form_dropdown('flammable_handling', $yes_no, $this->Item->get_field('flammable_handling'), 'id="flammable_handling" class="form-control"');
+				?>
+			</div>
+		</div>
+		<div class="form-group">
+
+			<label class="col-sm-2 control-label" for="fragile"><?php echo $this->lang->line('fragile'); ?></label>
+			<div class="col-sm-4">
+				<?php
+				echo form_dropdown('fragile', $yes_no, $this->Item->get_field('fragile'), 'id="fragile" class="form-control"');
+				?>
+			</div>
+		</div>
+
 		<?php
 		if ($this->Item->get_field('size_chart')) {
 		?>

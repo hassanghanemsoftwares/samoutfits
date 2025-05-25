@@ -8,7 +8,7 @@ class Order extends MY_Model
     protected $modelName = 'Order';
     protected $_table = 'orders';
     protected $_listFieldName = 'id';
-    protected $_fieldsNames = ['id', 'auto_no', 'customer_id', 'order_date', 'value_date', 'currency_id', 'currency_rate', 'description', 'status', 'coupon_id', 'discount', 'address', 'hide'];
+    protected $_fieldsNames = ['id', 'auto_no', 'customer_id', 'order_date', 'value_date', 'currency_id', 'currency_rate', 'description', 'status', 'coupon_id', 'discount', 'address', 'hide', 'payment_method', 'payment_status'];
     protected $allowedNulls = ['value_date', 'description', 'status', 'coupon_id'];
 
     public function __construct()
@@ -36,8 +36,20 @@ class Order extends MY_Model
     {
         $dt = [
             'columns' => [
-                'orders.auto_no', ['transactions.auto_no', 'tracking_nb'], ["CONCAT_WS(' ', first_name, last_name)", 'customer_name'], 'orders.order_date', 'orders.description', ['SUM(order_items.qty)', 'total_qty'], ['order_items.discount', 'percent_disc'], ['(SUM(order_items.qty * order_items.price * (1-(order_items.discount/100))) - orders.discount + orders.delivery_charge)', 'total'], 'orders.status', 'orders.id'
-            ], 'query' => [
+                'orders.auto_no',
+                ['transactions.auto_no', 'tracking_nb'],
+                ["CONCAT_WS(' ', first_name, last_name)", 'customer_name'],
+                'orders.order_date',
+                'orders.description',
+                ['SUM(order_items.qty)', 'total_qty'],
+                ['order_items.discount', 'percent_disc'],
+                ['(SUM(order_items.qty * order_items.price * (1-(order_items.discount/100))) - orders.discount + orders.delivery_charge)', 'total'],
+                'orders.status',
+                'orders.payment_method',
+                'orders.payment_status',
+                'orders.id'
+            ],
+            'query' => [
                 'join' => [
                     ['ecommerce_users', 'ecommerce_users.id = orders.customer_id', 'inner'],
                     ['transactions', 'transactions.id = orders.transaction_id', 'inner'],
@@ -67,16 +79,44 @@ class Order extends MY_Model
         $query = $this->db->get()->row_array();
         return $query;
     }
+    public function load_order_data_with_total($order_id)
+    {
+        $this->db->select('
+        orders.*, 
+        SUM(order_items.qty * order_items.price * (1 - (order_items.discount / 100))) AS subtotal,
+        (SUM(order_items.qty * order_items.price * (1 - (order_items.discount / 100))) - orders.discount + orders.delivery_charge) AS total
+    ');
+    $this->db->from('orders');
+    $this->db->join('order_items', 'order_items.order_id = orders.id', 'inner');
+    $this->db->where('orders.id', $order_id);
+    $this->db->group_by('orders.id'); // One row per order
+    return $this->db->get()->row_array();
+    }
+
+
+  
 
     public function load_order_items($order_id)
-    {
-        $this->db->select('order_items.*, items.barcode');
-        $this->db->from('order_items');
-        $this->db->join('items', 'items.id = order_items.item_id', 'inner');
-        $this->db->where('order_items.order_id', $order_id);
-        $query = $this->db->get()->result_array();
-        return $query;
-    }
+{
+    $this->db->select('
+        order_items.*,
+        items.barcode,
+        (order_items.qty * order_items.price) AS subtotal,
+        (
+           SELECT CONCAT("assets/uploads/", image_name)
+            FROM product_images
+            WHERE product_images.item_id = order_items.item_id
+            ORDER BY product_images.id ASC
+            LIMIT 1
+        ) AS image_name
+    ');
+    $this->db->from('order_items');
+    $this->db->join('items', 'items.id = order_items.item_id', 'inner');
+    $this->db->where('order_items.order_id', $order_id);
+    $query = $this->db->get()->result_array();
+    return $query;
+}
+
 
     public function update_hide_show_order($order_id, $value)
     {
@@ -105,8 +145,17 @@ class Order extends MY_Model
     {
         $dt = [
             'columns' => [
-                'orders.auto_no', ['transactions.auto_no', 'tracking_nb'], ["CONCAT_WS(' ', first_name, last_name)", 'customer_name'], 'orders.order_date', 'orders.description', ['SUM(order_items.qty)', 'total_qty'], ['(SUM(order_items.qty * order_items.price * (1-(order_items.discount/100))) - orders.discount)', 'total'], 'orders.status', 'orders.id'
-            ], 'query' => [
+                'orders.auto_no',
+                ['transactions.auto_no', 'tracking_nb'],
+                ["CONCAT_WS(' ', first_name, last_name)", 'customer_name'],
+                'orders.order_date',
+                'orders.description',
+                ['SUM(order_items.qty)', 'total_qty'],
+                ['(SUM(order_items.qty * order_items.price * (1-(order_items.discount/100))) - orders.discount)', 'total'],
+                'orders.status',
+                'orders.id'
+            ],
+            'query' => [
                 'join' => [
                     ['ecommerce_users', 'ecommerce_users.id = orders.customer_id', 'inner'],
                     ['transactions', 'transactions.id = orders.transaction_id', 'inner'],

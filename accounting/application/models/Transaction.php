@@ -26,9 +26,9 @@ class Transaction extends MY_Model
 	protected $modelName = 'Transaction';
 	protected $_table = 'transactions';
 	protected $_listFieldName = 'auto_no';
-	protected $_fieldsNames = ['id', 'fiscal_year_id', 'trans_type', 'auto_no', 'trans_date', 'value_date', 'account_id', 'account2_id', 'currency_id', 'currency_rate', 'discount', 'user_id', 'driver_id', 'employee_id', 'status', 'delivered', 'pickup', 'description', 'relation_id', 'delivery_charge', 'status2', 'source', 'delivery_note', 'payment_method',  'op_nb', 'hide', 'exchange', 'try_on'];
+	protected $_fieldsNames = ['id', 'fiscal_year_id', 'trans_type', 'auto_no', 'trans_date', 'value_date', 'account_id', 'account2_id', 'currency_id', 'currency_rate', 'discount', 'user_id', 'driver_id', 'employee_id', 'status', 'delivered', 'pickup', 'description', 'relation_id', 'delivery_charge', 'status2', 'source', 'delivery_note', 'payment_method','payment_method_gateway','payment_method_gateway_status',  'op_nb', 'hide', 'exchange', 'try_on'];
 	protected $_dateFields = ['trans_date', 'value_date'];
-	protected $allowedNulls = ['value_date', 'discount', 'exchange', 'try_on'];
+	protected $allowedNulls = ['value_date', 'discount', 'exchange', 'try_on','payment_method_gateway','payment_method_gateway_status'];
 
 	public function __construct()
 	{
@@ -166,7 +166,7 @@ class Transaction extends MY_Model
 				["account1.account_name AS account1, account2.account_name AS account2"],
 				["currencies.currency_code, transactions.currency_rate, transactions.discount, $total AS total"],
 				["transactions.status"],
-				["transactions.id"]
+				["transactions.id,transactions.payment_method_gateway,transactions.payment_method_gateway_status"]
 			],
 			'join' => [
 				['fiscal_years', 'fiscal_years.id = transactions.fiscal_year_id', 'inner'],
@@ -198,10 +198,21 @@ class Transaction extends MY_Model
 		}
 		$dt = [
 			'columns' => [
-				'transactions.auto_no', 'transactions.trans_date', 'transactions.value_date',
-				['account1.account_name', 'account1'], ['account2.account_name', 'account2'],
-				'currencies.currency_code', 'transactions.currency_rate',
-				'transactions.discount', [$total, 'total'], 'transactions.status', 'transactions.id'
+				'transactions.auto_no',
+				'transactions.trans_date',
+				'transactions.value_date',
+				['account1.account_name', 'account1'],
+				['account2.account_name', 'account2'],
+				'currencies.currency_code',
+				'transactions.currency_rate',
+				'transactions.discount',
+				[$total, 'total'],
+				'transactions.payment_method_gateway',
+				'payment_method_gateway_status',
+				'transactions.status',
+				'transactions.id'
+
+				
 			],
 			'query' => [
 				'join' => [
@@ -572,7 +583,12 @@ class Transaction extends MY_Model
 	{
 		$dt = [
 			'columns' => [
-				'transactions.auto_no', 'transactions.trans_date', ['MIN(i.description)', 'description'], ['MIN(i.barcode)', 'barcode'], ['SUM(ti.qty)', 'total_qty'], 'transactions.id',
+				'transactions.auto_no',
+				'transactions.trans_date',
+				['MIN(i.description)', 'description'],
+				['MIN(i.barcode)', 'barcode'],
+				['SUM(ti.qty)', 'total_qty'],
+				'transactions.id',
 			],
 			'query' => [
 				'join' => [
@@ -658,9 +674,7 @@ class Transaction extends MY_Model
 		return $query;
 	}
 
-	public function load_missing_products_data_tables()
-	{
-	}
+	public function load_missing_products_data_tables() {}
 
 	public function update_and_save_transaction_items_for_MP($missing_products, $MP_trans_items, $mvtType, $transaction_id)
 	{
@@ -749,7 +763,9 @@ class Transaction extends MY_Model
 	{
 		$dt = [
 			'columns' => [
-				'transactions.auto_no', 'transactions.trans_date', 'transactions.id'
+				'transactions.auto_no',
+				'transactions.trans_date',
+				'transactions.id'
 			],
 			'query' => [
 				'join' => [
@@ -1022,10 +1038,15 @@ class Transaction extends MY_Model
 	{
 		$dt = [
 			'columns' => [
-				'transactions.auto_no', 'transactions.relation_id', 'transactions.trans_date', 'transactions.value_date',
-				['account1.account_name', 'account1'], ['account1.account_number', 'account_number1'],
+				'transactions.auto_no',
+				'transactions.relation_id',
+				'transactions.trans_date',
+				'transactions.value_date',
+				['account1.account_name', 'account1'],
+				['account1.account_number', 'account_number1'],
 				['account2.account_name', 'account2'],
-				'transactions.delivered', 'transactions.id'
+				'transactions.delivered',
+				'transactions.id'
 			],
 			'query' => [
 				'join' => [
@@ -1123,9 +1144,16 @@ class Transaction extends MY_Model
 	{
 		$dt = [
 			'columns' => [
-				'transactions.auto_no', ['account1.account_name', 'account1'], ['account1.account_number', 'account_number1'],
-				'transactions.trans_date', 'transactions.value_date',
-				'transactions.status2', ['users.user_name', 'driver'], 'transactions.cash_date', 'transactions.return_date', 'transactions.id'
+				'transactions.auto_no',
+				['account1.account_name', 'account1'],
+				['account1.account_number', 'account_number1'],
+				'transactions.trans_date',
+				'transactions.value_date',
+				'transactions.status2',
+				['users.user_name', 'driver'],
+				'transactions.cash_date',
+				'transactions.return_date',
+				'transactions.id'
 			],
 			'query' => [
 				'join' => [
@@ -1168,7 +1196,7 @@ class Transaction extends MY_Model
 				["account1.account_name AS account1"],
 				["$subtotal AS subtotal, transactions.delivery_charge, journals.amount AS total, $qty as trans_qty"],
 				["transactions.status2"],
-				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id"]
+				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id,transactions.payment_method_gateway,transactions.payment_method_gateway_status"]
 			],
 			'join' => [
 				['fiscal_years', 'fiscal_years.id = transactions.fiscal_year_id', 'inner'],
@@ -1178,7 +1206,8 @@ class Transaction extends MY_Model
 				['transaction_items AS ti', 'ti.transaction_id = transactions.id', 'inner'],
 				['journals', 'journals.transaction_id = transactions.id', 'inner'],
 				['users as user1', 'user1.id = transactions.user_id', 'left'],
-				['users as user2', 'user2.id = transactions.driver_id', 'left']
+				['users as user2', 'user2.id = transactions.driver_id', 'left'],
+
 			],
 			'where' => [
 				["{$this->_table}.fiscal_year_id", $this->violet_auth->get_fiscal_year_id()],
@@ -1204,10 +1233,24 @@ class Transaction extends MY_Model
 		$qty = 'SUM(ti.qty)';
 		$dt = [
 			'columns' => [
-				['account1.account_number', 'account_nb1'], 'transactions.trans_date',
-				'transactions.trans_type', 'transactions.status', 'transactions.auto_no', ['account1.account_name', 'account1'],
-				[$subtotal, 'subtotal'],  'transactions.delivery_charge', ['journals.amount', 'total'], [$qty, 'trans_qty'], 'transactions.status2',
-				['DATE_FORMAT(transactions.value_date,"%d-%m-%Y")', 'value_date'], ['user2.user_name', 'driver'], ['user1.user_name', 'user'], 'transactions.id'
+				['account1.account_number', 'account_nb1'],
+				'transactions.trans_date',
+				'transactions.trans_type',
+				'transactions.status',
+				'transactions.auto_no',
+				['account1.account_name', 'account1'],
+				'transactions.payment_method_gateway',
+				'transactions.payment_method_gateway_status',
+
+				[$subtotal, 'subtotal'],
+				'transactions.delivery_charge',
+				['journals.amount', 'total'],
+				[$qty, 'trans_qty'],
+				'transactions.status2',
+				['DATE_FORMAT(transactions.value_date,"%d-%m-%Y")', 'value_date'],
+				['user2.user_name', 'driver'],
+				['user1.user_name', 'user'],
+				'transactions.id',
 			],
 			'query' => [
 				'join' => [
@@ -1218,7 +1261,7 @@ class Transaction extends MY_Model
 					['transaction_items AS ti', 'ti.transaction_id = transactions.id', 'inner'],
 					['journals', 'journals.transaction_id = transactions.id', 'inner'],
 					['users as user1', 'user1.id = transactions.user_id', 'left'],
-					['users as user2', 'user2.id = transactions.driver_id', 'left']
+					['users as user2', 'user2.id = transactions.driver_id', 'left'],
 				],
 				'where' => [
 					["{$this->_table}.fiscal_year_id", $this->violet_auth->get_fiscal_year_id()],
@@ -1227,7 +1270,7 @@ class Transaction extends MY_Model
 					["{$this->_table}.status2 !=", "Successfully Delivered"],
 					["{$this->_table}.status2 !=", "Failed To Deliver"],
 					["{$this->_table}.status2 !=", "Cancelled By Customer"],
-				    ["{$this->_table}.status2 !=", "Pending By Administration"],
+					["{$this->_table}.status2 !=", "Pending By Administration"],
 				],
 				'where_in' => [
 					["{$this->_table}.trans_type", [$transType, "EX"]],
@@ -1235,30 +1278,30 @@ class Transaction extends MY_Model
 				'group_by' => ['journals.id'],
 				'order_by' => [['auto_no', 'DESC']]
 			],
-			'search_in' => ['transactions.transaction_date', 'transactions.auto_no', 'transactions.currency_rate', 'transactions.discount', 'transactions.account_id', 'transactions.account2_id', 'account1.account_name', 'account2.account_name']
-		];		
-		$filter_type = $this->input->get(['trans_type'], true);		
-		$filter_tdate = $this->input->get(['trans_date'], true);	
-		$filter_dispatch_date = $this->input->get(['dispatch_date'], true);	
-		$filter_status = $this->input->get(['status'], true);	
-		if($filter_type){
-			if($filter_type['trans_type']){			
+			'search_in' => ['transactions.transaction_date', 'transactions.auto_no', 'transactions.currency_rate', 'transactions.discount', 'transactions.account_id', 'transactions.account2_id', 'account1.account_name', 'account2.account_name', 'transactions.payment_method_gateway']
+		];
+		$filter_type = $this->input->get(['trans_type'], true);
+		$filter_tdate = $this->input->get(['trans_date'], true);
+		$filter_dispatch_date = $this->input->get(['dispatch_date'], true);
+		$filter_status = $this->input->get(['status'], true);
+		if ($filter_type) {
+			if ($filter_type['trans_type']) {
 				$dt['query']['where'][] = ['transactions.trans_type', $filter_type['trans_type']];
 				unset($dt['query']['where_in']);
 			}
-		}		
-		if($filter_tdate){
-			if($filter_tdate['trans_date']){			
+		}
+		if ($filter_tdate) {
+			if ($filter_tdate['trans_date']) {
 				$dt['query']['where'][] = ['transactions.trans_date', date('Y-m-d', strtotime($filter_tdate['trans_date']))];
 			}
 		}
-		if($filter_dispatch_date){
-			if($filter_dispatch_date['dispatch_date']){			
+		if ($filter_dispatch_date) {
+			if ($filter_dispatch_date['dispatch_date']) {
 				$dt['query']['where'][] = ['transactions.value_date', date('Y-m-d', strtotime($filter_dispatch_date['dispatch_date']))];
 			}
 		}
-		if($filter_status){
-			if($filter_status['status']){			
+		if ($filter_status) {
+			if ($filter_status['status']) {
 				$dt['query']['where'][] = ['transactions.status2', $filter_status['status']];
 			}
 		}
@@ -1315,7 +1358,7 @@ class Transaction extends MY_Model
 	{
 		foreach ($trans_ids as $id) {
 			$data = array(
-				'cash_date' => date('Y-m-d', strtotime($cash_date)) 
+				'cash_date' => date('Y-m-d', strtotime($cash_date))
 			);
 			$this->db->where('id', $id);
 			$query = $this->db->update('transactions', $data);
@@ -1365,15 +1408,27 @@ class Transaction extends MY_Model
 		return parent::paginate($query, ['urlPrefix' => '']);
 	}
 
-public function load_wakilni_data_report_data_tables()
+	public function load_wakilni_data_report_data_tables()
 	{
 		$dir = "CONCAT_WS(' - ', accounts.place, accounts.street, accounts.description)";
 		$dt = [
 			'columns' => [
-				'accounts.account_name', 'accounts.email', 'accounts.phone', 'accounts.city', 'accounts.floor', ' accounts.building',
+				'accounts.account_name',
+				'accounts.email',
+				'accounts.phone',
+				'accounts.city',
+				'accounts.floor',
+				' accounts.building',
 				["IF(accounts.phone2 IS NULL or accounts.phone2 = '' or accounts.phone2 = '0', $dir, CONCAT_WS(' /mobile2: ', $dir, accounts.phone2))", 'direction'],
-				['journals.amount', 'total'], 'currencies.currency_code', ["IF(transactions.payment_method = 'BOTH', 'lbp','lbp')", "method"], ["'Regular'", "package_type"], ["1", "package_qty"],
-				'transactions.auto_no', 'transactions.delivery_note', ["CASE WHEN transactions.try_on = 1 then 'Yes' else 'No' END", "try_on"],  ["CASE WHEN transactions.exchange = 1 then 'Yes' else 'No' END", "exchange"]
+				['journals.amount', 'total'],
+				'currencies.currency_code',
+				["IF(transactions.payment_method = 'BOTH', 'lbp','lbp')", "method"],
+				["'Regular'", "package_type"],
+				["1", "package_qty"],
+				'transactions.auto_no',
+				'transactions.delivery_note',
+				["CASE WHEN transactions.try_on = 1 then 'Yes' else 'No' END", "try_on"],
+				["CASE WHEN transactions.exchange = 1 then 'Yes' else 'No' END", "exchange"]
 			],
 			'query' => [
 				'join' => [
@@ -1435,8 +1490,14 @@ public function load_wakilni_data_report_data_tables()
 		// $total = 'ROUND(SUM((ti.qty * ti.price * (1 - ti.discount/100))) + transactions.delivery_charge - transactions.discount ,2)';
 		$dt = [
 			'columns' => [
-				'transactions.auto_no', 'accounts.account_name', 'transactions.value_date', ['journals.amount', 'total'],
-				'currencies.currency_code', 'accounts.city', 'accounts.phone', 'transactions.delivery_note'
+				'transactions.auto_no',
+				'accounts.account_name',
+				'transactions.value_date',
+				['journals.amount', 'total'],
+				'currencies.currency_code',
+				'accounts.city',
+				'accounts.phone',
+				'transactions.delivery_note'
 			],
 			'query' => [
 				'join' => [
@@ -1709,7 +1770,7 @@ public function load_wakilni_data_report_data_tables()
 				["account1.account_name AS account1"],
 				["$subtotal AS subtotal, transactions.delivery_charge, journals.amount AS total, $qty as trans_qty"],
 				["transactions.status2"],
-				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id"]
+				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id,transactions.payment_method_gateway,transactions.payment_method_gateway_status"]
 			],
 			'join' => [
 				['fiscal_years', 'fiscal_years.id = transactions.fiscal_year_id', 'inner'],
@@ -1740,11 +1801,26 @@ public function load_wakilni_data_report_data_tables()
 		$qty = 'SUM(ti.qty)';
 		$dt = [
 			'columns' => [
-				['account1.account_number', 'account_nb1'], ['DATE_FORMAT(transactions.trans_date,"%d-%m-%Y")', 'trans_date'],
-				['DATE_FORMAT(transactions.cash_date,"%d-%m-%Y")', 'cash_date'], ['DATE_FORMAT(transactions.return_date,"%d-%m-%Y")', 'return_date'],
-				'transactions.trans_type', 'transactions.status', 'transactions.auto_no', ['account1.account_name', 'account1'],
-				[$subtotal, 'subtotal'],  'transactions.delivery_charge', ['journals.amount', 'total'], [$qty, 'trans_qty'], 'transactions.status2',
-				['DATE_FORMAT(transactions.value_date,"%d-%m-%Y")', 'value_date'], ['user2.user_name', 'driver'], ['user1.user_name', 'user'], 'transactions.id'
+				['account1.account_number', 'account_nb1'],
+				['DATE_FORMAT(transactions.trans_date,"%d-%m-%Y")', 'trans_date'],
+				['DATE_FORMAT(transactions.cash_date,"%d-%m-%Y")', 'cash_date'],
+				['DATE_FORMAT(transactions.return_date,"%d-%m-%Y")', 'return_date'],
+				'transactions.trans_type',
+				'transactions.status',
+				'transactions.auto_no',
+				['account1.account_name', 'account1'],
+				'transactions.payment_method_gateway',
+				'transactions.payment_method_gateway_status',
+
+				[$subtotal, 'subtotal'],
+				'transactions.delivery_charge',
+				['journals.amount', 'total'],
+				[$qty, 'trans_qty'],
+				'transactions.status2',
+				['DATE_FORMAT(transactions.value_date,"%d-%m-%Y")', 'value_date'],
+				['user2.user_name', 'driver'],
+				['user1.user_name', 'user'],
+				'transactions.id'
 			],
 			'query' => [
 				'join' => [
@@ -1769,29 +1845,29 @@ public function load_wakilni_data_report_data_tables()
 			],
 			'search_in' => ['transactions.auto_no', 'transactions.currency_rate', 'transactions.discount', 'transactions.account_id', 'transactions.account2_id', 'account1.account_name', 'account2.account_name']
 		];
-		$filter_type = $this->input->get(['trans_type'], true);		
-		$filter_tdate = $this->input->get(['trans_date'], true);	
-		$filter_dispatch_date = $this->input->get(['dispatch_date'], true);	
-		$filter_status = $this->input->get(['status'], true);	
-		if($filter_type){
-			if($filter_type['trans_type']){			
+		$filter_type = $this->input->get(['trans_type'], true);
+		$filter_tdate = $this->input->get(['trans_date'], true);
+		$filter_dispatch_date = $this->input->get(['dispatch_date'], true);
+		$filter_status = $this->input->get(['status'], true);
+		if ($filter_type) {
+			if ($filter_type['trans_type']) {
 				$dt['query']['where'][] = ['transactions.trans_type', $filter_type['trans_type']];
 				unset($dt['query']['where_in']);
 				$dt['query']['where_in'][] = ["{$this->_table}.status2", ["Cancelled By Administration", "Successfully Delivered", "Failed To Deliver"]];
 			}
-		}		
-		if($filter_tdate){
-			if($filter_tdate['trans_date']){			
+		}
+		if ($filter_tdate) {
+			if ($filter_tdate['trans_date']) {
 				$dt['query']['where'][] = ['transactions.trans_date', date('Y-m-d', strtotime($filter_tdate['trans_date']))];
 			}
 		}
-		if($filter_dispatch_date){
-			if($filter_dispatch_date['dispatch_date']){			
+		if ($filter_dispatch_date) {
+			if ($filter_dispatch_date['dispatch_date']) {
 				$dt['query']['where'][] = ['transactions.value_date', date('Y-m-d', strtotime($filter_dispatch_date['dispatch_date']))];
 			}
 		}
-		if($filter_status){
-			if($filter_status['status']){			
+		if ($filter_status) {
+			if ($filter_status['status']) {
 				$dt['query']['where'][] = ['transactions.status2', $filter_status['status']];
 			}
 		}
@@ -2122,10 +2198,21 @@ public function load_wakilni_data_report_data_tables()
 		$qty = 'SUM(ti.qty)';
 		$dt = [
 			'columns' => [
-				['account1.account_number', 'account_nb1'], 'transactions.trans_date',
-				'transactions.trans_type', 'transactions.status', 'transactions.auto_no', ['account1.account_name', 'account1'],
-				[$subtotal, 'subtotal'],  'transactions.delivery_charge', ['journals.amount', 'total'], [$qty, 'trans_qty'], 'transactions.status2',
-				['DATE_FORMAT(transactions.value_date,"%d-%m-%Y")', 'value_date'], ['user2.user_name', 'driver'], ['user1.user_name', 'user'], 'transactions.id'
+				['account1.account_number', 'account_nb1'],
+				'transactions.trans_date',
+				'transactions.trans_type',
+				'transactions.status',
+				'transactions.auto_no',
+				['account1.account_name', 'account1'],
+				[$subtotal, 'subtotal'],
+				'transactions.delivery_charge',
+				['journals.amount', 'total'],
+				[$qty, 'trans_qty'],
+				'transactions.status2',
+				['DATE_FORMAT(transactions.value_date,"%d-%m-%Y")', 'value_date'],
+				['user2.user_name', 'driver'],
+				['user1.user_name', 'user'],
+				'transactions.id'
 			],
 			'query' => [
 				'join' => [
@@ -2210,17 +2297,17 @@ public function load_wakilni_data_report_data_tables()
 				['warehouses', 'ti.warehouse_id = warehouses.id', 'left']
 			],
 			// 'where' => [
-				// ["transactions.fiscal_year_id", $this->violet_auth->get_fiscal_year_id()],
+			// ["transactions.fiscal_year_id", $this->violet_auth->get_fiscal_year_id()],
 			// ],
-			'where_in' => [			
+			'where_in' => [
 				["transactions.trans_type", ['SA', 'EX']]
 			],
 			'order_by' => ['transactions.auto_no', "ASC"]
 		];
-		if($auto_nos[0] != ''){
-			$query['where_in'][]= ["transactions.auto_no", $auto_nos];
-		}elseif($status2){
-			$query['where'][]= ['transactions.status2', $status2];
+		if ($auto_nos[0] != '') {
+			$query['where_in'][] = ["transactions.auto_no", $auto_nos];
+		} elseif ($status2) {
+			$query['where'][] = ['transactions.status2', $status2];
 		}
 		return $this->load_all($query);
 	}
@@ -2257,9 +2344,17 @@ public function load_wakilni_data_report_data_tables()
 	{
 		$dt = [
 			'columns' => [
-				'transactions.auto_no', 'items.barcode', 'transaction_item_sizes.size', 'transaction_item_sizes.qty', 'items.price_ttc',
-				'items.description',  'warehouses.warehouse', 'warehouses.shelf',
-				'transactions.trans_date', ['account1.account_name', 'supplier'], 'transactions.id'
+				'transactions.auto_no',
+				'items.barcode',
+				'transaction_item_sizes.size',
+				'transaction_item_sizes.qty',
+				'items.price_ttc',
+				'items.description',
+				'warehouses.warehouse',
+				'warehouses.shelf',
+				'transactions.trans_date',
+				['account1.account_name', 'supplier'],
+				'transactions.id'
 			],
 			'query' => [
 				'join' => [
@@ -2310,7 +2405,7 @@ public function load_wakilni_data_report_data_tables()
 				["account1.account_name AS account1"],
 				["$subtotal AS subtotal, transactions.delivery_charge, journals.amount AS total, $qty as trans_qty"],
 				["transactions.status2"],
-				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id"]
+				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id,transactions.payment_method_gateway,transactions.payment_method_gateway_status"]
 			],
 			'join' => [
 				['fiscal_years', 'fiscal_years.id = transactions.fiscal_year_id', 'inner'],
@@ -2341,10 +2436,22 @@ public function load_wakilni_data_report_data_tables()
 		$qty = 'SUM(ti.qty)';
 		$dt = [
 			'columns' => [
-				['account1.account_number', 'account_nb1'], 'transactions.trans_date',
-				'transactions.trans_type', 'transactions.auto_no', ['account1.account_name', 'account1'],
-				[$subtotal, 'subtotal'],  'transactions.delivery_charge', ['journals.amount', 'total'], [$qty, 'trans_qty'], 'transactions.status2',
-				['DATE_FORMAT(transactions.value_date,"%d-%m-%Y")', 'value_date'], ['user2.user_name', 'driver'], ['user1.user_name', 'user'], 'transactions.id'
+				['account1.account_number', 'account_nb1'],
+				'transactions.trans_date',
+				'transactions.trans_type',
+				'transactions.auto_no',
+				['account1.account_name', 'account1'],
+				'transactions.payment_method_gateway',
+				'transactions.payment_method_gateway_status',
+				[$subtotal, 'subtotal'],
+				'transactions.delivery_charge',
+				['journals.amount', 'total'],
+				[$qty, 'trans_qty'],
+				'transactions.status2',
+				['DATE_FORMAT(transactions.value_date,"%d-%m-%Y")', 'value_date'],
+				['user2.user_name', 'driver'],
+				['user1.user_name', 'user'],
+				'transactions.id'
 			],
 			'query' => [
 				'join' => [
@@ -2454,7 +2561,11 @@ public function load_wakilni_data_report_data_tables()
 	{
 		$dt = [
 			'columns' => [
-				'items.barcode', 'items.description', 'ts.size', ["SUM(ts.qty * IF(transactions.trans_type = 'OS','-1','1'))", 'total_qty'], 'items.price_ttc'
+				'items.barcode',
+				'items.description',
+				'ts.size',
+				["SUM(ts.qty * IF(transactions.trans_type = 'OS','-1','1'))", 'total_qty'],
+				'items.price_ttc'
 			],
 			'query' => [
 				'join' => [
@@ -2475,7 +2586,8 @@ public function load_wakilni_data_report_data_tables()
 		return parent::load_datatables_pagedata($dt);
 	}
 
-	public function calculate_item_total_available_qty($item_id){
+	public function calculate_item_total_available_qty($item_id)
+	{
 		$query = [
 			'select' => [
 				"SUM(ts.qty * transaction_items.mvt_type) as total_qty,"
@@ -2494,7 +2606,8 @@ public function load_wakilni_data_report_data_tables()
 		return $this->load($query);
 	}
 
-	public function calculate_item_total_available_qty_of_szie($item_id, $size){
+	public function calculate_item_total_available_qty_of_szie($item_id, $size)
+	{
 		$query = [
 			'select' => [
 				"SUM(ts.qty * transaction_items.mvt_type) as total_qty,"
@@ -2621,7 +2734,7 @@ public function load_wakilni_data_report_data_tables()
 		];
 		return $this->load_all($query);
 	}
-	
+
 	public function  calculate_available_item_qty($item_id)
 	{
 		$query = [
@@ -2646,7 +2759,8 @@ public function load_wakilni_data_report_data_tables()
 		return $result["total_qty"];
 	}
 
-	public function load_profits_per_date_data($from_date, $to_date){
+	public function load_profits_per_date_data($from_date, $to_date)
+	{
 		$revenue = 'ROUND(journals.amount - transactions.delivery_charge,2)';
 		$cost = 'SUM(ti.qty*ti.cost)';
 		$query = [
@@ -2673,7 +2787,7 @@ public function load_wakilni_data_report_data_tables()
 		];
 		return $this->load_all($query);
 	}
-	
+
 	public function paginate_pending_sales_data($transType)
 	{
 		$subtotal = 'ROUND(journals.amount - transactions.delivery_charge,2)';
@@ -2684,7 +2798,7 @@ public function load_wakilni_data_report_data_tables()
 				["account1.account_name AS account1"],
 				["$subtotal AS subtotal, transactions.delivery_charge, journals.amount AS total, $qty as trans_qty"],
 				["transactions.status2"],
-				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id"]
+				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id,transactions.payment_method_gateway,transactions.payment_method_gateway_status"]
 			],
 			'join' => [
 				['fiscal_years', 'fiscal_years.id = transactions.fiscal_year_id', 'inner'],
@@ -2716,10 +2830,24 @@ public function load_wakilni_data_report_data_tables()
 		$qty = 'SUM(ti.qty)';
 		$dt = [
 			'columns' => [
-				['account1.account_number', 'account_nb1'], 'transactions.trans_date',
-				'transactions.trans_type', 'transactions.status', 'transactions.auto_no', ['account1.account_name', 'account1'],
-				[$subtotal, 'subtotal'],  'transactions.delivery_charge', ['journals.amount', 'total'], [$qty, 'trans_qty'], 'transactions.status2',
-				['DATE_FORMAT(transactions.value_date,"%d-%m-%Y")', 'value_date'], ['user2.user_name', 'driver'], ['user1.user_name', 'user'], 'transactions.id'
+				['account1.account_number', 'account_nb1'],
+				'transactions.trans_date',
+				'transactions.trans_type',
+				'transactions.status',
+				'transactions.auto_no',
+				['account1.account_name', 'account1'],
+				'transactions.payment_method_gateway',
+				'transactions.payment_method_gateway_status',
+
+				[$subtotal, 'subtotal'],
+				'transactions.delivery_charge',
+				['journals.amount', 'total'],
+				[$qty, 'trans_qty'],
+				'transactions.status2',
+				['DATE_FORMAT(transactions.value_date,"%d-%m-%Y")', 'value_date'],
+				['user2.user_name', 'driver'],
+				['user1.user_name', 'user'],
+				'transactions.id'
 			],
 			'query' => [
 				'join' => [
@@ -2744,29 +2872,29 @@ public function load_wakilni_data_report_data_tables()
 				'order_by' => [['auto_no', 'DESC']]
 			],
 			'search_in' => ['transactions.transaction_date', 'transactions.auto_no', 'transactions.currency_rate', 'transactions.discount', 'transactions.account_id', 'transactions.account2_id', 'account1.account_name', 'account2.account_name']
-		];		
-		$filter_type = $this->input->get(['trans_type'], true);		
-		$filter_tdate = $this->input->get(['trans_date'], true);	
-		$filter_dispatch_date = $this->input->get(['dispatch_date'], true);	
-		$filter_status = $this->input->get(['status'], true);	
-		if($filter_type){
-			if($filter_type['trans_type']){			
+		];
+		$filter_type = $this->input->get(['trans_type'], true);
+		$filter_tdate = $this->input->get(['trans_date'], true);
+		$filter_dispatch_date = $this->input->get(['dispatch_date'], true);
+		$filter_status = $this->input->get(['status'], true);
+		if ($filter_type) {
+			if ($filter_type['trans_type']) {
 				$dt['query']['where'][] = ['transactions.trans_type', $filter_type['trans_type']];
 				unset($dt['query']['where_in']);
 			}
-		}		
-		if($filter_tdate){
-			if($filter_tdate['trans_date']){			
+		}
+		if ($filter_tdate) {
+			if ($filter_tdate['trans_date']) {
 				$dt['query']['where'][] = ['transactions.trans_date', date('Y-m-d', strtotime($filter_tdate['trans_date']))];
 			}
 		}
-		if($filter_dispatch_date){
-			if($filter_dispatch_date['dispatch_date']){			
+		if ($filter_dispatch_date) {
+			if ($filter_dispatch_date['dispatch_date']) {
 				$dt['query']['where'][] = ['transactions.value_date', date('Y-m-d', strtotime($filter_dispatch_date['dispatch_date']))];
 			}
 		}
-		if($filter_status){
-			if($filter_status['status']){			
+		if ($filter_status) {
+			if ($filter_status['status']) {
 				$dt['query']['where'][] = ['transactions.status2', $filter_status['status']];
 			}
 		}

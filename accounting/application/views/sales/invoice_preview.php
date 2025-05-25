@@ -18,11 +18,17 @@
             </div>
             <div class="col-sm-6 col-xs-6">
                 <div class="col-sm-12 col-xs-12">
-                    <img id="logo" style="height: 45px; width: 60px;" src="<?php echo site_url('assets/images/cash1.png') ?>">
+                    <?php
+                    echo ($trans["payment_method_gateway"] == "whish")
+                        ? '<img style="height: 25px;width: 100px;margin-bottom: 15px;" src="' . site_url('assets/images/wish.png') . '">'
+                        : '<img  style="height: 25px;width: 100px;margin-bottom: 15px;" src="' . site_url('assets/images/cod.png') . '">';
+                    ?>
+
+
                 </div>
                 <div class="col-sm-12 col-xs-12" style="border: solid 1px black; border-radius:5px; width: 150px;">
                     <h4 style="color: black; text-align:center;">
-                        <b>USD <?php echo $total ?> </b>
+                        <b>USD <?php echo ($trans["payment_method_gateway"] == "whish") ? "0" : $total ?> </b>
                     </h4>
                 </div>
                 <p style="color: black; font-size:11px; font-weight:bold;">
@@ -87,7 +93,7 @@
                     </thead>
                     <tbody style="text-align: center;">
                         <?php foreach ($trans_items as $x => $transItem) : ?>
-                            <tr>
+                            <tr style="background-color: <?php echo ($transItem['qty'] > 1) ? "#cccccc" : "#ffffff" ?>;">
                                 <td style="width: 90px; margin:2px;"><b><?php echo $transItem['barcode'] ?></b></td>
                                 <td style="width: 90px; margin:2px;"><b><?php echo $transItem['size'] ?></b></td>
                                 <td style="width: 90px; margin:2px;"><b><?php echo $transItem['qty'] ?></b></td>

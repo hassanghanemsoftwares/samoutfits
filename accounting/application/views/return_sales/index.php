@@ -1,5 +1,5 @@
 <p class="text-right">
-<?php echo anchor('return_sales/add', $this->lang->line('Add_Return_Invoice'), 'accesskey="a" class="btn btn-primary" id="bgadd" style="width:200px;"') ?>
+	<?php echo anchor('return_sales/add', $this->lang->line('Add_Return_Invoice'), 'accesskey="a" class="btn btn-primary" id="bgadd" style="width:200px;"') ?>
 </p>
 <div class="col-sm-12">
 	<div class="col-sm-4">
@@ -19,6 +19,8 @@
 			<th><?php echo $this->lang->line('currency_rate') ?></th>
 			<th><?php echo $this->lang->line('discount') ?></th>
 			<th><?php echo $this->lang->line('total') ?></th>
+			<th><?php echo $this->lang->line('payment_method') ?></th>
+			<th><?php echo $this->lang->line('payment_status') ?></th>
 			<th><?php echo $this->lang->line('actions') ?></th>
 		</tr>
 	</thead>
@@ -34,6 +36,8 @@
 				<td><?php echo $record['currency_rate'] ?></td>
 				<td><?php echo $record['discount'] ?></td>
 				<td><?php echo $record['total'] ?></td>
+				<td><?php echo $record['payment_method_gateway'] ?></td>
+				<td><?php echo $record['payment_method_gateway_status'] ?></td>
 				<td><?php echo $record['id'] ?></td>
 			</tr>
 		<?php } ?>
