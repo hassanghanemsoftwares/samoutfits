@@ -45,7 +45,7 @@
         <?php } ?>
     </tbody>
 </table>
-  <div id="order-summary-root"></div>
+<div id="order-summary-root"></div>
 <!-- Edit Order Status Modal -->
 <div id="statusModalForm" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
@@ -133,20 +133,39 @@
                 </div>
             </div>
             <div class="modal-footer px-0">
-                <button type="button" class="btn btn-primary " style="width:20% !important;" id="accept_order">
+                <button type="button" class="btn btn-primary " style="width:18% !important;" id="accept_order">
                     <?php echo $this->lang->line('accept_order') ?>
                 </button>
                 <button type="button" class="btn btn-success" id="whatsapp_btn">
                     <img src="https://img.icons8.com/color/24/000000/whatsapp.png" alt="WhatsApp Icon">
+                </button> <button type="button" class="btn btn-secondary" id="copy_msg">
+                    <span class="glyphicon glyphicon-copy"></span>
                 </button>
-                <button type="button" class="btn btn-primary" style="width:20% !important;" id="order_summery">
+                <button type="button" class="btn btn-primary" style="width:18% !important;" id="order_summery">
                     <?php echo $this->lang->line('order_summery') ?>
                 </button>
-                <button type="submit" class="btn btn-primary " style="width:20% !important;"><?php echo $this->lang->line('Submit') ?></button>
+                <button type="submit" class="btn btn-primary " style="width:18% !important;"><?php echo $this->lang->line('Submit') ?></button>
                 <?php echo form_close(); ?>
-                <a href="" class="btn btn-primary" style="width:20% !important;" id="waybil_preview"><?php echo $this->lang->line('Private_Waybil') ?></a>
+                <a href="" class="btn btn-primary" style="width:18% !important;" id="waybil_preview"><?php echo $this->lang->line('Private_Waybil') ?></a>
                 <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo $this->lang->line('Close') ?></button>
             </div>
         </div>
     </div>
+</div>
+
+<div id="copyToast" style="
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #6c757d; /* Bootstrap's gray color */
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    font-size: 14px;
+    z-index: 9999;
+">
+    Message copied to clipboard!
 </div>

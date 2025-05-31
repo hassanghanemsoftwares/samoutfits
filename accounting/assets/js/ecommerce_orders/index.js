@@ -135,35 +135,36 @@ function openStatusModal(order_id, auto_no, tracking_nb, status) {
       }
       const customer_phone = result["customer"]["phone"].replace("+", "");
       const customer_name = result["customer"]["account_name"];
-      const order_number = result["order_data"]["auto_no"];
       const order_value = result["order_data"]["total"];
 
       const rawMessage = `*This is an automated message from samoutfits.com confirming your order*
 
-Hello ${customer_name},
+Hello ${customer_name} 👋,
 
 We have successfully received and confirmed your order:
 
-• Order Number: ${order_number}  
-• Order Value: USD ${order_value}  
-• Status: Getting ready
+- Order Number: ${tracking_nb}  
+- Order Value: USD ${order_value}  
+- Status: Getting ready
 
-Your order will be packed and dispatched shortly. Expect it at your doorstep within 2–3 working days.
+Your order will be packed and dispatched shortly. Expect it at your doorstep within 2-3 working days.
 
 For any assistance, feel free to contact our customer care from Monday to Saturday, 9:00 AM to 6:00 PM, at +961 70 615 210.
 
 We truly appreciate your support and are excited to get this order to you!
 
-*HAPPY SHOPPING*`;
+*HAPPY SHOPPING* 🛒`;
 
       const encodedMessage = encodeURIComponent(rawMessage);
       const formattedPhone = customer_phone.replace(/\D/g, "");
-      const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
+      // const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
+      const whatsappUrl = `https://wa.me/${formattedPhone}`;
 
       $("#whatsapp_btn")
         .off("click")
-        .on("click", function () {
-          // Ensure phone number is properly formatted (digits only)
+        .on("click", async function () {
+          await navigator.clipboard.writeText(rawMessage);
+          $("#copyToast").fadeIn(300).delay(4000).fadeOut(300);
           window.open(whatsappUrl, "_blank");
         });
       $("#order_summery")
@@ -185,9 +186,11 @@ We truly appreciate your support and are excited to get this order to you!
           e.preventDefault();
           if (confirm("Are You Sure?")) {
             const $form = $("#statusModalForm").find("form");
-            $form.find("#status").val("Accepted & Preparing");
+            // $form.find("#status").val("Accepted & Preparing");
 
             await renderOrderSummary(result["items"], result["order_data"]);
+            await navigator.clipboard.writeText(rawMessage);
+            $("#copyToast").fadeIn(300).delay(4000).fadeOut(300);
             window.open(whatsappUrl, "_blank");
 
             // Call validation manually with false
@@ -199,6 +202,12 @@ We truly appreciate your support and are excited to get this order to you!
               $form[0].submit();
             }
           }
+        });
+      $("#copy_msg")
+        .off("click")
+        .on("click", async function (e) {
+          await navigator.clipboard.writeText(rawMessage);
+          $("#copyToast").fadeIn(300).delay(4000).fadeOut(300);
         });
     },
   });
@@ -240,25 +249,24 @@ function change_date_format(date) {
 }
 
 async function renderOrderSummary(cartItems, order) {
-  // Create a hidden container dynamically
+  // Create hidden container
   const container = document.createElement("div");
   container.style.position = "fixed";
   container.style.top = "-9999px";
   container.style.left = "-9999px";
   container.id = "order-summary-root-hidden";
   document.body.appendChild(container);
-
-  container.innerHTML = ""; // Clear previous content if any
+  container.innerHTML = "";
 
   const wrapper = document.createElement("div");
   wrapper.className = "container";
-  wrapper.style.fontSize = "12px"; // smaller font
-  wrapper.style.maxWidth = "600px"; // smaller max width
+  wrapper.style.fontSize = "12px";
+  wrapper.style.maxWidth = "600px";
 
   const header = document.createElement("h3");
   header.className = "mb-4";
   header.textContent = "Order Summary";
-  header.style.fontSize = "16px"; // smaller header
+  header.style.fontSize = "16px";
   wrapper.appendChild(header);
 
   const tableWrapper = document.createElement("div");
@@ -268,7 +276,7 @@ async function renderOrderSummary(cartItems, order) {
   const table = document.createElement("table");
   table.className = "table table-bordered table-hover text-center bg-white";
   table.style.width = "100%";
-  table.style.fontSize = "12px"; // smaller text
+  table.style.fontSize = "12px";
   table.style.borderCollapse = "collapse";
 
   const thead = `
@@ -290,10 +298,9 @@ async function renderOrderSummary(cartItems, order) {
         .map(
           (item) => `
         <tr>
-     <td style="padding: 4px;">
-  <img src="${item.image_name}" width="80" style="object-fit: contain;"><br>
-</td>
-
+          <td style="padding: 4px;">
+            <img src="${item.image_name}" width="80" style="object-fit: contain;"><br>
+          </td>
           <td style="padding: 4px;">${item.barcode}</td>
           <td style="padding: 4px;">${item.size}</td>
           <td style="padding: 4px;">$${item.price}</td>
@@ -309,10 +316,9 @@ async function renderOrderSummary(cartItems, order) {
   table.innerHTML = thead + tbody;
   tableWrapper.appendChild(table);
   wrapper.appendChild(tableWrapper);
-
   container.appendChild(wrapper);
 
-  // Wait for images to load before calling html2canvas
+  // Wait for images to load
   await new Promise((resolve) => setTimeout(resolve, 500));
 
   try {
@@ -320,13 +326,41 @@ async function renderOrderSummary(cartItems, order) {
       scale: 3,
       useCORS: true,
     });
-    const link = document.createElement("a");
-    link.download = order["auto_no"] + "_order-summary.png";
-    link.href = canvas.toDataURL();
-    link.click();
+
+    const dataUrl = canvas.toDataURL("image/png");
+    const fileName = `${order.auto_no}_order-summary.png`;
+
+    // Detect iPhone/iPad
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isIOS) {
+      // iOS workaround — open in new tab
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      const win = window.open(blobUrl, "_blank");
+      if (!win) {
+        alert("Please allow popups to view or save the order summary image.");
+      } else {
+        alert("On iPhone, long-press the image and choose 'Save Image'.");
+      }
+
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000); // clean up
+    } else {
+      // Other devices: force download
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   } catch (error) {
-    console.error("Error generating image:", error);
+    console.error("Error generating or downloading image:", error);
+    alert("An error occurred while generating the order summary image.");
   } finally {
+    // Clean up
     document.body.removeChild(container);
   }
 }

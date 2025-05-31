@@ -456,6 +456,16 @@ function getcurrencyrate() {
 }
 
 function validation() {
+  const gateway = $("#payment_method_gateway").val();
+  const status = $("#payment_method_gateway_status").val();
+
+
+  if (gateway === "whish" && status === "Payment successful") {
+    if (!confirm("Are you sure you want to submit this form?")) {
+      return false;
+    }
+  }
+
   document.getElementById("bgsave").style.display = "none";
   var count = 0;
   let records = [];
@@ -746,3 +756,25 @@ function autoCompleteSalesAccount(
     },
   });
 }
+
+$(document).ready(function () {
+  function toggleStatusDropdown() {
+    const $status = $("#payment_method_gateway_status");
+    const selectedValue = $("#payment_method_gateway").val();
+
+    if (selectedValue === "C.O.D") {
+      $status.val("").prop("disabled", true);
+    } else if (selectedValue === "whish") {
+      $status.find('option[value=""]').remove();
+
+      if (!$status.val()) {
+        $status.val($status.find("option").first().val());
+      }
+
+      $status.prop("disabled", $status.val() === "Payment successful");
+    }
+  }
+
+  toggleStatusDropdown();
+  $("#payment_method_gateway").on("change", toggleStatusDropdown);
+});

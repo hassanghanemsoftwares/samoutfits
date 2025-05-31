@@ -14,3 +14,8 @@
 -- ALTER TABLE `transactions` ADD `payment_method_gateway` VARCHAR(100) NULL DEFAULT NULL AFTER `payment_method`;
 -- ALTER TABLE `transactions` ADD `payment_method_gateway_status` VARCHAR(100) NULL DEFAULT NULL AFTER `payment_method_gateway`;
 
+-- UPDATE `transactions` SET `payment_method_gateway`='C.O.D' WHERE payment_method_gateway IS null;
+-- UPDATE `transactions` SET `payment_method_gateway_status` = null WHERE payment_method_gateway = 'C.O.D' ;
+
+-- UPDATE `orders` SET `payment_method`='C.O.D' WHERE payment_method  IS null;
+-- UPDATE `orders` SET `payment_status` = null WHERE payment_method = 'C.O.D' ;

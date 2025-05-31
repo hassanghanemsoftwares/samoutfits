@@ -86,36 +86,36 @@ class Order extends MY_Model
         SUM(order_items.qty * order_items.price * (1 - (order_items.discount / 100))) AS subtotal,
         (SUM(order_items.qty * order_items.price * (1 - (order_items.discount / 100))) - orders.discount + orders.delivery_charge) AS total
     ');
-    $this->db->from('orders');
-    $this->db->join('order_items', 'order_items.order_id = orders.id', 'inner');
-    $this->db->where('orders.id', $order_id);
-    $this->db->group_by('orders.id'); // One row per order
-    return $this->db->get()->row_array();
+        $this->db->from('orders');
+        $this->db->join('order_items', 'order_items.order_id = orders.id', 'inner');
+        $this->db->where('orders.id', $order_id);
+        $this->db->group_by('orders.id'); // One row per order
+        return $this->db->get()->row_array();
     }
 
 
-  
+
 
     public function load_order_items($order_id)
-{
-    $this->db->select('
+    {
+        $this->db->select('
         order_items.*,
         items.barcode,
         (order_items.qty * order_items.price) AS subtotal,
         (
-           SELECT CONCAT("assets/uploads/", image_name)
+            SELECT CONCAT("assets/uploads/", image_name)
             FROM product_images
             WHERE product_images.item_id = order_items.item_id
-            ORDER BY product_images.id ASC
+            ORDER BY product_images.order_nb ASC
             LIMIT 1
         ) AS image_name
     ');
-    $this->db->from('order_items');
-    $this->db->join('items', 'items.id = order_items.item_id', 'inner');
-    $this->db->where('order_items.order_id', $order_id);
-    $query = $this->db->get()->result_array();
-    return $query;
-}
+        $this->db->from('order_items');
+        $this->db->join('items', 'items.id = order_items.item_id', 'inner');
+        $this->db->where('order_items.order_id', $order_id);
+        $query = $this->db->get()->result_array();
+        return $query;
+    }
 
 
     public function update_hide_show_order($order_id, $value)

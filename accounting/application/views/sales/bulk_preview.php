@@ -12,16 +12,21 @@
                 <h4><b><?php echo $this->lang->line('Tracking') ?># : <?php echo $t["auto_no"] ?></b></h4>
             </div>
             <div class="col-sm-6 col-xs-6">
-                <div class="col-sm-12 col-xs-12">
-                    <img id="logo" style="height: 45px; width: 60px;" src="<?php echo site_url('assets/images/cash1.png') ?>">
+                <div class="col-sm-12 col-xs-12 pl-0" style="padding-left: 0 !important;">
+                    <?php
+                    echo ($t["payment_method_gateway"] == "whish")
+                        ? '<img style="height: 35px; width: 140px; margin-bottom: 15px; filter: grayscale(100%) contrast(200%);" src="' . site_url('assets/images/wish_black.png') . '">'
+                        : '<img style="height: 35px; width: 140px; margin-bottom: 15px; filter: grayscale(100%) contrast(200%);" src="' . site_url('assets/images/cod_black.png') . '">';
+                    ?>
                 </div>
+
                 <div class="col-sm-12 col-xs-12" style="border: solid 1px black; border-radius:5px; width: 150px;">
                     <h4 style="color: black; text-align:center;">
-                        <b>USD <?php echo $total[$x] ?> </b>
+                        <b>USD <?php echo ($t["payment_method_gateway"] == "whish" && $t["payment_method_gateway_status"] == "Payment successful") ? "0" : $total[$x] ?> </b>
                     </h4>
                 </div>
                 <p style="color: black; font-size:11px; font-weight:bold;">
-                <?php echo $this->lang->line('Date') ?>: <?php echo $t["trans_date"] ?>
+                    <?php echo $this->lang->line('Date') ?>: <?php echo $t["trans_date"] ?>
                 </p>
             </div>
             <div class="col-sm-6 col-xs-6">
@@ -86,7 +91,7 @@
                     </thead>
                     <tbody style="text-align: center;">
                         <?php foreach ($trans_items[$x] as $transItem) : ?>
-                            <tr>
+                            <tr style="background-color: <?php echo ($transItem['qty'] > 1) ? "#cccccc" : "#ffffff" ?>;">
                                 <td style="width: 90px; margin:2px;"><b><?php echo $transItem['barcode'] ?></b></td>
                                 <td style="width: 90px; margin:2px;"><b><?php echo $transItem['size'] ?></b></td>
                                 <td style="width: 90px; margin:2px;"><b><?php echo $transItem['qty'] ?></b></td>

@@ -206,53 +206,58 @@ $link = substr($link, 1);
             margin-top: 50px;
         }
     }
-    
+
     /* mohammad code 2024-10-31 start */
-    @media(max-width:767px){
+    @media(max-width:767px) {
         .hidden_phone {
             display: none !important;
         }
+
         .navbar-primary {
-            background: #7f00ff333 !important;
+            background: "#7f00ff333" !important;
             width: 100%;
             margin-left: 0px !important;
             margin-top: 60px;
         }
+
         .navbar-default {
             margin-top: 0px;
-            
+
             position: fixed;
-    right: 0;
-    left: 0;
-    z-index: 1030;
-    top:0;
+            right: 0;
+            left: 0;
+            z-index: 1030;
+            top: 0;
         }
+
         .search_list {
-            width:100% !important;
+            width: 100% !important;
             margin: 0px !important;
             padding: 0px;
         }
+
         .fiscal_year {
             display: none !important;
         }
+
         .navbar-toggle {
             z-index: 10000 !important;
         }
     }
-    
-    @media(min-width:768px){
+
+    @media(min-width:768px) {
         .navbar-primary {
-            
+
             position: fixed;
-    right: 0;
-    left: 0px;
-    z-index: 1030;
-    top:0 !important;
+            right: 0;
+            left: 0px;
+            z-index: 1030;
+            top: 0 !important;
         }
-       
+
     }
+
     /* mohammad code 2024-10-31 end */
-    
 </style>
 <div id="throbber" style="display:none; min-height:120px;"></div>
 <div id="noty-holder"></div>
@@ -316,10 +321,10 @@ $link = substr($link, 1);
                     </div>
                 </li>
                 <li class="border_menu">
-                    <a href="<?php echo base_url()."home"; ?>" class="<?php echo ($link == "home") ? 'active' : '' ?>"><?php echo $this->lang->line('Home') ?></a>
+                    <a href="<?php echo base_url() . "home"; ?>" class="<?php echo ($link == "home") ? 'active' : '' ?>"><?php echo $this->lang->line('Home') ?></a>
                 </li>
                 <li class="border_menu">
-                    <a href="<?php echo ($_SESSION['vauth_user_type'] == "Admin") ?site_url('items/index'):site_url('items/all') ?>" class="<?php echo ($link == "items/index") ? 'active' : '' ?>"><?php echo $this->lang->line('products') ?></a>
+                    <a href="<?php echo ($_SESSION['vauth_user_type'] == "Admin") ? site_url('items/index') : site_url('items/all') ?>" class="<?php echo ($link == "items/index") ? 'active' : '' ?>"><?php echo $this->lang->line('products') ?></a>
                 </li>
 
                 <li class="border_menu">

@@ -626,3 +626,9 @@ $lang['flammable_handling'] = "Flammable Handling";
 $lang['fragile'] = "Fragile";
 $lang['accept_order'] = "Accept Order";
 $lang['order_summery'] = "Order Summery";
+
+
+$lang['user_type'] = 'User Type';
+$lang['user_email'] = 'User Email';
+$lang['fiscal_year_id'] = 'Fiscal Year';
+$lang['Edit_Order_Status_Of '] = 'Edit Order Status Of';

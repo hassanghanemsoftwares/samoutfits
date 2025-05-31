@@ -166,7 +166,7 @@ class Transaction extends MY_Model
 				["account1.account_name AS account1, account2.account_name AS account2"],
 				["currencies.currency_code, transactions.currency_rate, transactions.discount, $total AS total"],
 				["transactions.status"],
-				["transactions.id,transactions.payment_method_gateway,transactions.payment_method_gateway_status"]
+				["transactions.id,transactions.payment_method_gateway, COALESCE(transactions.payment_method_gateway_status, '-') as payment_method_gateway_status"]
 			],
 			'join' => [
 				['fiscal_years', 'fiscal_years.id = transactions.fiscal_year_id', 'inner'],
@@ -208,7 +208,8 @@ class Transaction extends MY_Model
 				'transactions.discount',
 				[$total, 'total'],
 				'transactions.payment_method_gateway',
-				'payment_method_gateway_status',
+				['COALESCE(transactions.payment_method_gateway_status, "-")', 'payment_method_gateway_status'],
+
 				'transactions.status',
 				'transactions.id'
 
@@ -1196,7 +1197,7 @@ class Transaction extends MY_Model
 				["account1.account_name AS account1"],
 				["$subtotal AS subtotal, transactions.delivery_charge, journals.amount AS total, $qty as trans_qty"],
 				["transactions.status2"],
-				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id,transactions.payment_method_gateway,transactions.payment_method_gateway_status"]
+				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id,transactions.payment_method_gateway, COALESCE(transactions.payment_method_gateway_status, '-') as payment_method_gateway_status"]
 			],
 			'join' => [
 				['fiscal_years', 'fiscal_years.id = transactions.fiscal_year_id', 'inner'],
@@ -1240,7 +1241,8 @@ class Transaction extends MY_Model
 				'transactions.auto_no',
 				['account1.account_name', 'account1'],
 				'transactions.payment_method_gateway',
-				'transactions.payment_method_gateway_status',
+				['COALESCE(transactions.payment_method_gateway_status, "-")', 'payment_method_gateway_status'],
+
 
 				[$subtotal, 'subtotal'],
 				'transactions.delivery_charge',
@@ -1770,7 +1772,7 @@ class Transaction extends MY_Model
 				["account1.account_name AS account1"],
 				["$subtotal AS subtotal, transactions.delivery_charge, journals.amount AS total, $qty as trans_qty"],
 				["transactions.status2"],
-				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id,transactions.payment_method_gateway,transactions.payment_method_gateway_status"]
+				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id,transactions.payment_method_gateway, COALESCE(transactions.payment_method_gateway_status, '-') as payment_method_gateway_status"]
 			],
 			'join' => [
 				['fiscal_years', 'fiscal_years.id = transactions.fiscal_year_id', 'inner'],
@@ -1810,7 +1812,8 @@ class Transaction extends MY_Model
 				'transactions.auto_no',
 				['account1.account_name', 'account1'],
 				'transactions.payment_method_gateway',
-				'transactions.payment_method_gateway_status',
+				['COALESCE(transactions.payment_method_gateway_status, "-")', 'payment_method_gateway_status'],
+
 
 				[$subtotal, 'subtotal'],
 				'transactions.delivery_charge',
@@ -2405,7 +2408,7 @@ class Transaction extends MY_Model
 				["account1.account_name AS account1"],
 				["$subtotal AS subtotal, transactions.delivery_charge, journals.amount AS total, $qty as trans_qty"],
 				["transactions.status2"],
-				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id,transactions.payment_method_gateway,transactions.payment_method_gateway_status"]
+				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id,transactions.payment_method_gateway, COALESCE(transactions.payment_method_gateway_status, '-') as payment_method_gateway_status"]
 			],
 			'join' => [
 				['fiscal_years', 'fiscal_years.id = transactions.fiscal_year_id', 'inner'],
@@ -2442,7 +2445,8 @@ class Transaction extends MY_Model
 				'transactions.auto_no',
 				['account1.account_name', 'account1'],
 				'transactions.payment_method_gateway',
-				'transactions.payment_method_gateway_status',
+				['COALESCE(transactions.payment_method_gateway_status, "-")', 'payment_method_gateway_status'],
+
 				[$subtotal, 'subtotal'],
 				'transactions.delivery_charge',
 				['journals.amount', 'total'],
@@ -2798,7 +2802,7 @@ class Transaction extends MY_Model
 				["account1.account_name AS account1"],
 				["$subtotal AS subtotal, transactions.delivery_charge, journals.amount AS total, $qty as trans_qty"],
 				["transactions.status2"],
-				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id,transactions.payment_method_gateway,transactions.payment_method_gateway_status"]
+				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id,transactions.payment_method_gateway, COALESCE(transactions.payment_method_gateway_status, '-') as payment_method_gateway_status"]
 			],
 			'join' => [
 				['fiscal_years', 'fiscal_years.id = transactions.fiscal_year_id', 'inner'],
@@ -2837,7 +2841,7 @@ class Transaction extends MY_Model
 				'transactions.auto_no',
 				['account1.account_name', 'account1'],
 				'transactions.payment_method_gateway',
-				'transactions.payment_method_gateway_status',
+				['COALESCE(transactions.payment_method_gateway_status, "-")', 'payment_method_gateway_status'],
 
 				[$subtotal, 'subtotal'],
 				'transactions.delivery_charge',

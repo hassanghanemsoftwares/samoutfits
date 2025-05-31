@@ -1,3 +1,9 @@
+<?php
+$selected_gateway = $this->Transaction->get_field('payment_method_gateway');
+$selected_status = $this->Transaction->get_field('payment_method_gateway_status');
+$is_cod = ($selected_gateway === 'C.O.D');
+$is_success_paymet_wish = ($selected_gateway == "whish" && $selected_status == "Payment successful");
+?>
 <p class="text-right">
 	<?php echo anchor('delivery_notes/preview/' . $this->Transaction->get_field('id'), $this->lang->line('Delivery_Note'), 'accesskey="b" class="btn btn-primary"  id="bgadd"') ?>
 	<?php echo anchor('sales/preview/' . $this->Transaction->get_field('id'), $this->lang->line('Print_waybil'), 'accesskey="p" class="btn btn-primary"  id="print"') ?>
@@ -105,7 +111,7 @@
 	<div class="col-sm-4">
 		<div class="form-group">
 			<label class="col-sm-6 control-label" for="driver_id">
-			<?php echo $this->lang->line('Select_Driver') ?>
+				<?php echo $this->lang->line('Select_Driver') ?>
 			</label>
 			<div class="col-sm-6">
 				<?php echo form_dropdown('driver_list', $drivers, $this->Transaction->get_field('driver_id'), 'id="driver_list" class="form-control"') ?>
@@ -117,7 +123,7 @@
 	<div class="col-sm-4">
 		<div class="form-group">
 			<label class="col-sm-6 control-label" for="employee_id">
-			<?php echo $this->lang->line('Select_Employee') ?>
+				<?php echo $this->lang->line('Select_Employee') ?>
 			</label>
 			<div class="col-sm-6">
 				<?php echo form_dropdown('employee_list', $employees, $this->Transaction->get_field('employee_id'), 'id="employee_list" class="form-control"') ?>
@@ -162,6 +168,37 @@
 			<div class="col-sm-6">
 				<?php
 				echo form_dropdown('trans[exchange]', $exchange_list, $exchange, 'id="exchange" class="form-control"')
+				?>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-4">
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="payment_method_gateway"><?php echo $this->lang->line('payment_method') ?></label>
+			<div class="col-sm-8">
+				<?php
+				echo form_dropdown(
+					'trans[payment_method_gateway]',
+					$payment_method_gateway,
+					$selected_gateway,
+					'id="payment_method_gateway" class="form-control" ' . ($is_success_paymet_wish ? 'disabled' : '')
+				);
+				?>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-sm-4">
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="payment_method_gateway_status"><?php echo $this->lang->line('payment_method') ?></label>
+			<div class="col-sm-8">
+				<?php
+				echo form_dropdown(
+					'trans[payment_method_gateway_status]',
+					$payment_method_gateway_status,
+					$selected_status,
+					'id="payment_method_gateway_status" class="form-control" ' . (($is_cod || $is_success_paymet_wish) ? 'disabled' : '')
+				);
 				?>
 			</div>
 		</div>

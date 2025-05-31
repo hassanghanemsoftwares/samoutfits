@@ -2,7 +2,13 @@
 // var_dump($_SESSION);
 // exit;
 ?>
+<?php
+$selected_gateway = $this->Transaction->get_field('payment_method_gateway');
+$selected_status = $this->Transaction->get_field('payment_method_gateway_status');
+$is_cod = ($selected_gateway === 'C.O.D');
 
+$is_success_paymet_wish = ($selected_gateway == "whish" && $selected_status == "Payment successful");
+?>
 <p class="text-right">
 	<?php echo anchor('delivery_notes/preview/' . $this->Transaction->get_field('id'), $this->lang->line('Delivery_Note'), 'accesskey="b" class="btn btn-primary btndnote" id="dnbtn"') ?>
 	<?php echo anchor('sales/invoice_preview/' . $this->Transaction->get_field('id'), $this->lang->line('Print_Invoice'), 'class="btn btn-primary btnprinteri"  id="invoice_print"') ?>
@@ -191,17 +197,28 @@
 			<label class="col-sm-4 control-label" for="payment_method_gateway"><?php echo $this->lang->line('payment_method') ?></label>
 			<div class="col-sm-8">
 				<?php
-				echo form_dropdown('trans[payment_method_gateway]', $payment_method_gateway, $this->Transaction->get_field('payment_method_gateway'), 'id="payment_method_gateway" class="form-control"')
+				echo form_dropdown(
+					'trans[payment_method_gateway]',
+					$payment_method_gateway,
+					$selected_gateway,
+					'id="payment_method_gateway" class="form-control" ' . ( $is_success_paymet_wish ? 'disabled' : '')
+				);
 				?>
 			</div>
 		</div>
 	</div>
+
 	<div class="col-sm-4">
 		<div class="form-group">
 			<label class="col-sm-4 control-label" for="payment_method_gateway_status"><?php echo $this->lang->line('payment_method') ?></label>
 			<div class="col-sm-8">
 				<?php
-				echo form_dropdown('trans[payment_method_gateway_status]', $payment_method_gateway_status, $this->Transaction->get_field('payment_method_gateway_status'), 'id="payment_method_gateway_status" class="form-control"')
+				echo form_dropdown(
+					'trans[payment_method_gateway_status]',
+					$payment_method_gateway_status,
+					$selected_status,
+					'id="payment_method_gateway_status" class="form-control" ' . (($is_cod || $is_success_paymet_wish) ? 'disabled' : '')
+				);
 				?>
 			</div>
 		</div>

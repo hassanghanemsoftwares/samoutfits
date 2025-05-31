@@ -16,7 +16,7 @@
 <?php
 if (isset($_moreJs)) :
     foreach ($_moreJs as $jsFile) {
-        echo PHP_EOL, '<script src="assets/js/', $jsFile, '.js?version=2.8"></script>';
+        echo PHP_EOL, '<script src="assets/js/', $jsFile, '.js?version=2.9"></script>';
     }
 endif
 ?>

@@ -17,18 +17,17 @@
                 <h4><b>Tracking# : <?php echo $trans["auto_no"] ?></b></h4>
             </div>
             <div class="col-sm-6 col-xs-6">
-                <div class="col-sm-12 col-xs-12">
+                <div class="col-sm-12 col-xs-12 pl-0" style="padding-left: 0 !important;">
                     <?php
                     echo ($trans["payment_method_gateway"] == "whish")
-                        ? '<img style="height: 25px;width: 100px;margin-bottom: 15px;" src="' . site_url('assets/images/wish.png') . '">'
-                        : '<img  style="height: 25px;width: 100px;margin-bottom: 15px;" src="' . site_url('assets/images/cod.png') . '">';
+                        ? '<img style="height: 35px; width: 140px; margin-bottom: 15px; filter: grayscale(100%) contrast(200%);" src="' . site_url('assets/images/wish_black.png') . '">'
+                        : '<img style="height: 35px; width: 140px; margin-bottom: 15px; filter: grayscale(100%) contrast(200%);" src="' . site_url('assets/images/cod_black.png') . '">';
                     ?>
-
-
                 </div>
                 <div class="col-sm-12 col-xs-12" style="border: solid 1px black; border-radius:5px; width: 150px;">
                     <h4 style="color: black; text-align:center;">
-                        <b>USD <?php echo ($trans["payment_method_gateway"] == "whish") ? "0" : $total ?> </b>
+                        <b>USD <?php echo ($trans["payment_method_gateway"] == "whish" && $trans["payment_method_gateway_status"] == "Payment successful") ? "0" : $total ?> </b>
+
                     </h4>
                 </div>
                 <p style="color: black; font-size:11px; font-weight:bold;">

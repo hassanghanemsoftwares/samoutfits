@@ -1027,6 +1027,7 @@ class Sales extends MY_Controller
 		$data = $this->_load_related_models('', $transType, "Exchange");
 		$data['old_sub_total'] = -1 * doubleval($this->Transaction->calculate_invoice_sub_totoal($id)['subtot']);
 		$data['auto_no'] = $this->Transaction->set_next_auto_number_for_sale_and_exchange();
+
 		$data["DN"] = "Exchange Order";
 		$this->load->view('templates/header', [
 			'_moreCss' => ['js/air-datepicker/css/datepicker.min', 'css/bootstrap-select.min', 'css/bootstrap-select-country.min'],

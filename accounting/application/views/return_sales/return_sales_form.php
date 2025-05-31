@@ -1,3 +1,17 @@
+<?php
+$selected_gateway = $this->Transaction->get_field('payment_method_gateway');
+$selected_status = $this->Transaction->get_field('payment_method_gateway_status');
+
+// var_dump($selected_status);exit;
+$is_cod = ($selected_gateway === 'C.O.D');
+
+$is_success_paymet_wish = ($selected_gateway == "whish" && $selected_status == "Payment successful");
+
+// var_dump($is_success_paymet_wish);exit;
+
+
+
+?>
 <p class="text-right">
 	<button accesskey="b" class="btn btn-primary" id="bgback"><?php echo $this->lang->line('Back') ?></button>
 	<?php echo anchor('return_sales/preview/' . $this->Transaction->get_field('id'), $this->lang->line('Print'), 'accesskey="p" class="btn btn-primary"  id="print"') ?>
@@ -50,22 +64,33 @@
 	</div>
 	<div class="col-sm-4"></div>
 
-	<div class="col-sm-4">
+		<div class="col-sm-4">
 		<div class="form-group">
-			<label class="col-sm-6  control-label" for="payment_method_gateway"><?php echo $this->lang->line('payment_method') ?></label>
-			<div class="col-sm-6 ">
+			<label class="col-sm-6 control-label" for="payment_method_gateway"><?php echo $this->lang->line('payment_method') ?></label>
+			<div class="col-sm-6">
 				<?php
-				echo form_dropdown('trans[payment_method_gateway]', $payment_method_gateway, $this->Transaction->get_field('payment_method_gateway'), 'id="payment_method_gateway" class="form-control"')
+				echo form_dropdown(
+					'trans[payment_method_gateway]',
+					$payment_method_gateway,
+					$selected_gateway,
+					'id="payment_method_gateway" class="form-control" ' . ( $is_success_paymet_wish ? 'disabled' : '')
+				);
 				?>
 			</div>
 		</div>
 	</div>
+
 	<div class="col-sm-4">
 		<div class="form-group">
-			<label class="col-sm-6  control-label" for="payment_method_gateway_status"><?php echo $this->lang->line('payment_method') ?></label>
-			<div class="col-sm-6 ">
+			<label class="col-sm-6 control-label" for="payment_method_gateway_status"><?php echo $this->lang->line('payment_method') ?></label>
+			<div class="col-sm-6">
 				<?php
-				echo form_dropdown('trans[payment_method_gateway_status]', $payment_method_gateway_status, $this->Transaction->get_field('payment_method_gateway_status'), 'id="payment_method_gateway_status" class="form-control"')
+				echo form_dropdown(
+					'trans[payment_method_gateway_status]',
+					$payment_method_gateway_status,
+					$selected_status,
+					'id="payment_method_gateway_status" class="form-control" ' . (($is_cod || $is_success_paymet_wish) ? 'disabled' : '')
+				);
 				?>
 			</div>
 		</div>

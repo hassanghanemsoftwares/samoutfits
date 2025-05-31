@@ -13,8 +13,8 @@ class Whish
     {
         // $this->baseUrl = 'https://lb.sandbox.whish.money/itel-service/api/';
         $this->baseUrl = 'https://whish.money/itel-service/api/';
-        $this->channel = '10195123';
-        $this->secret = '6c59f08398de4cc3aa34f8b61a67c1fa';
+        $this->channel = '13763772';
+        $this->secret = '237224ee3ffd42e79f97bd57ec56852f';
         $this->websiteUrl = 'samoutfits.com';
     }
 
@@ -69,7 +69,7 @@ class Whish
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         // 👇 Add this line to securely verify SSL with the right cert
-        // curl_setopt($ch, CURLOPT_CAINFO, 'C:/wamp/bin/php/php8.2.18/extras/ssl/cacert.pem');
+        curl_setopt($ch, CURLOPT_CAINFO, 'C:/wamp/bin/php/php8.2.18/extras/ssl/cacert.pem');
 
         if (strtoupper($method) === 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
