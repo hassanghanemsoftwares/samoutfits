@@ -254,6 +254,8 @@ async function renderOrderSummary(cartItems, order) {
   container.style.position = "fixed";
   container.style.top = "-9999px";
   container.style.left = "-9999px";
+  container.style.zIndex = "-1";
+  container.style.width = "fit-content";
   container.id = "order-summary-root-hidden";
   document.body.appendChild(container);
   container.innerHTML = "";
@@ -262,11 +264,17 @@ async function renderOrderSummary(cartItems, order) {
   wrapper.className = "container";
   wrapper.style.fontSize = "12px";
   wrapper.style.maxWidth = "600px";
+  wrapper.style.backgroundColor = "#fff";
+  wrapper.style.padding = "16px";
+  wrapper.style.border = "1px solid #ccc";
+  wrapper.style.boxShadow = "0 0 5px rgba(0,0,0,0.1)";
+  wrapper.style.minHeight = "100px"; // Ensures height is never too short
 
   const header = document.createElement("h3");
   header.className = "mb-4";
   header.textContent = "Order Summary";
   header.style.fontSize = "16px";
+  header.style.marginBottom = "16px";
   wrapper.appendChild(header);
 
   const tableWrapper = document.createElement("div");
@@ -299,7 +307,7 @@ async function renderOrderSummary(cartItems, order) {
           (item) => `
         <tr>
           <td style="padding: 4px;">
-            <img src="${item.image_name}" width="80" style="object-fit: contain;"><br>
+            <img src="${item.image_name}" width="60" style="object-fit: contain; max-height: 60px;"><br>
           </td>
           <td style="padding: 4px;">${item.barcode}</td>
           <td style="padding: 4px;">${item.size}</td>
@@ -318,13 +326,28 @@ async function renderOrderSummary(cartItems, order) {
   wrapper.appendChild(tableWrapper);
   container.appendChild(wrapper);
 
-  // Wait for images to load
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  // Wait for all images to load
+  const images = container.querySelectorAll("img");
+  await Promise.all(
+    Array.from(images).map((img) => {
+      return new Promise((resolve) => {
+        if (img.complete) resolve();
+        else {
+          img.onload = resolve;
+          img.onerror = resolve;
+        }
+      });
+    })
+  );
 
   try {
     const canvas = await html2canvas(tableWrapper, {
       scale: 3,
       useCORS: true,
+      scrollY: 0,
+      scrollX: 0,
+      windowWidth: document.body.scrollWidth,
+      windowHeight: document.body.scrollHeight,
     });
 
     const dataUrl = canvas.toDataURL("image/png");
@@ -346,7 +369,7 @@ async function renderOrderSummary(cartItems, order) {
         alert("On iPhone, long-press the image and choose 'Save Image'.");
       }
 
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000); // clean up
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
     } else {
       // Other devices: force download
       const link = document.createElement("a");

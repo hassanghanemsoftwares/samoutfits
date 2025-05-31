@@ -9,6 +9,9 @@
         padding:10px; display: flex; flex-direction: column; min-height: 55vh; position: relative;">
         <section style="flex: 1;">
             <div class="col-sm-12 col-xs-12">
+                <img style="height: 70px; width: auto;  filter: grayscale(100%) contrast(200%);" src="<?php echo site_url('assets/images/logo_black.png') ?>">
+            </div>
+            <div class="col-sm-12 col-xs-12">
                 <h4><b><?php echo $this->lang->line('Tracking') ?># : <?php echo $t["auto_no"] ?></b></h4>
             </div>
             <div class="col-sm-6 col-xs-6">

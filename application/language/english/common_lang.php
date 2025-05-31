@@ -235,3 +235,4 @@ $lang['invalid_email_address'] = 'Invalid email address.';
 $lang['subscribed_successfully'] = 'Subscribed successfully!';
 $lang['email_already_subscribed'] = 'Email is already subscribed.';
 
+$lang['home'] = 'Home';

@@ -161,13 +161,12 @@ jQuery(document).ready(function () {
       const $btn = $("#placeOrderBtn");
       $btn.prop("disabled", true);
       $btn.find(".spinner-border").removeClass("d-none").addClass("text-white"); // show spinner
-      
 
       var form = document.getElementById("directOrderForm");
       var formData = new FormData(form);
 
       if (formData.get("payment_method") === "cod") {
-          $btn.find(".btn-text").text("Placing Order...").addClass("text-white");
+        $btn.find(".btn-text").text("Placing Order...").addClass("text-white");
         $.ajax({
           url: getAppURL("checkout/confirm_direct_order"),
           type: "POST",
@@ -213,7 +212,10 @@ jQuery(document).ready(function () {
           },
         });
       } else if (formData.get("payment_method") === "whish") {
-          $btn.find(".btn-text").text("Redirecting. Wait a moment...").addClass("text-white");
+        $btn
+          .find(".btn-text")
+          .text("Redirecting. Wait a moment...")
+          .addClass("text-white");
         var formDataObject = {};
         formData.forEach((value, key) => {
           formDataObject[key] = value;
@@ -346,6 +348,14 @@ function calculateTotal() {
 //calculate end
 function validation() {
   var count = 0;
+  let phone = $("#phone_view").val().replace(/\s+/g, "");
+
+  if (phone.startsWith("3") && phone.length === 7) {
+    phone = "0" + phone;
+  }
+
+  $("#phone_view").val(phone);
+
   if ($("#city").val() !== "") {
     if ($("#country").val() == "LB") {
       var cities = get_lebanese_cities();
