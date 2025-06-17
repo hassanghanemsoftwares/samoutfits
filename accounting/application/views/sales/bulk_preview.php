@@ -4,6 +4,26 @@
     <?php foreach ($trans as $x => $t) : ?>
         <input type="text" id="<?php echo "sales_nb" . $x ?>" value="<?php echo $t["auto_no"] ?>" hidden>
 </p>
+<style>
+    .gray-background {
+        background-color: #cccccc;
+    }
+
+    @media print {
+        * {
+            -webkit-print-color-adjust: exact !important;
+            /* Chrome, Safari */
+            color-adjust: exact !important;
+            /* Firefox */
+            print-color-adjust: exact !important;
+            /* Standard */
+        }
+
+        tr.gray-background {
+            background-color: #cccccc !important;
+        }
+    }
+</style>
 <center>
     <div id="myHtml" class="print_invoice" style="background-color: white; color: black; width:320px; margin:10px;
         padding:10px; display: flex; flex-direction: column; min-height: 55vh; position: relative;">
@@ -94,10 +114,10 @@
                     </thead>
                     <tbody style="text-align: center;">
                         <?php foreach ($trans_items[$x] as $transItem) : ?>
-                            <tr style="background-color: <?php echo ($transItem['qty'] > 1) ? "#cccccc" : "#ffffff" ?>;">
-                                <td style="width: 90px; margin:2px;"><b><?php echo $transItem['barcode'] ?></b></td>
-                                <td style="width: 90px; margin:2px;"><b><?php echo $transItem['size'] ?></b></td>
-                                <td style="width: 90px; margin:2px;"><b><?php echo $transItem['qty'] ?></b></td>
+                            <tr class="<?php echo ($transItem['qty'] > 1) ? 'gray-background' : '' ?>">
+                                <td style="width: 90px; margin:2px;"><b><?php echo ($transItem['qty'] > 1) ? '**' : '' ?><?php echo $transItem['barcode'] ?></b></td>
+                                <td style="width: 90px; margin:2px;"><b><?php echo ($transItem['qty'] > 1) ? '**' : '' ?><?php echo $transItem['size'] ?></b></td>
+                                <td style="width: 90px; margin:2px;"><b><?php echo ($transItem['qty'] > 1) ? '**' : '' ?><?php echo $transItem['qty'] ?></b></td>
                             </tr>
                         <?php endforeach ?>
                     </tbody>

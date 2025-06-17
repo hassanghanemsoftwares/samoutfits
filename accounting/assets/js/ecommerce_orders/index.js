@@ -1,9 +1,13 @@
 jQuery(document).ready(function () {
   window.ecoordersDT = null;
-  let dtActionsHTML =
-    '<button type="button" class="btn bt-link btn-xs i-adjust" style="background-color: #333;" onclick="openStatusModal(%d, \'%a\', \'%t\', \'%s\')">' +
-    '<i class="glyphicon glyphicon-edit text-yellow" title="Adjust"></i>' +
-    "</button>";
+let dtActionsHTML =
+  '<button type="button" class="btn bt-link btn-xs i-adjust" style="background-color: #333;" onclick="openStatusModal(%d, \'%a\', \'%t\', \'%s\')">' +
+  '<i class="glyphicon glyphicon-edit text-yellow" title="Adjust"></i>' +
+  "</button> " +
+  '<a class="btn bt-link btn-xs" onclick="editTransaction(\'%t\')">' +
+  '<i style="color:#282828;" class="glyphicon glyphicon-pencil"></i>' +
+  "</a>";
+
   /***************************************************/
   var $dtTbl = $("#ecoordersTbl");
   BuildDataTableColumnSearch($dtTbl, "ecoordersDT");
@@ -133,27 +137,20 @@ function openStatusModal(order_id, auto_no, tracking_nb, status) {
           "</td></tr>";
         $("#order_items_table_body").append(row);
       }
-      const customer_phone = result["customer"]["phone"].replace("+", "");
-      const customer_name = result["customer"]["account_name"];
-      const order_value = result["order_data"]["total"];
+      let customer_phone = result["customer"]["phone"].replace("+", "");
+      let customer_name = result["customer"]["account_name"];
+      let order_value = result["order_data"]["total"];
+      if (
+        result["order_data"]["payment_method"] == "whish" &&
+        result["order_data"]["payment_status"] == "Payment successful"
+      ) {
+        order_value = 0;
+      }
 
-      const rawMessage = `*This is an automated message from samoutfits.com confirming your order*
-
-Hello ${customer_name} 👋,
-
-We have successfully received and confirmed your order:
-
-- Order Number: ${tracking_nb}  
-- Order Value: USD ${order_value}  
-- Status: Getting ready
-
-Your order will be packed and dispatched shortly. Expect it at your doorstep within 2-3 working days.
-
-For any assistance, feel free to contact our customer care from Monday to Saturday, 9:00 AM to 6:00 PM, at +961 70 615 210.
-
-We truly appreciate your support and are excited to get this order to you!
-
-*HAPPY SHOPPING* 🛒`;
+      let rawMessage = result["whatsapp_order_confirmation_msg"]
+        .replace("{{customer_name}}", customer_name)
+        .replace("{{order_value}}", order_value)
+        .replace("{{tracking_nb}}", tracking_nb);
 
       const encodedMessage = encodeURIComponent(rawMessage);
       const formattedPhone = customer_phone.replace(/\D/g, "");
@@ -386,4 +383,23 @@ async function renderOrderSummary(cartItems, order) {
     // Clean up
     document.body.removeChild(container);
   }
+}
+function editTransaction(trackingNb) {
+  $.ajax({
+    url: getAppURL("ecommerce/get_transaction_id_by_autono"),
+    type: "POST",
+    dataType: "json",
+    data: { tracking_nb: trackingNb },
+    success: function (response) {
+      console.log(response)
+      if (response.trans_id) {
+        window.location.href = getAppURL("sales/edit/") + response.trans_id;
+      } else {
+        alert("Transaction ID not found for tracking number: " + trackingNb);
+      }
+    },
+    error: function () {
+      alert("Error retrieving transaction ID.");
+    },
+  });
 }

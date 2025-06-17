@@ -92,7 +92,12 @@ class Transaction_item extends MY_Model
 		$ItemsFld = $this->Item->get('_listFieldName');
 		$init_override = [
 			'columns' => [
-				'transactions_items.qty', 'transactions_items.mvt_type', 'transactions_items.cost', 'transactions_items.price', 'transactions_items.discount', 'transactions_items.id',
+				'transactions_items.qty',
+				'transactions_items.mvt_type',
+				'transactions_items.cost',
+				'transactions_items.price',
+				'transactions_items.discount',
+				'transactions_items.id',
 				['transactions.' . $TransactionsFld, 'Transaction'],
 				['items.' . $ItemsFld, 'Item']
 			],
@@ -389,5 +394,27 @@ class Transaction_item extends MY_Model
 			);
 			$this->db->insert('transaction_item_sizes', $data);
 		}
+	}
+
+
+	public function load_transaction_items($transaction_id)
+	{
+		$this->db->select('
+        transaction_items.*,
+        items.barcode,
+        (transaction_items.qty * transaction_items.price) AS subtotal,
+        (
+            SELECT CONCAT("assets/uploads/", image_name)
+            FROM product_images
+            WHERE product_images.item_id = transaction_items.item_id
+            ORDER BY product_images.order_nb ASC
+            LIMIT 1
+        ) AS image_name
+    ');
+		$this->db->from('transaction_items');
+		$this->db->join('items', 'items.id = transaction_items.item_id', 'inner');
+		$this->db->where('transaction_items.transaction_id', $transaction_id);
+		$query = $this->db->get()->result_array();
+		return $query;
 	}
 }

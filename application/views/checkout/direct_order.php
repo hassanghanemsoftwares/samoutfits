@@ -41,7 +41,7 @@
                 <div class="row">
                     <div class="col-4 col-md-2 p-0 m-0 w-100">
                         <div class="form-outline w-100">
-                            <?php echo form_dropdown('country', '', '', 'id="country" class="selectpicker countrypicker  form-control border"  data-live-search="true" data-flag="true" style="padding: 5px;" data-default="LB"') ?>
+                            <?php echo form_dropdown('country', '', '', 'id="country" class="selectpicker countrypicker  form-control border"  data-live-search="true" data-flag="true" style="padding: 5px;" data-default="LB" autocomplete="tel-country-code"') ?>
                         </div>
                     </div>
                     <div class="col-8 col-md-10 p-0 m-0 w-100">
@@ -49,9 +49,9 @@
                         <input type="hidden" class="form-control " id="phone_code" name="phone_code" value="+961"
                             placeholder="Your Phone Number" required="required"
                             data-validation-required-message="Please enter your phone number" />
-                        <input type="text" class="form-control " id="phone_view" name="phone"
+                        <input type="text" class="form-control " id="phone_view" autocomplete="tel" name="phone"
                             placeholder="Your Phone Number" required="required"
-                            data-validation-required-message="Please enter your phone number" />
+                            data-validation-required-message="Please enter your phone number" autocomplete="tel-national" />
                         <!-- </div> -->
                     </div>
                 </div>
@@ -80,21 +80,21 @@
                         </div>
                         <div class="col-md-6 form-group">
                             <label>First Name <span id="msg_fname"></span></label>
-                            <input class="form-control" type="text" id="fname" name="fname" value="">
+                            <input class="form-control" type="text" id="fname" name="fname" autocomplete="given-name" value="">
                         </div>
                         <div class="col-md-6 form-group">
                             <label>Last Name <span id="msg_lname"></span></label>
-                            <input class="form-control" type="text" id="lname" name="lname" value="">
+                            <input class="form-control" type="text" id="lname" name="lname" autocomplete="family-name" value="">
                         </div>
                         <div class="col-md-12 form-group">
                             <label>City <span id="msg_city"></span></label>
-                            <input class="form-control" list="cities" type="text" id="city" name="city" value="" />
+                            <input class="form-control" list="cities" type="text" autocomplete="address-level2" id="city" name="city" value="" />
                             <datalist id="cities">
                             </datalist>
                         </div>
                         <div class="col-md-12 form-group">
                             <label>Street <span id="msg_street"></span></label>
-                            <input class="form-control" type="text" value="" id="street" name="street">
+                            <input class="form-control" type="text" value="" id="street" autocomplete="street-address" name="street">
                         </div>
                         <!-- <div class="col-md-12 form-group">
                             <label>Address <span id="msg_direction"></span></label>
@@ -106,26 +106,33 @@
                             <div class="row">
                                 <div class="col-4 col-md-2 p-0 m-0 w-100 ps-2">
                                     <div class="form-outline w-100">
-                                        <?php echo form_dropdown('country_phone2', '', '', 'id="country_phone2" class="selectpicker countrypicker  form-control border"  data-live-search="true" data-flag="true" style="padding: 5px;" data-default="LB"') ?>
+                                        <?php echo form_dropdown(
+                                            'country_phone2',
+                                            '',
+                                            '',
+                                            'id="country_phone2" autocomplete="off" class="selectpicker countrypicker form-control border" data-live-search="true" data-flag="true" style="padding: 5px;" data-default="LB"'
+                                        ) ?>
                                     </div>
                                 </div>
                                 <div class="col-8 col-md-10 p-0 m-0 w-100">
-                                    <!-- <div class="form-outline"> -->
-                                    <input type="hidden" class="form-control " id="phone2_code" name="phone2_code"
-                                        value="+961" placeholder="Your Phone Number" required="required"
-                                        data-validation-required-message="Please enter your phone number" />
-                                    <input type="text" class="form-control " id="phone2" name="phone2"
-                                        placeholder="Your Phone Number" required="required"
-                                        data-validation-required-message="Other Phone(Optional)" />
-                                    <!-- </div> -->
+                                    <input type="hidden" class="form-control" id="phone2_code" name="phone2_code"
+                                        value="+961" placeholder="Country Code"
+                                        autocomplete="off" />
+
+                                    <input type="text" class="form-control" id="phone2" name="phone2"
+                                        placeholder="Your Phone Number"
+                                        required="required"
+                                        data-validation-required-message="Other Phone(Optional)"
+                                        autocomplete="new-phone" /> <!-- key line -->
                                 </div>
                             </div>
                             <span id="msg_phone2"></span>
-
                         </div>
+
                         <div class="col-md-6 form-group">
                             <label>Email</label>
-                            <input class="form-control" type="text" id="email" name="email" value="">
+                            <input class="form-control" type="email" id="email" name="email" autocomplete="email" value="">
+
                             <span id="msg_email"></span>
 
                         </div>

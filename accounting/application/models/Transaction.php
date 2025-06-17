@@ -26,9 +26,9 @@ class Transaction extends MY_Model
 	protected $modelName = 'Transaction';
 	protected $_table = 'transactions';
 	protected $_listFieldName = 'auto_no';
-	protected $_fieldsNames = ['id', 'fiscal_year_id', 'trans_type', 'auto_no', 'trans_date', 'value_date', 'account_id', 'account2_id', 'currency_id', 'currency_rate', 'discount', 'user_id', 'driver_id', 'employee_id', 'status', 'delivered', 'pickup', 'description', 'relation_id', 'delivery_charge', 'status2', 'source', 'delivery_note', 'payment_method','payment_method_gateway','payment_method_gateway_status',  'op_nb', 'hide', 'exchange', 'try_on'];
+	protected $_fieldsNames = ['id', 'fiscal_year_id', 'trans_type', 'auto_no', 'trans_date', 'value_date', 'account_id', 'account2_id', 'currency_id', 'currency_rate', 'discount', 'user_id', 'driver_id', 'employee_id', 'status', 'delivered', 'pickup', 'description', 'relation_id', 'delivery_charge', 'status2', 'source', 'delivery_note', 'payment_method', 'payment_method_gateway', 'payment_method_gateway_status',  'op_nb', 'hide', 'exchange', 'try_on'];
 	protected $_dateFields = ['trans_date', 'value_date'];
-	protected $allowedNulls = ['value_date', 'discount', 'exchange', 'try_on','payment_method_gateway','payment_method_gateway_status'];
+	protected $allowedNulls = ['value_date', 'discount', 'exchange', 'try_on', 'payment_method_gateway', 'payment_method_gateway_status'];
 
 	public function __construct()
 	{
@@ -213,7 +213,7 @@ class Transaction extends MY_Model
 				'transactions.status',
 				'transactions.id'
 
-				
+
 			],
 			'query' => [
 				'join' => [
@@ -2167,7 +2167,7 @@ class Transaction extends MY_Model
 				["account1.account_name AS account1"],
 				["$subtotal AS subtotal, transactions.delivery_charge, journals.amount AS total, $qty as trans_qty"],
 				["transactions.status2"],
-				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id"]
+				["DATE_FORMAT(transactions.value_date,'%d-%m-%Y') as value_date, user2.user_name as driver, user1.user_name as user, transactions.status, transactions.id,transactions.payment_method_gateway, COALESCE(transactions.payment_method_gateway_status, '-') as payment_method_gateway_status"]
 			],
 			'join' => [
 				['fiscal_years', 'fiscal_years.id = transactions.fiscal_year_id', 'inner'],
@@ -2182,9 +2182,12 @@ class Transaction extends MY_Model
 			],
 			'where' => [
 				["{$this->_table}.fiscal_year_id", $this->violet_auth->get_fiscal_year_id()],
-				["{$this->_table}.status2 !=", "Cancelled"],
-				["{$this->_table}.status2 !=", "Delivered"],
-				["{$this->_table}.status2 !=", "Return"],
+				["({$this->_table}.hide != 1 OR {$this->_table}.hide is NULL)"],
+				// ["{$this->_table}.status2 !=", "Cancelled By Administration"],
+				// ["{$this->_table}.status2 !=", "Successfully Delivered"],
+				// ["{$this->_table}.status2 !=", "Failed To Deliver"],
+				// ["{$this->_table}.status2 !=", "Cancelled By Customer"],
+				// ["{$this->_table}.status2 !=", "Pending By Administration"],
 			],
 			'where_in' => [
 				["{$this->_table}.trans_type", [$transType, "EX"]],
@@ -2207,6 +2210,8 @@ class Transaction extends MY_Model
 				'transactions.status',
 				'transactions.auto_no',
 				['account1.account_name', 'account1'],
+				'transactions.payment_method_gateway',
+				['COALESCE(transactions.payment_method_gateway_status, "-")', 'payment_method_gateway_status'],
 				[$subtotal, 'subtotal'],
 				'transactions.delivery_charge',
 				['journals.amount', 'total'],
@@ -2231,9 +2236,12 @@ class Transaction extends MY_Model
 				],
 				'where' => [
 					["{$this->_table}.fiscal_year_id", $this->violet_auth->get_fiscal_year_id()],
-					["{$this->_table}.status2 !=", "Cancelled"],
-					["{$this->_table}.status2 !=", "Delivered"],
-					["{$this->_table}.status2 !=", "Return"],
+					["({$this->_table}.hide != 1 OR {$this->_table}.hide is NULL)"],
+					// ["{$this->_table}.status2 !=", "Cancelled By Administration"],
+					// ["{$this->_table}.status2 !=", "Successfully Delivered"],
+					// ["{$this->_table}.status2 !=", "Failed To Deliver"],
+					// ["{$this->_table}.status2 !=", "Cancelled By Customer"],
+					// ["{$this->_table}.status2 !=", "Pending By Administration"],
 				],
 				'where_in' => [
 					["{$this->_table}.trans_type", [$transType, "EX"]],

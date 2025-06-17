@@ -19,3 +19,14 @@
 
 -- UPDATE `orders` SET `payment_method`='C.O.D' WHERE payment_method  IS null;
 -- UPDATE `orders` SET `payment_status` = null WHERE payment_method = 'C.O.D' ;
+
+
+-- INSERT INTO configurations (name, type, valueStr)
+-- VALUES (
+--   'whatsapp_order_confirmation_msg',
+--   1,
+--   ''
+-- );
+
+-- ALTER TABLE configurations 
+-- MODIFY valueStr TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

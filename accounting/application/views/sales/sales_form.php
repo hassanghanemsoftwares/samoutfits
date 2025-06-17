@@ -210,7 +210,7 @@ $is_success_paymet_wish = ($selected_gateway == "whish" && $selected_status == "
 
 	<div class="col-sm-4">
 		<div class="form-group">
-			<label class="col-sm-4 control-label" for="payment_method_gateway_status"><?php echo $this->lang->line('payment_method') ?></label>
+			<label class="col-sm-4 control-label" for="payment_method_gateway_status"><?php echo $this->lang->line('payment_status') ?></label>
 			<div class="col-sm-8">
 				<?php
 				echo form_dropdown(

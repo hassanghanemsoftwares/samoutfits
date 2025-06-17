@@ -344,12 +344,14 @@ class Ecommerce extends MY_Controller
     {
         $this->load->model('Order');
         $this->load->model('Account');
-
+        $this->load->model('Configuration');
         $order_id = $this->input->post('order_id');
         $order['order_data'] = $this->Order->load_order_data_with_total($order_id);
         $order['order_data']['address_details'] = explode("-", $order['order_data']['address']);
         $order['items'] = $this->Order->load_order_items($order_id);
         $order['customer'] =  $this->Account->get_ecommerce_user_info($order['order_data']['customer_id']);
+
+        $order['whatsapp_order_confirmation_msg']    = $this->Configuration->fetch_local_whatsapp_order_confirmation_msg()["valueStr"];
 
         $this->_render_json($order);
     }
@@ -663,5 +665,32 @@ class Ecommerce extends MY_Controller
         }
     }
 
+    public function whish_users()
+    {
+        $this->load->model('Ecommerce_user');
+        if ($this->input->is_ajax_request()) {
+            $this->_render_json($this->Ecommerce_user->load_whish_users_data_tables());
+        } else {
+            $data['records'] = $this->Ecommerce_user->paginate_whish_users();
+            $data['title'] = $this->lang->line('inbox');
+            $this->load->view('templates/eco_header', [
+                '_page_title' => $data['title'],
+                '_moreCss' => ['css/dataTables.bootstrap.min', 'css/fixedHeader.dataTables.min'],
+            ]);
+            $this->load->view('ecommerce_whish_users/index', $data);
+            $this->load->view('templates/footer', ['_moreJs' => ['jquery.dataTables.min', 'dataTables.bootstrap.min', 'ecommerce_whish_users/index']]);
+        }
+    }
 
+    public function get_transaction_id_by_autono()
+    {
+        $this->load->model('Transaction');
+        $auto_no = $this->input->post('tracking_nb');
+        $trans_id = $this->Transaction->fetch_transaction_id_by_autono($auto_no, Transaction::SaleTransType)['0']['id'];
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode([
+                'trans_id' => $trans_id,
+            ]));
+    }
 }

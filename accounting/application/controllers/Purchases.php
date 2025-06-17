@@ -141,7 +141,9 @@ class Purchases extends MY_Controller
 					//delete journal
 					$this->load->model('Journal');
 					$journal_id = $this->Journal->fetch_journal_id_by_transaction_id($this->Transaction->get_field('id'));
+					if(isset($journal_id["id"])){
 					$this->Journal->delete($journal_id["id"]);
+					}
 					//delete journal_acc
 					$this->load->model('Journal_account');
 					$journal_acc_ids = $this->Journal_account->fetch_journal_accounts_id_by_journal_id($journal_id["id"]);

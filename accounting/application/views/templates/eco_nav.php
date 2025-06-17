@@ -9,8 +9,10 @@
             <li><a href="ecommerce/sales">Sales</a></li>
             <li><a href="ecommerce/coupons">Coupons</a></li>
             <li><a href="ecommerce/inbox">Inbox</a></li>
+            <li><a href="ecommerce/whish_users">Whish users</a></li>
+
             <li><a href="ecommerce/users">Users</a></li>
-             <li><a href="ecommerce/sections">Sections</a></li> 
+            <li><a href="ecommerce/sections">Sections</a></li>
             <li><a href="ecommerce/landing_page">Landing Page</a></li>
             <li><a href="ecommerce/newsletter_subscribers">Newsletter subscribers</a></li>
         </ul>

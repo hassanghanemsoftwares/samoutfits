@@ -87,7 +87,7 @@ class Return_sales extends MY_Controller
 			if ($saved) {
 				if (!$fetched) {
 					$this->Transaction->save_transaction_items_and_sizes($post['transItems'], 1);
-					
+
 					$this->Transaction->update_items_qty($post['transItems']);
 
 					$total = $this->Transaction->calculate_sale_transaction_total($post['transItems'], $post['trans']['discount'], $post['trans']['delivery_charge']);
@@ -144,7 +144,7 @@ class Return_sales extends MY_Controller
 					}
 					//insert trans_items
 					$this->Transaction->save_transaction_items_and_sizes($post['transItems'], 1);
-					
+
 					//update qty 
 					$this->Transaction->update_items_qty($trans_items);
 					$this->Transaction->update_items_qty($post['transItems']);
@@ -175,8 +175,14 @@ class Return_sales extends MY_Controller
 		$this->load->view('return_sales/return_sales_form', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'bootstrap-select.min', 'bootstrap-select-country.min', 'transactions/return_sale', 'accounts/account_modal', 'items/item_modal'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'bootstrap-select.min',
+				'bootstrap-select-country.min',
+				'transactions/return_sale',
+				'accounts/account_modal',
+				'items/item_modal'
 			]
 		]);
 	}
@@ -189,12 +195,15 @@ class Return_sales extends MY_Controller
 		$data['transType'] = $this->Transaction->get_transaction_types_list()[$transType];
 		$data['currenciesList'] = $this->Currency->load_currencies_list();
 		$data['account_type'] = array(
-			"Customer" => "Customer", "Supplier" => "Supplier",
-			"Cash" => "Cash", "Expenses" => "Expenses",
-			"Bank" => "Bank", "Sale VAT" => "Sale VAT",
+			"Customer" => "Customer",
+			"Supplier" => "Supplier",
+			"Cash" => "Cash",
+			"Expenses" => "Expenses",
+			"Bank" => "Bank",
+			"Sale VAT" => "Sale VAT",
 			"Purchase VAT" => "Purchase VAT"
 		);
-			$data['payment_method_gateway'] = array(
+		$data['payment_method_gateway'] = array(
 			"C.O.D" => "C.O.D",
 			"whish" => "whish"
 		);
@@ -214,14 +223,14 @@ class Return_sales extends MY_Controller
 		$categories = explode(",", $categories);
 		$data['categories'] = array_combine($categories, $categories);
 		$sizes = explode(",", $this->Configuration->fetch_sizes()["valueStr"]);
-		$data['sizes']["No"]= "No";
-		foreach($sizes as $s){
-			$data['sizes'][$s]= $s;
+		$data['sizes']["No"] = "No";
+		foreach ($sizes as $s) {
+			$data['sizes'][$s] = $s;
 		}
 		$delivery_charge = $this->Configuration->fetch_delivery_charge()["valueStr"];
 		$delivery_charge = explode(",", $delivery_charge);
 		$data['delivery_charge'] = array_combine($delivery_charge, $delivery_charge);
-		$data['delivery_charge'][0]=0;
+		$data['delivery_charge'][0] = 0;
 		if ($fetched) {
 			$this->load->model('Account');
 			$account = $this->Account->load($this->Transaction->get_field('account_id'));
@@ -236,8 +245,8 @@ class Return_sales extends MY_Controller
 			$data['shelf_list'] = [];
 			foreach ($data['trans_items'] as $i => $t) {
 				$res = $this->Warehouse->fetch_warehouse_and_shelf($t["warehouse_id"]);
-				$data['warehouse'][$i]= $res['warehouse'];
-				$data['shelf'][$i]= $res['shelf'];
+				$data['warehouse'][$i] = $res['warehouse'];
+				$data['shelf'][$i] = $res['shelf'];
 				$s = $this->Warehouse->fetch_all_warehouse_shelfs($res['warehouse']);
 				$s = array_combine($s, $s);
 				array_push($data['shelf_list'], $s);
@@ -269,6 +278,11 @@ class Return_sales extends MY_Controller
 		$this->load->model('Transaction_item');
 		$trans = $this->Transaction->load_trans_data_by_trans_id($id);
 		$trans_items = $this->Transaction_item->load_all_trans_items($id);
+		if ($trans["payment_method_gateway"] == "whish" && $trans["payment_method_gateway_status"] == "Payment successful") {
+			$this->session->set_flashdata('message', "This transaction cannot be deleted, as the payment was successful.");
+			redirect('return_sales/index');
+			exit;
+		}
 		if ($this->Transaction->delete($id)) {
 			$this->Transaction->update_items_qty($trans_items);
 			$this->load->model('Journal');
@@ -347,8 +361,10 @@ class Return_sales extends MY_Controller
 		$this->load->view('sales/preview', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'sales/preview'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'sales/preview'
 			]
 		]);
 	}

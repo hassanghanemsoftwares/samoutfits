@@ -38,7 +38,7 @@
             foreach ($trans as $t) { ?>
                 <div style="border: 2px solid #444; margin-bottom: 30px;">
                     <table class="table table-bordered table-condensed table-striped table-hover">
-                        <tr style="background-color: #ffdf59;">
+                        <tr style="background-color: #d1a3ff;">
                             <th colspan="7">
                                 <center><?php echo ($t[0]['trans_type'] == 'EX') ? 'Exchange' : 'Invoice' ?> #<?php echo $t[0]['auto_no'] ?></center>
                             </th>
@@ -59,7 +59,7 @@
                             <th><?php echo $this->lang->line('Status') ?></th>
                             <td colspan="6"><?php echo $t[0]['status2'] ?></td>
                         </tr>
-                        <tr style="background-color: #ffdf59;">
+                        <tr style="background-color: #d1a3ff;">
                             <th colspan="7">
                                 <center><?php echo ($t[0]['trans_type'] == 'EX') ?  $this->lang->line('Exchange') : $this->lang->line('Invoice') ?> <?php echo $this->lang->line('Items') ?></center>
                             </th>
@@ -74,7 +74,7 @@
                             <th><?php echo $this->lang->line('Description') ?></th>
                         </tr>
                         <?php foreach ($t as $i) { ?>
-                            <tr>
+                            <tr <?php echo ($i['qty'] > 0) ? 'style="background-color: #7f00ff;color: white;"' : '' ?>>
                                 <th><?php echo $i['barcode'] ?></th>
                                 <th><img src="assets/uploads/<?php echo $i['image'] ?>" height="100px"></th>
                                 <th><?php echo $i['size'] ?></th>

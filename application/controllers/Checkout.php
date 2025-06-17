@@ -505,27 +505,33 @@ class Checkout extends MY_Controller
                     $user_id = $user['id'];
                     $requirementText = "";
                     $this->load->model('Item');
+                    $requirementsSet = [];
+
                     foreach ($data['cartItems'] as $item) {
-                        $itemData =    $this->Item->load_item_data($item['id']);
-                        $requirements = [];
+                        $itemData = $this->Item->load_item_data($item['id']);
 
                         if ($itemData['cool_storage'] === "1") {
-                            $requirements[] = "Requires Cool Storage";
+                            $requirementsSet["Requires Cool Storage"] = true;
                         }
 
                         if ($itemData['flammable_handling'] === "1") {
-                            $requirements[] = "Requires Flammable Handling";
+                            $requirementsSet["Requires Flammable Handling"] = true;
                         }
 
                         if ($itemData['fragile'] === "1") {
-                            $requirements[] = "Requires Fragile Handling";
+                            $requirementsSet["Requires Fragile Handling"] = true;
                         }
+                    }
 
-                        $requirementText = implode('/ ', $requirements);
+                    $uniqueRequirements = array_keys($requirementsSet);
+
+                    // Join them with ' / '
+                    $requirementText = implode(' / ', $uniqueRequirements);
+
+                    if (!empty($requirementText)) {
+                        $post['note'] = trim($post['note'] . ' ' . $requirementText);
                     }
-                    if ($requirementText != "") {
-                        $post['note'] = $post['note'] . " " . $requirementText;
-                    }
+
 
                     //updated 2024-03-07
                     $added = $this->Transaction->create_new_sale_invoice_for_order_as_user($acc_id, $discount, $local_currency, $account2, $fiscal_year_id, $user_id, $post['note'], $post['delivery_charge'], $payment_method, $payment_status);
@@ -566,6 +572,9 @@ class Checkout extends MY_Controller
                         $this->Order->update_order_transaction_id($this->Order->get_field('id'), $this->Transaction->get_field('id'));
                     }
                     $this->session->set_flashdata('message', $this->lang->line('*Your_order_sent_successfully*'));
+
+                    $this->send_order_email($order_id);
+
                     $this->cart->destroy();
 
                     $fireData = array(
@@ -914,27 +923,33 @@ class Checkout extends MY_Controller
                     $user_id = $user['id'];
                     $requirementText = "";
                     $this->load->model('Item');
+                    $requirementsSet = []; // Using an associative array as a set
+
                     foreach ($data['cartItems'] as $item) {
-                        $itemData =    $this->Item->load_item_data($item['id']);
-                        $requirements = [];
+                        $itemData = $this->Item->load_item_data($item['id']);
 
                         if ($itemData['cool_storage'] === "1") {
-                            $requirements[] = "Requires Cool Storage";
+                            $requirementsSet["Requires Cool Storage"] = true;
                         }
 
                         if ($itemData['flammable_handling'] === "1") {
-                            $requirements[] = "Requires Flammable Handling";
+                            $requirementsSet["Requires Flammable Handling"] = true;
                         }
 
                         if ($itemData['fragile'] === "1") {
-                            $requirements[] = "Requires Fragile Handling";
+                            $requirementsSet["Requires Fragile Handling"] = true;
                         }
+                    }
 
-                        $requirementText = implode('/ ', $requirements);
+                    $uniqueRequirements = array_keys($requirementsSet);
+
+                    // Join them with ' / '
+                    $requirementText = implode(' / ', $uniqueRequirements);
+
+                    if (!empty($requirementText)) {
+                        $formData['note'] = trim($formData['note'] . ' ' . $requirementText);
                     }
-                    if ($requirementText != "") {
-                        $formData['note'] = $formData['note'] . " " . $requirementText;
-                    }
+
 
                     //updated 2024-03-07
                     $added = $this->Transaction->create_new_sale_invoice_for_order_as_user($acc_id, $discount, $local_currency, $account2, $fiscal_year_id, $user_id, $formData['note'], $formData['delivery_charge'], $payment_method, $payment_status);
@@ -975,6 +990,9 @@ class Checkout extends MY_Controller
                         $this->Order->update_order_transaction_id($this->Order->get_field('id'), $this->Transaction->get_field('id'));
                     }
                     $this->session->set_flashdata('message', $this->lang->line('*Your_order_sent_successfully*'));
+
+                    $this->send_order_email($order_id);
+
                     $this->cart->destroy();
 
                     $fireData = array(
@@ -1071,5 +1089,79 @@ class Checkout extends MY_Controller
         ]);
         $this->load->view('payments/payment_failed', $data);
         $this->load->view('templates/footer', ['_moreJs' => []]);
+    }
+
+    public function summary()
+    {
+        $get = $this->input->get(null, true);
+
+        if (isset($get['order_id'])) {
+            $this->load->model('Order');
+            $order = $this->Order->get_order_data($get['order_id']);
+            if (!$order) {
+                show_404();
+                return;
+            }
+            $this->load->model('Transaction');
+            $order =   $this->Order->get_order_data($get['order_id']);
+            $transaction_id = $order['transaction_id'];
+            if ($order['payment_method'] == "whish") {
+                $status = 'Payment successful';
+                $this->Transaction->update_sale_invoice_payment_status($transaction_id, $status);
+                $this->Order->update_order_payment_status($get['order_id'], $status);
+            }
+            // Store necessary data in session or temp storage if needed
+            $this->load->library('session');
+            $this->session->set_userdata('summary_order_id', $get['order_id']);
+
+            // Redirect to remove order_id from URL
+            redirect('checkout/summary');
+            return;
+        }
+
+        // Load from session if redirected
+        $this->load->library('session');
+        $order_id = $this->session->userdata('summary_order_id');
+
+        if (!$order_id) {
+            redirect('/');
+            return;
+        }
+
+        $this->load->model('Order');
+        $order = $this->Order->get_order_data($order_id);
+        if (!$order) {
+            show_404();
+            return;
+        }
+
+        $data['order'] = $order;
+        $data['order_items'] = $this->Order->load_order_items_with_images_as_order($order_id);
+        $data['customer'] = $this->Order->get_order_customer_data($order_id);
+        $data['title'] = $this->lang->line('Order Summary');
+        // var_dump($data);
+        // exit;
+        $this->load->view('templates/header', [
+            '_page_title' => $data['title'],
+            '_moreCss' => []
+        ]);
+        $this->load->view('checkout/order_summary', $data);
+        $this->load->view('templates/footer', ['_moreJs' => []]);
+        $this->session->unset_userdata('summary_order_id');
+    }
+
+    public function send_order_email($order_id)
+    {
+        if (isset($order_id)) {
+            $this->load->helper('email');
+            $this->load->model('Order');
+            $order = $this->Order->get_order_data($order_id);
+            $data['order'] = $order;
+            $data['order_items'] = $this->Order->load_order_items_with_images_as_order($order_id);
+            $data['customer'] = $this->Order->get_order_customer_data($order_id);
+            //           var_dump($data);
+            // exit;
+            return  send_admin_order_email($data);
+        }
     }
 }

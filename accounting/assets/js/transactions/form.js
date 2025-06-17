@@ -169,22 +169,7 @@ function autoCompleteItem() {
       onSearchStart: function (params) {},
       onSelect: function (result) {
         //alert(result.row.id);
-        let requirements = [];
 
-        if (result.row.cool_storage === "1") {
-          requirements.push("Requires Cool Storage");
-        }
-
-        if (result.row.flammable_handling === "1") {
-          requirements.push("Requires Flammable Handling");
-        }
-
-        if (result.row.fragile === "1") {
-          requirements.push("Requires Fragile Handling");
-        }
-
-        let requirementText = requirements.join("/ ");
-        $("#delivery_note").val(requirementText);
         $.ajax({
           cache: false,
           type: "POST",
@@ -194,6 +179,30 @@ function autoCompleteItem() {
             if (parseFloat(data) > 0) {
               var currency_rate = $("#currency_rate").val();
               if (currency_rate != "") {
+                let existingText = $("#delivery_note").val() || "";
+                let existingRequirements = existingText
+                  .split("/")
+                  .map((r) => r.trim())
+                  .filter((r) => r);
+
+                // Start with existing unique values
+                let requirementsSet = new Set(existingRequirements);
+
+                if (result.row.cool_storage === "1") {
+                  requirementsSet.add("Requires Cool Storage");
+                }
+
+                if (result.row.flammable_handling === "1") {
+                  requirementsSet.add("Requires Flammable Handling");
+                }
+
+                if (result.row.fragile === "1") {
+                  requirementsSet.add("Requires Fragile Handling");
+                }
+
+                // Convert the Set back to a string
+                let requirementText = Array.from(requirementsSet).join(" / ");
+                $("#delivery_note").val(requirementText);
                 addLineToTransaction(result.row, true);
               } else {
                 alert("Please, you must select customer account first.");
@@ -458,7 +467,6 @@ function getcurrencyrate() {
 function validation() {
   const gateway = $("#payment_method_gateway").val();
   const status = $("#payment_method_gateway_status").val();
-
 
   if (gateway === "whish" && status === "Payment successful") {
     if (!confirm("Are you sure you want to submit this form?")) {

@@ -228,12 +228,51 @@ class Order extends MY_Model
         $this->db->where('orders.id', $order_id);
         return $this->db->update('orders', $data);
     }
-        public function get_order_data($order_id)
+    public function get_order_data($order_id)
     {
         $this->db->select('*');
         $this->db->from('orders');
         $this->db->where('id', $order_id);
         $query = $this->db->get()->row_array();
         return $query;
+    }
+
+    public function get_order_customer_data($order_id)
+    {
+        $this->db->select(' accounts.*');
+        $this->db->from('orders');
+        $this->db->join('transactions', 'transactions.id = orders.transaction_id', 'left');
+        $this->db->join('accounts', 'accounts.id = transactions.account_id', 'left');
+        $this->db->where('orders.id', $order_id);
+
+        $query = $this->db->get()->row_array();
+        return $query;
+    }
+
+    public function load_order_items_with_images_as_order($order_id)
+    {
+        $query = [
+            'select' => "order_items.*, items.description, items.category, items.barcode, pi.image_name",
+            'join' => [
+                ['order_items', 'orders.id = order_items.order_id', 'inner'],
+                ['items', 'items.id = order_items.item_id', 'inner'],
+                ["(
+            SELECT pi1.item_id, pi1.image_name
+            FROM product_images pi1
+            INNER JOIN (
+                SELECT item_id, MIN(order_nb) as min_order_nb
+                FROM product_images
+                WHERE order_nb IS NOT NULL
+                GROUP BY item_id
+            ) pi2 ON pi1.item_id = pi2.item_id AND pi1.order_nb = pi2.min_order_nb
+        ) AS pi", 'items.id = pi.item_id', 'left']
+            ],
+            'where' => [
+                ['orders.id', $order_id]
+            ],
+            'order_by' => [['orders.auto_no', 'DESC']]
+        ];
+
+        return $this->load_all($query);
     }
 }

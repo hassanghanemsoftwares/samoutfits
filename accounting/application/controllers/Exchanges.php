@@ -16,7 +16,7 @@ class Exchanges extends MY_Controller
 	public $Transaction = NULL;
 	public $Warehouse = NULL;
 	public $Journal_account = NULL;
-	public $User = NULL;	
+	public $User = NULL;
 
 	public function __construct()
 	{
@@ -162,8 +162,14 @@ class Exchanges extends MY_Controller
 		$this->load->view('exchange/form', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'transactions/exchange', 'bootstrap-select.min', 'bootstrap-select-country.min', 'accounts/account_modal', 'items/item_modal'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'transactions/exchange',
+				'bootstrap-select.min',
+				'bootstrap-select-country.min',
+				'accounts/account_modal',
+				'items/item_modal'
 			]
 		]);
 	}
@@ -179,9 +185,12 @@ class Exchanges extends MY_Controller
 		$drivers = $this->User->load_all_users_with_type_driver();
 		$employees = $this->User->load_all_users_with_type_employee();
 		$data['account_type'] = array(
-			"Customer" => "Customer", "Supplier" => "Supplier",
-			"Cash" => "Cash", "Expenses" => "Expenses",
-			"Bank" => "Bank", "Sale VAT" => "Sale VAT",
+			"Customer" => "Customer",
+			"Supplier" => "Supplier",
+			"Cash" => "Cash",
+			"Expenses" => "Expenses",
+			"Bank" => "Bank",
+			"Sale VAT" => "Sale VAT",
 			"Purchase VAT" => "Purchase VAT"
 		);
 		$this->load->model('Configuration');
@@ -214,19 +223,32 @@ class Exchanges extends MY_Controller
 		// var_dump($data['delivery_charge']);
 		// exit;
 		$data['try_on_list'] = array(
-			"0" => "No", "1" => "Yes"
+			"0" => "No",
+			"1" => "Yes"
 		);
 		$data['exchange_list'] = array(
-			"0" => "No", "1" => "Yes"
+			"0" => "No",
+			"1" => "Yes"
+		);
+		$data['payment_method_gateway'] = array(
+			"C.O.D" => "C.O.D",
+			"whish" => "whish"
+		);
+		$data['payment_method_gateway_status'] = array(
+			"" => "",
+			"Pending" => "Pending",
+			"Payment successful" => "Payment successful",
+			"Payment failed (insufficient balance)" => "Payment failed (insufficient balance)"
+
 		);
 		$data['try_on'] = '1';
 		$data['exchange'] = '0';
-		if($transType == 'EX'){
-		    	$data['exchange'] = '1';
+		if ($transType == 'EX') {
+			$data['exchange'] = '1';
 		}
 		if ($fetched) {
-		    $data['try_on'] = $this->Transaction->get_field('try_on');
-		    $data['exchange'] = $this->Transaction->get_field('exchange');
+			$data['try_on'] = $this->Transaction->get_field('try_on');
+			$data['exchange'] = $this->Transaction->get_field('exchange');
 			$this->load->model('Account');
 			$account = $this->Account->load($this->Transaction->get_field('account_id'));
 			$data['account'] = "{$account['account_number']} - {$account['account_name']}";
@@ -277,9 +299,9 @@ class Exchanges extends MY_Controller
 			$this->load->model('Journal');
 			$journal_id = $this->Journal->fetch_journal_id_by_transaction_id($this->Transaction->get_field('id'))["id"];
 			$amount = $this->Journal->load_journal_data_by_jonrnal_id($journal_id)["amount"];
-// 			var_dump($amount, $tot, $am);exit;
-// 			$data['old_sub_total'] = doubleval($amount) - doubleval($tot);
-            $data['old_sub_total'] = -1 * doubleval($this->Transaction->calculate_invoice_sub_totoal($this->Transaction->get_field('relation_id'))['subtot']);
+			// 			var_dump($amount, $tot, $am);exit;
+			// 			$data['old_sub_total'] = doubleval($amount) - doubleval($tot);
+			$data['old_sub_total'] = -1 * doubleval($this->Transaction->calculate_invoice_sub_totoal($this->Transaction->get_field('relation_id'))['subtot']);
 			$data['DN'] = $this->Transaction->get_field('delivery_note');
 		} else {
 			$data['auto_no'] = $this->Transaction->set_next_auto_number_for_sale_and_exchange();
@@ -380,8 +402,14 @@ class Exchanges extends MY_Controller
 		$this->load->view('sales/return_sales_form', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'bootstrap-select.min', 'bootstrap-select-country.min', 'transactions/return_sale', 'accounts/account_modal', 'items/item_modal'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'bootstrap-select.min',
+				'bootstrap-select-country.min',
+				'transactions/return_sale',
+				'accounts/account_modal',
+				'items/item_modal'
 			]
 		]);
 	}
@@ -395,9 +423,12 @@ class Exchanges extends MY_Controller
 		$data['transType'] = $this->Transaction->get_transaction_types_list()[$transType];
 		$data['currenciesList'] = $this->Currency->load_currencies_list();
 		$data['account_type'] = array(
-			"Customer" => "Customer", "Supplier" => "Supplier",
-			"Cash" => "Cash", "Expenses" => "Expenses",
-			"Bank" => "Bank", "Sale VAT" => "Sale VAT",
+			"Customer" => "Customer",
+			"Supplier" => "Supplier",
+			"Cash" => "Cash",
+			"Expenses" => "Expenses",
+			"Bank" => "Bank",
+			"Sale VAT" => "Sale VAT",
 			"Purchase VAT" => "Purchase VAT"
 		);
 		$this->load->model('Configuration');
@@ -410,7 +441,7 @@ class Exchanges extends MY_Controller
 		$data['delivery_charge'][0] = 0;
 		$delivery_charge = $this->Configuration->fetch_delivery_charge()["valueStr"];
 		$delivery_charge = explode(",", $delivery_charge);
-		foreach($delivery_charge as $d){
+		foreach ($delivery_charge as $d) {
 			$data['delivery_charge'][$d] = $d;
 		}
 		$categories = $this->Configuration->fetch_categories()["valueStr"];

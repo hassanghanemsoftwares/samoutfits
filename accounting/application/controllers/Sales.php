@@ -372,6 +372,12 @@ class Sales extends MY_Controller
 		$this->load->model('Transaction_item');
 		$trans = $this->Transaction->load_trans_data_by_trans_id($id);
 		$trans_items = $this->Transaction_item->load_all_trans_items($id);
+		// var_dump($trans);exit;
+		if ($trans["payment_method_gateway"] == "whish" && $trans["payment_method_gateway_status"] == "Payment successful") {
+			$this->session->set_flashdata('message', "This transaction cannot be deleted, as the payment was successful.");
+			redirect('sales/index');
+			exit;
+		}
 		if ($this->Transaction->delete($id)) {
 			$this->Transaction->update_items_qty($trans_items);
 			$this->load->model('Journal');
@@ -1390,5 +1396,64 @@ class Sales extends MY_Controller
 			$this->load->view('sales/pending', $data);
 			$this->load->view('templates/footer', ['_moreJs' => ['jquery.dataTables.min', 'dataTables.bootstrap.min', 'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en', 'dataTables.datetime.format', 'jquery.autocomplete.min', 'jquery.tagthis', 'sales/pending']]);
 		}
+	}
+
+	public function copy_whatsapp_msg()
+	{
+		$this->load->model('Configuration');
+		$this->load->model('Account');
+		$this->load->model('Transaction_item');
+
+		$id = $this->input->post('trans_id');
+		$order['whatsapp_order_confirmation_msg'] = $this->Configuration->fetch_local_whatsapp_order_confirmation_msg()["valueStr"];
+		$trans = $this->Transaction->load_trans_data_by_trans_id($id);
+		$trans_items = $this->Transaction_item->load_all_trans_items($id);
+		$customer = $this->Account->fetch_account_info($trans['account_id']);
+
+		$tracking_nb = $trans["auto_no"];
+		$account_name = $customer['account_name'];
+		$account_phone = $customer['phone'];
+
+		if (
+			$trans["payment_method_gateway"] == "whish" &&
+			$trans["payment_method_gateway_status"] == "Payment successful"
+		) {
+			$order_value = 0;
+		} else {
+			$sub_total = 0;
+			foreach ($trans_items as $k => $t) {
+				$sub_total += floatval($t["price"]) * floatval($t["qty"]) * (1 - (floatval($t["discount"]) / 100));
+			}
+			$order_value = floatval($sub_total) - floatval($trans["discount"]) + floatval($trans["delivery_charge"]);
+			$order_value = number_format($order_value, 2);
+		}
+		$rawMessage = str_replace(
+			["{{customer_name}}", "{{order_value}}", "{{tracking_nb}}"],
+			[$account_name, $order_value, $tracking_nb],
+			$order['whatsapp_order_confirmation_msg']
+		);
+		$this->output
+			->set_content_type('application/json')
+			->set_output(json_encode(['message' => $rawMessage]));
+	}
+
+	public function download_summary()
+	{
+		$this->load->model('Transaction_item');
+		$id = $this->input->post('trans_id');
+		$trans = $this->Transaction->load_trans_data_by_trans_id($id);
+		$trans_items = $this->Transaction_item->load_transaction_items($id);
+
+		foreach ($trans_items as $key=> $item) {
+			$trans_items[$key]['size'] = $this->Transaction_item->fetch_trans_item_selected_size($item['id'])['size']??"";
+		}
+
+
+		$this->output
+			->set_content_type('application/json')
+			->set_output(json_encode([
+				'cartItems' => $trans_items,
+				'order' => $trans,
+			]));
 	}
 }

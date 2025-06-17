@@ -255,7 +255,7 @@ class Pre_orders extends MY_Controller
 			$data['selected_status2'] = $this->Transaction->get_field('status2');
 			$data['status'] = $this->Transaction->get_field('status');
 			$this->load->model("User");
-			$data['driver'] = $this->User->get_user_name($this->Transaction->get_field('driver_id'))["user_name"]??"";
+			$data['driver'] = $this->User->get_user_name($this->Transaction->get_field('driver_id'))["user_name"] ?? "";
 		} else {
 			$data['account'] = '';
 			$data['account2'] = '';
@@ -271,6 +271,13 @@ class Pre_orders extends MY_Controller
 
 	public function delete($id)
 	{
+		$trans = $this->Transaction->load_trans_data_by_trans_id($id);
+
+		if ($trans["payment_method_gateway"] == "whish" && $trans["payment_method_gateway_status"] == "Payment successful") {
+			$this->session->set_flashdata('message', "This transaction cannot be deleted, as the payment was successful.");
+			redirect('pre_orders/index');
+			exit;
+		}
 		if ($this->Transaction->delete($id)) {
 			// $this->add_msg($this->lang->line('record_deleted'), 'success');
 			redirect('pre_orders/index');

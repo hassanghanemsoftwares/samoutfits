@@ -176,18 +176,16 @@ jQuery(document).ready(function () {
           dataType: "json",
           success: function (dataResult) {
             if (dataResult.result) {
-              //place order make fire on purchase start
-              //end
-              $("#order_success_message").text(
-                "Order Received And Waiting Approval. We Will Contact You Shortly"
-              );
-              $("#order_success_modal").modal("show");
               firePurchase(
                 dataResult.fireData.order,
                 dataResult.fireData.coupon,
                 dataResult.fireData.order_items,
                 dataResult.fireData.delivery_charge
               );
+              const orderId = dataResult.fireData.order.id;
+
+              window.location.href =
+                getAppURL("checkout/summary") + "?order_id=" + orderId;
             } else {
               $("#error_message").text(dataResult.message);
               $("#error_modal").modal("show");
@@ -227,7 +225,7 @@ jQuery(document).ready(function () {
           externalId: Math.floor(Math.random() * 1000000), // generate or get unique external ID
           successCallbackUrl: getAppURL("checkout/whish_success_callback"),
           failureCallbackUrl: getAppURL("checkout/whish_failure_callback"),
-          successRedirectUrl: getAppURL("checkout/whish_success_redirect"),
+          successRedirectUrl: getAppURL("checkout/summary"),
           failureRedirectUrl: getAppURL("checkout/whish_failure_redirect"),
           formData: formDataObject,
         };
@@ -3845,3 +3843,44 @@ jQuery(document).ready(function () {
   });
 });
 //fire on checkout end
+
+jQuery(document).ready(function () {
+  fireCheckout();
+  $("#order_success_modal").on("hidden.bs.modal", function () {
+    location.reload();
+  });
+});
+//fire on checkout end
+
+document.addEventListener("DOMContentLoaded", function () {
+  const phoneInput = document.getElementById("phone_view");
+  const phoneCodeInput = document.getElementById("phone_code");
+  const countrySelect = document.getElementById("country");
+
+  // Extract code from country dropdown if changed
+  countrySelect.addEventListener("change", function () {
+    const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+    const code = selectedOption.getAttribute("data-dial-code");
+    if (code) {
+      phoneCodeInput.value = "+" + code;
+    }
+  });
+
+  // Clean up full international phone pasted/autofilled
+  phoneInput.addEventListener("input", function () {
+    const fullPhone = phoneInput.value.trim();
+    const currentCode = phoneCodeInput.value;
+
+    if (fullPhone.startsWith(currentCode)) {
+      phoneInput.value = fullPhone
+        .replace(currentCode, "")
+        .replace(/^\+/, "")
+        .replace(/^0+/, "");
+    }
+  });
+
+  // Optional: force extraction on page load (in case of autofill)
+  window.setTimeout(() => {
+    phoneInput.dispatchEvent(new Event("input"));
+  }, 100);
+});

@@ -11,11 +11,17 @@ class Whish
 
     public function __construct()
     {
-        // $this->baseUrl = 'https://lb.sandbox.whish.money/itel-service/api/';
         $this->baseUrl = 'https://whish.money/itel-service/api/';
         $this->channel = '13763772';
         $this->secret = '237224ee3ffd42e79f97bd57ec56852f';
         $this->websiteUrl = 'samoutfits.com';
+
+
+        //Testin
+        // $this->baseUrl = 'https://lb.sandbox.whish.money/itel-service/api/';
+        // $this->channel = '10195230';
+        // $this->secret = '19fc46c47b5c41eca79852716bb2a013';
+        // $this->websiteUrl = 'samoutfits.com';
     }
 
     public function getBalance()
@@ -68,7 +74,6 @@ class Whish
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-        // 👇 Add this line to securely verify SSL with the right cert
         curl_setopt($ch, CURLOPT_CAINFO, 'C:/wamp/bin/php/php8.2.18/extras/ssl/cacert.pem');
 
         if (strtoupper($method) === 'POST') {

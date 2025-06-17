@@ -41,7 +41,7 @@
         <table class="table table-bordered table-condensed table-striped table-hover" id="print_table">
             <thead id="print_table">
                 <tr>
-                    <th class="table_th_ivoice_print">Code</th>
+                    <th class="table_th_ivoice_print">Product</th>
                     <th class="table_th_ivoice_print">Size</th>
                     <th class="table_th_ivoice_print">Qty</th>
                     <th class="table_th_ivoice_print">Price</th>
@@ -52,7 +52,7 @@
                 <?php foreach ($trans_items as $transItem) :
                 ?>
                     <tr>
-                        <td><b><?php echo $transItem['barcode'] ?></b></td>
+                        <td style="max-width: 150px;"><b><?php echo $transItem['description']." (".$transItem['barcode'].")" ?></b></td>
                         <td><b><?php echo $transItem['size'] ?></b></td>
                         <td><b><?php echo $transItem['qty'] ?></b></td>
                         <td><b><?php echo $transItem['price'] ?></b></td>

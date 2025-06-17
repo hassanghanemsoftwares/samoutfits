@@ -11,10 +11,10 @@ defined('BASEPATH') or die('No direct script access allowed');
 class Orders extends MY_Controller
 {
 	public $Transaction = NULL;
-    public $Transaction_item = NULL;
-    public $Configuration = NULL;
-    public $Warehouse = NULL;
-    public $Journal = NULL;
+	public $Transaction_item = NULL;
+	public $Configuration = NULL;
+	public $Warehouse = NULL;
+	public $Journal = NULL;
 
 	public function __construct()
 	{
@@ -72,7 +72,7 @@ class Orders extends MY_Controller
 			if ($saved) {
 				if (!$fetched) {
 					$this->Transaction->save_transaction_items_and_sizes_without_warehouse_id($post['transItems'], 0);
-					
+
 					$total = $this->Transaction->calculate_transaction_total($post['transItems'], $post['trans']['discount']);
 					$trans_id = $this->Transaction->fetch_transaction_id_by_autono($post['trans']['auto_no'], $transType);
 					$this->Transaction->save_transaction_in_journals($post['trans'], $trans_id["0"]["id"], $total, "OS");
@@ -93,7 +93,7 @@ class Orders extends MY_Controller
 					}
 					//insert trans_items
 					$this->Transaction->save_transaction_items_and_sizes_without_warehouse_id($post['transItems'], 0);
-					
+
 					redirect('orders/index');
 				}
 			} elseif ($this->Transaction->is_valid()) {
@@ -113,8 +113,14 @@ class Orders extends MY_Controller
 		$this->load->view('orders/order_form', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'bootstrap-select.min', 'bootstrap-select-country.min', 'transactions/quotation', 'accounts/account_modal', 'items/item_modal'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'bootstrap-select.min',
+				'bootstrap-select-country.min',
+				'transactions/quotation',
+				'accounts/account_modal',
+				'items/item_modal'
 			]
 		]);
 	}
@@ -127,9 +133,12 @@ class Orders extends MY_Controller
 		$data['transType'] = $this->Transaction->get_transaction_types_list()[$transType];
 		$data['currenciesList'] = $this->Currency->load_currencies_list();
 		$data['account_type'] = array(
-			"Customer" => "Customer", "Supplier" => "Supplier",
-			"Cash" => "Cash", "Expenses" => "Expenses",
-			"Bank" => "Bank", "Sale VAT" => "Sale VAT",
+			"Customer" => "Customer",
+			"Supplier" => "Supplier",
+			"Cash" => "Cash",
+			"Expenses" => "Expenses",
+			"Bank" => "Bank",
+			"Sale VAT" => "Sale VAT",
 			"Purchase VAT" => "Purchase VAT"
 		);
 		$this->load->model('Configuration');
@@ -257,8 +266,10 @@ class Orders extends MY_Controller
 		$this->load->view('order_to_invoice/form', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'transactions/ordertoinvoice'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'transactions/ordertoinvoice'
 			]
 		]);
 	}
@@ -313,8 +324,10 @@ class Orders extends MY_Controller
 		$this->load->view('orders/order_form', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'transactions/form'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'transactions/form'
 			]
 		]);
 	}
@@ -431,8 +444,10 @@ class Orders extends MY_Controller
 		$this->load->view('quotations/preview', $data);
 		$this->load->view('templates/footer', [
 			'_moreJs' => [
-				'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-				'jquery.autocomplete.min', 'sales/preview'
+				'air-datepicker/js/datepicker.min',
+				'air-datepicker/js/i18n/datepicker.en',
+				'jquery.autocomplete.min',
+				'sales/preview'
 			]
 		]);
 	}

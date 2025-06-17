@@ -152,20 +152,3 @@
         </div>
     </div>
 </div>
-
-<div id="copyToast" style="
-    display: none;
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #6c757d; /* Bootstrap's gray color */
-    color: #fff;
-    padding: 12px 24px;
-    border-radius: 6px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    font-size: 14px;
-    z-index: 9999;
-">
-    Message copied to clipboard!
-</div>

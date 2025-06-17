@@ -19,29 +19,30 @@ class Configurations extends MY_Controller
 			die("handle ajax request");
 		} else {
 			$post = $this->input->post(null, true);
-			$rejected_sizes= [];
+			// var_dump($post );exit;
+			$rejected_sizes = [];
 			$sizes = $this->Configuration->fetch_sizes()["valueStr"];
 			if (isset($post['variables'])) {
-				$data= $post['variables'];
+				$data = $post['variables'];
 				if ($sizes !== $post['variables']["sizes"]) {
 					$old = explode(",", $sizes);
 					$new = explode(",", $post['variables']["sizes"]);
 					$diff = array_diff($old, $new);
-					$sizes_new= $new;
+					$sizes_new = $new;
 					foreach ($diff as $d) {
 						$count = $this->Configuration->check_if_size_is_active($d)["count"];
-						if(intval($count) > 0){
+						if (intval($count) > 0) {
 							array_push($sizes_new, $d);
 							array_push($rejected_sizes, $d);
-						}					
+						}
 					}
 					sort($sizes_new);
-					$sizes_new= implode(",",$sizes_new);
-					$data["sizes"]= $sizes_new;
+					$sizes_new = implode(",", $sizes_new);
+					$data["sizes"] = $sizes_new;
 				}
-				if($rejected_sizes !== []){
-					$r= implode(",",$rejected_sizes);
-					$this->session->set_flashdata('message', '*'.$this->lang->line('Sizes').': '.$r.' '.$this->lang->line('can_not_be_deleted').'*');
+				if ($rejected_sizes !== []) {
+					$r = implode(",", $rejected_sizes);
+					$this->session->set_flashdata('message', '*' . $this->lang->line('Sizes') . ': ' . $r . ' ' . $this->lang->line('can_not_be_deleted') . '*');
 				}
 				$this->Configuration->save($data);
 				redirect('configurations/index');
@@ -55,7 +56,10 @@ class Configurations extends MY_Controller
 			// die("This is how you read TestTwo [ {$this->Configuration->get_conf_val('TestTwo')} ]");
 			// die("This is how you read all: <pre>" . print_r($this->Configuration->load_configurations(), true) . "</pre>");
 			// die("This is how you read some: <pre>" . print_r($this->Configuration->load_configurations(['TestThree']), true) . "</pre>");
+			$data['whatsapp_order_confirmation_msg']	= $this->Configuration->fetch_local_whatsapp_order_confirmation_msg()["valueStr"];
+
 			$data['title'] = $this->lang->line('Configurations');
+			// var_dump($data);exit;
 			$this->load->view('templates/header', [
 				'_page_title' => $data['title'],
 				'_moreCss' => ['css/jquery-tag-this']
@@ -63,7 +67,8 @@ class Configurations extends MY_Controller
 			$this->load->view('configurations/form', $data);
 			$this->load->view('templates/footer', [
 				'_moreJs' => [
-					'jquery.tagthis', 'configurations/form'
+					'jquery.tagthis',
+					'configurations/form'
 				]
 			]);
 		}

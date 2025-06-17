@@ -176,7 +176,10 @@ function addLineToTransaction(item, newLine) {
 		for (var i = 0; i < sizes.length; i++) {
 			$(sizes[i]).val(0);
 		}
-		var getselected = jQuery('select.i-warehouse', $tr).children("option:selected").text();
+		if ( jQuery('select.i-warehouse', $tr).find('option[value="Primary Warehouse"]').length > 0 ) {
+		    jQuery('select.i-warehouse', $tr).val("Primary Warehouse");
+		}
+		var getselected = jQuery('select.i-warehouse', $tr).val();
 		$.ajax({
 			cache: false,
 			type: 'POST',

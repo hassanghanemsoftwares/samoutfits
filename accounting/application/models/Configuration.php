@@ -11,7 +11,7 @@ class Configuration extends MY_Model {
 	protected $_fieldsNames = ['id', 'name', 'type', 'valueInt', 'valueStr'];
 	protected $allowedNulls = ['valueInt', 'valueStr'];
 	protected $variables = [];
-	protected $keys = ['CompanyName', 'CompanyAddress', 'CompanyPhone', 'CompanyEmail', 'CompanyWebsite', 'CompanyLogo', 'Language', 'SystemCurrency', 'TestThree', 'sizes', 'status', 'source', 'categories', 'sub_categories', 'delivery_charge', 'colors', 'eco_delivery_charge'];
+	protected $keys = ['CompanyName', 'CompanyAddress', 'CompanyPhone', 'CompanyEmail', 'CompanyWebsite', 'CompanyLogo', 'Language', 'SystemCurrency', 'TestThree', 'sizes', 'status', 'source', 'categories', 'sub_categories', 'delivery_charge', 'colors', 'eco_delivery_charge','whatsapp_order_confirmation_msg'];
 	protected $numericFields = ['TestThree', 'Language', 'SystemCurrency'];
 	private $serializedFields = [];
 	protected $fileControls = [];
@@ -330,6 +330,14 @@ class Configuration extends MY_Model {
 		$this->db->select('valueStr');
 		$this->db->from('configurations');
 		$this->db->where('name', "sub_categories");
+		$query = $this->db->get()->row_array();
+		return $query;
+	}
+
+		public function fetch_local_whatsapp_order_confirmation_msg(){
+		$this->db->select('valueStr');
+		$this->db->from('configurations');
+		$this->db->where('name', "whatsapp_order_confirmation_msg");
 		$query = $this->db->get()->row_array();
 		return $query;
 	}

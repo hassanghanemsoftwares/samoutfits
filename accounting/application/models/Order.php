@@ -192,6 +192,7 @@ class Order extends MY_Model
     {
         $this->db->select('orders.*');
         $this->db->from('orders');
+        $this->db->join('transactions', 'transactions.id = orders.transaction_id', 'inner');
         $this->db->where('(orders.transaction_id is not NULL) and (orders.hide != 1 or orders.hide is NULL)');
         $query = $this->db->get()->result_array();
         return $query;

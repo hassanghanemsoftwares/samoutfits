@@ -28,9 +28,13 @@ class Ecommerce_user extends MY_Model
     {
         $dt = [
             'columns' => [
-                ['CONCAT_WS(" ", first_name, last_name)', 'eco_user_name'], 'account_number', 'birthdate',
-                'phone', 'ecommerce_users.id'
-            ], 'query' => [
+                ['CONCAT_WS(" ", first_name, last_name)', 'eco_user_name'],
+                'account_number',
+                'birthdate',
+                'phone',
+                'ecommerce_users.id'
+            ],
+            'query' => [
                 'join' => [['accounts', 'accounts.id = ecommerce_users.account_id', 'inner']],
                 'order_by' => [['ecommerce_users.id', 'DESC']]
             ],
@@ -55,5 +59,46 @@ class Ecommerce_user extends MY_Model
         $data['password'] = $this->User->encryptPass('Sam20Outfit22');
         $this->db->where('id', $user_id);
         return $this->db->update('ecommerce_users', $data);
+    }
+
+    public function paginate_whish_users()
+    {
+        $query = [
+            'select' => "ecommerce_users.*, accounts.account_number, accounts.phone, CONCAT_WS(' ', first_name, last_name) AS eco_user_name",
+            'join' => [
+                ['accounts', 'accounts.id = ecommerce_users.account_id', 'inner'],
+                ['transactions', 'transactions.account_id = accounts.id', 'inner']
+            ],
+            'where' => [
+                "transactions.payment_method_gateway = 'whish' And transactions.payment_method_gateway_status = 'Payment successful'",
+            ],
+            'order_by' => [['ecommerce_users.id', 'DESC']]
+        ];
+        return parent::paginate($query, ['urlPrefix' => '']);
+    }
+
+    public function load_whish_users_data_tables()
+    {
+        $dt = [
+            'columns' => [
+                ['CONCAT_WS(" ", first_name, last_name)', 'eco_user_name'],
+                'account_number',
+                'birthdate',
+                'phone',
+                'ecommerce_users.id'
+            ],
+            'query' => [
+                'join' => [
+                    ['accounts', 'accounts.id = ecommerce_users.account_id', 'inner'],
+                    ['transactions', 'transactions.account_id = accounts.id', 'inner']
+                ],
+                'where' => [
+                    "transactions.payment_method_gateway = 'whish' And transactions.payment_method_gateway_status = 'Payment successful'",
+                ],
+                'order_by' => [['ecommerce_users.id', 'DESC']]
+            ],
+            'search_in' => ['first_name, last_name, account_number, phone']
+        ];
+        return parent::load_datatables_pagedata($dt);
     }
 }
