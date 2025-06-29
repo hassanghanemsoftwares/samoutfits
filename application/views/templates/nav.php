@@ -126,20 +126,20 @@
 						if (count($s) == 1 && in_array(NULL, $s)) {
 					?>
 							<div>
-								<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace('&', '%26', $k)) ?>"
+								<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace(' ', '_', str_replace('&', '-and', $k))) ?>"
 									class="nav-item nav-link"><?php echo $k ?></a>
 							</div>
 						<?php } else { ?>
 							<div class="nav-item dropdown dropright">
-								<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace('&', '%26', $k)) ?>"
+								<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace(' ', '_', str_replace('&', '-and', $k))) ?>"
 									class="nav-link dropdown-toggle" data-toggle="dropdown"><?php echo $k ?> <i
 										class="fa fa-angle-right float-right mt-1"></i></a>
 								<div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
-									<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace('&', '%26', $k)) ?>"
+									<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace(' ', '_', str_replace('&', '-and', $k))) ?>"
 										class="dropdown-item">All</a>
 									<?php foreach ($s as $c) {
 										if ($c != NULL && $c != '0') { ?>
-											<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace('&', '%26', $k)) ?>/<?php echo str_replace('&', '%26', $c) ?>"
+											<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace(' ', '_', str_replace('&', '-and', $k))) ?>/<?php echo str_replace(' ', '_', str_replace('&', '-and', $c)) ?>"
 												class="dropdown-item"><?php echo $c ?></a>
 									<?php }
 									} ?>
@@ -187,19 +187,19 @@
 						<?php foreach ($sub_cat_list as $k => $s) {
 							if (count($s) == 1 && in_array(NULL, $s)) {
 						?>
-								<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace('&', '%26', $k)) ?>"
+								<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace(' ', '_', str_replace('&', '-and', $k))) ?>"
 									class="nav-item nav-link only-mobile"><?php echo $k ?></a>
 							<?php } else { ?>
 								<div class="nav-item dropdown d-lg-none">
-									<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace('&', '%26', $k)) ?>"
+									<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace(' ', '_', str_replace('&', '-and', $k))) ?>"
 										class="nav-link dropdown-toggle" data-toggle="dropdown"><?php echo $k ?> <i
 											class="fa fa-angle-right float-right mt-1"></i></a>
 									<div class="dropdown-menu rounded-0 border-0 m-0 pl-2 text-black">
-										<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace('&', '%26', $k)) ?>"
+										<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace(' ', '_', str_replace('&', '-and', $k))) ?>"
 											class="nav-item nav-link text-black">All</a>
 										<?php foreach ($s as $c) {
 											if ($c != NULL && $c != '0') { ?>
-												<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace('&', '%26', $k)) ?>/<?php echo str_replace('&', '%26', $c) ?>"
+												<a href="products/category/<?php echo ($k == 'Caps') ? 'Hats' : (($k == 'Bags & Wallets') ? 'Wallets' : str_replace(' ', '_', str_replace('&', '-and', $k))) ?>/<?php echo str_replace(' ', '_', str_replace('&', '-and', $c)) ?>"
 													class="nav-item nav-link text-black"><?php echo $c ?></a>
 										<?php }
 										} ?>

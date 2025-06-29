@@ -256,14 +256,14 @@ class Transaction extends MY_Model
 		if ($sub_cat && $sub_cat !== 'All') {
 			$sub_f = str_replace('%and', '&', $sub_cat);
 			if (is_array($sub_f)) {
-				if (in_array('Deodorant%20&%20Roll', $sub_f)) {
+				if (in_array('Deodorant_&_Roll', $sub_f)) {
 					$this->db->where_in('items.sub_category', ['Deodorant & Roll-on']);
 				} else {
-					$this->db->where_in('items.sub_category', str_replace('%20', ' ', $sub_f));
+					$this->db->where_in('items.sub_category', str_replace('_', ' ', $sub_f));
 				}
 			} else {
 				$sub_f = str_replace('All-', '', $sub_f);
-				$this->db->where_in('items.sub_category', str_replace('%20', ' ', $sub_f));
+				$this->db->where_in('items.sub_category', str_replace('_', ' ', $sub_f));
 			}
 		}
 		$this->db->having('total_qty >', 0);

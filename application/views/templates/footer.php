@@ -15,10 +15,12 @@
 <!-- Template Javascript -->
 <script src="assets/js/main.js?version=1.3"></script>
 <script src="assets/js/common.js?version=1.3"> </script>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KV38C8MQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
 <?php
 if (isset($_moreJs)) :
 	foreach ($_moreJs as $jsFile) {
-		echo PHP_EOL, '<script src="assets/js/', $jsFile, '.js?version=5.9"></script>';
+		echo PHP_EOL, '<script src="assets/js/', $jsFile, '.js?version=6.1"></script>';
 	}
 endif
 ?>

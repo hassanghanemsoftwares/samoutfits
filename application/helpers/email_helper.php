@@ -2,46 +2,46 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 if (!function_exists('send_admin_order_email')) {
-    function send_admin_order_email($data)
-    {
-        $CI = &get_instance();
-        $CI->load->library('email');
-        $order = $data['order'];
-        $order_items = $data['order_items'];
-        $customer = $data['customer'];
-        $emailConfig = [
-            'protocol'     => 'smtp',
-            'smtp_host'    => 'ssl://mail.samoutfits.com',
-            'smtp_port'    => 465,
-            'smtp_user'    => 'orders@samoutfits.com',
-            'smtp_pass'    => 'UMzsV55b%o%TbU0K',
-            'mailtype'     => 'html',
-            'charset'      => 'utf-8',
-            'newline'      => "\r\n",
-            'crlf'         => "\r\n",
-            'wordwrap'     => TRUE,
-            'priority'     => 1,
-        ];
+  function send_admin_order_email($data)
+  {
+    $CI = &get_instance();
+    $CI->load->library('email');
+    $order = $data['order'];
+    $order_items = $data['order_items'];
+    $customer = $data['customer'];
+    $emailConfig = [
+      'protocol'     => 'smtp',
+      'smtp_host'    => 'ssl://cloud2.lebstores.com',
+      'smtp_port'    => 465,
+      'smtp_user'    => 'orders@samoutfits.com',
+      'smtp_pass'    => 'MyBusiness@2025',
+      'mailtype'     => 'html',
+      'charset'      => 'utf-8',
+      'newline'      => "\r\n",
+      'crlf'         => "\r\n",
+      'wordwrap'     => TRUE,
+      'priority'     => 1,
+    ];
 
-        $CI->email->initialize($emailConfig);
-        $CI->email->from('orders@samoutfits.com', 'Samoutfits');
+    $CI->email->initialize($emailConfig);
+    $CI->email->from('orders@samoutfits.com', 'Samoutfits');
 
-        // $client_email = trim($customer['email'] ?? '');
+    $client_email = trim($customer['email'] ?? '');
 
-        // if (!empty($client_email)) {
-        //     $CI->email->to($client_email);
-        //     $CI->email->cc("orders@samoutfits.com");
-        // } else {
-        $CI->email->to("orders@samoutfits.com");
+    if (!empty($client_email)) {
+        $CI->email->to($client_email);
+        $CI->email->cc("orders@samoutfits.com");
+    } else {
+    $CI->email->to("orders@samoutfits.com");
 
-        // }
+    }
 
-        // $CI->email->to("hassanghanemsoftwares@gmail.com");
+    // $CI->email->to("hassanghanemsoftwares@gmail.com");
 
-        $CI->email->subject('🛒 Order Confirmation - #' . $order['auto_no']);
+    $CI->email->subject('🛒 Order Confirmation - #' . $order['auto_no']);
 
 
-        $message = '<html>
+    $message = '<html>
   <head>
     <meta charset="UTF-8">
   </head>
@@ -71,7 +71,7 @@ if (!function_exists('send_admin_order_email')) {
                     <li style="margin-bottom:8px;">
                       <strong>Order Value:</strong>
                       <span style="color:#7f00ff;">
-                        USD ' . number_format((float)$order_items[0]['price'] * $order_items[0]['qty'] + $order['delivery_charge'], 2) . '
+                        USD ' . number_format((float)$order['total'], 2) . '
                       </span>
                     </li>
                     <li style="margin-bottom:8px;">
@@ -82,13 +82,13 @@ if (!function_exists('send_admin_order_email')) {
                       <strong>Payment Method:</strong>
                       <span style="color:#7f00ff;">' . htmlspecialchars($order['payment_method']) . '</span>
                     </li>';
-        if ($order['payment_method'] === "whish") {
-            $message .= '<li>
+    if ($order['payment_method'] === "whish") {
+      $message .= '<li>
                       <strong>Payment Status:</strong>
                       <span style="color:#7f00ff;">' . htmlspecialchars($order['payment_status']) . '</span>
                     </li>';
-        }
-        $message .= '
+    }
+    $message .= '
                   </ul>
                 </div>
 
@@ -105,8 +105,8 @@ if (!function_exists('send_admin_order_email')) {
                       </tr>
                     </thead>
                     <tbody>';
-        foreach ($order_items as $item) {
-            $message .= '<tr>
+    foreach ($order_items as $item) {
+      $message .= '<tr>
                           <td style="padding:8px;">
                             <img src="' . base_url() . 'accounting/assets/uploads/' . $item['image_name'] . '"
                                  alt=""
@@ -118,8 +118,8 @@ if (!function_exists('send_admin_order_email')) {
                           <td style="padding:8px;">' . $item['qty'] . '</td>
                           <td style="padding:8px;">$' . number_format((float)$item['price'] * $item['qty'], 2) . '</td>
                         </tr>';
-        }
-        $message .= '</tbody>
+    }
+    $message .= '</tbody>
                   </table>
                 </div>
 
@@ -190,13 +190,13 @@ if (!function_exists('send_admin_order_email')) {
 </html>';
 
 
-        $CI->email->message($message);
+    $CI->email->message($message);
 
-        if (!$CI->email->send()) {
-            log_message('error', 'Order email failed: ' . $CI->email->print_debugger(['headers']));
-            return false;
-        }
-
-        return true;
+    if (!$CI->email->send()) {
+      log_message('error', 'Order email failed: ' . $CI->email->print_debugger(['headers']));
+      return false;
     }
+
+    return true;
+  }
 }

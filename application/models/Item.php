@@ -127,26 +127,27 @@ class Item extends MY_Model
 				$this->db->where('items.category', $category);
 			}
 		}
+		// var_dump($filter);exit;
 		if ($filter) {
 			if (array_key_exists("subcategory", $filter)) {
 				unset($filter['subcategory']['All']);
 				if ($filter['subcategory']) {
-					$sub_f = str_replace('%26', '&', $filter['subcategory']);
+					$sub_f = str_replace('-and', '&', $filter['subcategory']);
 					if (is_array($sub_f)) {
-						if (in_array('Deodorant%20&%20Roll', $sub_f)) {
+						if (in_array('Deodorant_and_Roll-on', $sub_f)) {
 							$this->db->where_in('items.sub_category', ['Deodorant & Roll-on']);
 						} else {
-							$this->db->where_in('items.sub_category', str_replace('%20', ' ', $sub_f));
+							$this->db->where_in('items.sub_category', str_replace('_', ' ', $sub_f));
 						}
 					} else {
-						$this->db->where_in('items.sub_category', str_replace('%20', ' ', $sub_f));
+						$this->db->where_in('items.sub_category', str_replace('_', ' ', $sub_f));
 					}
 				}
 			}
 			if (array_key_exists("gender", $filter)) {
 				unset($filter['gender']['All']);
 				if ($filter['gender']) {
-					$this->db->where_in('items.gender', str_replace('%20', ' ', $filter['gender']));
+					$this->db->where_in('items.gender', str_replace('_', ' ', $filter['gender']));
 				}
 			}
 			if ($filter['min_price']) {
@@ -158,15 +159,15 @@ class Item extends MY_Model
 			if (array_key_exists("colors", $filter)) {
 				unset($filter['colors']['All']);
 				if ($filter['colors']) {
-					$color_rep = str_replace('%26', '&', $filter['colors']);
-					$this->db->where_in('items.color', str_replace('%20', ' ', $color_rep));
+					$color_rep = str_replace('-and', '&', $filter['colors']);
+					$this->db->where_in('items.color', str_replace('_', ' ', $color_rep));
 				}
 			}
 
 			if (array_key_exists("sizes", $filter)) {
 				unset($filter['sizes']['All']);
 				if ($filter['sizes']) {
-					$this->db->where_in('transaction_item_sizes.size', str_replace('%20', ' ', $filter['sizes']));
+					$this->db->where_in('transaction_item_sizes.size', str_replace('_', ' ', $filter['sizes']));
 				}
 			}
 			// var_dump(array_key_exists("sort", $filter), $filter);exit;
@@ -477,20 +478,20 @@ class Item extends MY_Model
 		if ($colors) {
 			unset($colors['All']);
 			if ($colors) {
-				$color_rep = str_replace('%26', '&', $colors);
-				$this->db->where_in('items.color', str_replace('%20', ' ', $color_rep));
+				$color_rep = str_replace('-and', '&', $colors);
+				$this->db->where_in('items.color', str_replace('_', ' ', $color_rep));
 			}
 		}
 
 		if ($sizes) {
 			unset($sizes['All']);
 			if ($sizes) {
-				$this->db->where_in('transaction_item_sizes.size', str_replace('%20', ' ', $sizes));
+				$this->db->where_in('transaction_item_sizes.size', str_replace('_', ' ', $sizes));
 			}
 		}
 		unset($gender['All']);
 		if ($gender) {
-			$this->db->where_in('items.gender', str_replace('%20', ' ', $gender));
+			$this->db->where_in('items.gender', str_replace('_', ' ', $gender));
 		}
 		$query = $this->db->get()->result_array();
 		// 		echo($this->db->last_query());exit;

@@ -59,7 +59,7 @@
             </a>
         </div>
         <div class="col-sm cat-style mb-3">
-            <a href="products/category/Bracelets%20%26%20Necklaces">
+            <a href="products/category/Bracelets_-and_Necklaces">
                 <img class="img-fluid" src="accounting/sections_uploads/<?php echo $sections[3]['value'] ?>"
                     width="100%">
             </a>
@@ -77,7 +77,7 @@
             </a>
         </div>
         <div class="col-sm cat-style mb-3">
-            <a href="products/category/Hair%20%26%20Skin%20Products">
+            <a href="products/category/Hair_-and_Skin_Products">
                 <img class="img-fluid" src="accounting/sections_uploads/<?php echo $sections[6]['value'] ?>"
                     width="100%">
             </a>

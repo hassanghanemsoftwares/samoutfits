@@ -79,7 +79,11 @@ class Sales extends MY_Controller
 	{
 		$fetched = ($id > 0 ? $this->Transaction->fetch(_gnv($id)) : false);
 		$post = $this->input->post(['trans', 'transItems', 'submitBtn'], true);
-
+		if (isset($post['trans']['payment_method_gateway'])) {
+			if ($post['trans']['payment_method_gateway'] == "C.O.D") {
+				$post['trans']['payment_method_gateway_status'] = null;
+			}
+		}
 		if ((!$fetched) and ($this->Transaction->set_next_auto_number_for_sale_and_exchange())) {
 			$this->Transaction->set_field('auto_no', $this->Transaction->set_next_auto_number_for_sale_and_exchange());
 		}
@@ -98,6 +102,10 @@ class Sales extends MY_Controller
 				$this->load->model('Transaction_item');
 				$trans = $this->Transaction->load_trans_data_by_trans_id($id);
 				$trans_items = $this->Transaction_item->load_all_trans_items($id);
+				if (isset($post['trans']['payment_method_gateway'])) {
+					$this->load->model('Order');
+					$this->Order->update_order_payment_method_status_by_tran_id($id, $post['trans']['payment_method_gateway'], $post['trans']['payment_method_gateway_status']);
+				}
 			}
 			$saved = $fetched ? $this->Transaction->update() : $this->Transaction->insert();
 			if ($saved) {
@@ -1444,8 +1452,8 @@ class Sales extends MY_Controller
 		$trans = $this->Transaction->load_trans_data_by_trans_id($id);
 		$trans_items = $this->Transaction_item->load_transaction_items($id);
 
-		foreach ($trans_items as $key=> $item) {
-			$trans_items[$key]['size'] = $this->Transaction_item->fetch_trans_item_selected_size($item['id'])['size']??"";
+		foreach ($trans_items as $key => $item) {
+			$trans_items[$key]['size'] = $this->Transaction_item->fetch_trans_item_selected_size($item['id'])['size'] ?? "";
 		}
 
 

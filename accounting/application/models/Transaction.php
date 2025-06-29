@@ -1608,7 +1608,12 @@ class Transaction extends MY_Model
 	{
 		$query = [
 			'select' => [
-				"SUM(transaction_items.qty * transaction_items.profit) as total_profit,"
+				"SUM(
+					transaction_items.qty * 
+					(transaction_items.price - transaction_items.cost - (transaction_items.discount / 100.0 * transaction_items.price))
+				) as total_profit"
+
+				// "SUM(transaction_items.qty * transaction_items.profit) as total_profit,"
 			],
 			'join' => [
 				['transaction_items', 'transactions.id = transaction_items.transaction_id', 'inner']

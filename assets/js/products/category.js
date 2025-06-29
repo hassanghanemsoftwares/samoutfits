@@ -55,7 +55,7 @@ function create_url_link_and_redirect(page) {
     $('.sub_category').each(function () {
         if (this.checked == true) {
             if (this.value !== 'All') {
-                subcategory[count] = this.value.replace("&", "%26");
+                subcategory[count] = this.value.replace("&", "-and").replace(" ", "_").replace("%20", "_");
                 count++;
             }
         }
@@ -84,7 +84,7 @@ function create_url_link_and_redirect(page) {
     var count = 0;
     $('.color').each(function () {
         if (this.checked == true) {
-            let color_rep = this.value.replace("&", "%26");
+            let color_rep = this.value.replace("&", "-and").replace(" ", "_").replace("%20", "_");
             colors[count] = color_rep;
             count++;
         }

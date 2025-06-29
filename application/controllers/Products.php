@@ -57,8 +57,8 @@ class Products extends MY_Controller
 		$data['product'] = $this->Item->load_item_data($item_id);
 		$data['category'] = $data['product']['category'];
 		$data['sub_category'] = $data['product']['sub_category'];
-		$data['category_link'] = str_replace(" ", "%20", str_replace("&", "%26", $data['product']['category']));
-		$data['sub_category_link'] = str_replace(" ", "%20", str_replace("&", "%26", $data['product']['sub_category']));
+		$data['category_link'] = str_replace(" ", "_", str_replace("&", "-and", $data['product']['category']));
+		$data['sub_category_link'] = str_replace(" ", "_", str_replace("&", "-and", $data['product']['sub_category']));
 		// var_dump($data['sub_category_link'], $data['category_link']);exit;
 		$data['images'] = $this->Item->load_item_images($item_id);
 		$tags = $this->Item->load_item_tags($item_id);
@@ -137,8 +137,8 @@ class Products extends MY_Controller
 			}
 		}
 		// var_dump($title);exit;
-		$cat = str_replace('%26', '&', $category);
-		$cat = str_replace('%20', ' ', $cat);
+		$cat = str_replace('-and', '&', $category);
+		$cat = str_replace('_', ' ', $cat);
 		if (in_array($cat, ['Shoes', 'Men Shoes', 'Unisex Shoes', 'Women Shoes', 'Clothing'])) {
 			$data['hide_size'] = 0;
 		} else {
@@ -169,18 +169,20 @@ class Products extends MY_Controller
 
 	private function load_related_data_for_category($category, $subcategory, $gender, $min_price, $max_price, $colors, $sizes, $sort)
 	{
-		$breadcrumb_sub_category = str_replace('%26', '&', $subcategory);
-		$breadcrumb_sub_category = str_replace('%20', ' ', $breadcrumb_sub_category);
+		$breadcrumb_sub_category = str_replace('-and', '&', $subcategory);
+		$breadcrumb_sub_category = str_replace('_', ' ', $breadcrumb_sub_category);
 		$data['breadcrumb_sub_category'] = str_replace('All-', '', $breadcrumb_sub_category);
 		$data['category_name'] = $category;
 		$data['breadcrumb_cat_link'] = "products/category/" . $category;
+			
 		if ($subcategory) {
-			$subcategory_array = explode("-", $subcategory);
+			$subcategory_new = str_replace('-and', 'and', $subcategory);
+			$subcategory_array = explode("-", $subcategory_new);
 			$data['selected_subcategory'] = [];
 			foreach ($subcategory_array as $s) {
-				str_replace('%20', ' ',  $s);
-				if ($s == "Deodorant%20%26%20Roll") {
-					$s = "Deodorant%20%26%20Roll-on";
+				str_replace('_', ' ',  $s);
+				if ($s == "Deodorant_and_Roll") {
+					$s = "Deodorant_and_Roll-on";
 				}
 				$data['selected_subcategory'][$s] = $s;
 			}
@@ -240,8 +242,8 @@ class Products extends MY_Controller
 			if ($category === "Hair_and_Body_Care") {
 				$data['category_name'] = 'Hair & Body Care';
 			} else {
-				$category = str_replace('%26', '&', $category);
-				$category = str_replace('%20', ' ', $category);
+				$category = str_replace('-and', '&', $category);
+				$category = str_replace('_', ' ', $category);
 				$data['category_name'] = $category;
 			}
 		}

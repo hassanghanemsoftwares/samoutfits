@@ -197,4 +197,13 @@ class Order extends MY_Model
         $query = $this->db->get()->result_array();
         return $query;
     }
+    public function update_order_payment_method_status_by_tran_id($tran_id, $payment_method, $payment_status)
+    {
+        $data = [
+            'payment_method' => $payment_method,
+            'payment_status' => $payment_status
+        ];
+        $this->db->where('transaction_id', $tran_id);
+        return $this->db->update('orders', $data);
+    }
 }

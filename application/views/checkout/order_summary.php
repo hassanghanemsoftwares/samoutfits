@@ -110,7 +110,7 @@
         <div class="bg-purple p-3 rounded mb-4">
             <ul class="list-unstyled mb-0 mx-auto" style="max-width: 400px;">
                 <li class="d-flex justify-content-start mb-2"><strong class="mr-1">Order Number: </strong> <span class="text-purple"> <?php echo htmlspecialchars($order['auto_no']); ?></span></li>
-                <li class="d-flex justify-content-start mb-2"><strong class="mr-1">Order Value: </strong> <span class="text-purple"> USD <?php echo number_format((float)$order_items[0]['price'] * $order_items[0]['qty'] + $order['delivery_charge'], 2); ?></span></li>
+                <li class="d-flex justify-content-start mb-2"><strong class="mr-1">Order Value: </strong> <span class="text-purple"> USD <?php echo number_format((float) $order['total'], 2); ?></span></li>
                 <li class="d-flex justify-content-start mb-2"><strong class="mr-1">Status: </strong> <span class="text-purple"> <?php echo htmlspecialchars($order['status']); ?></span></li>
                 <li class="d-flex justify-content-start"><strong class="mr-1">Payment Method: </strong> <span class="text-purple"> <?php echo htmlspecialchars($order['payment_method']); ?></span></li>
                 <?php

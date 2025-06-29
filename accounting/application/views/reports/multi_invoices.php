@@ -74,7 +74,7 @@
                             <th><?php echo $this->lang->line('Description') ?></th>
                         </tr>
                         <?php foreach ($t as $i) { ?>
-                            <tr <?php echo ($i['qty'] > 0) ? 'style="background-color: #7f00ff;color: white;"' : '' ?>>
+                            <tr <?php echo ($i['qty'] > 1) ? 'style="background-color: #7f00ff;color: white;"' : '' ?>>
                                 <th><?php echo $i['barcode'] ?></th>
                                 <th><img src="assets/uploads/<?php echo $i['image'] ?>" height="100px"></th>
                                 <th><?php echo $i['size'] ?></th>
