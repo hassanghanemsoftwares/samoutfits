@@ -8,7 +8,7 @@ class Order extends MY_Model
     protected $_table = 'orders';
     protected $_listFieldName = 'id';
     protected $_fieldsNames = ['id', 'auto_no', 'customer_id', 'order_date', 'value_date', 'currency_id', 'currency_rate', 'description', 'status', 'coupon_id', 'discount', 'address', 'delivery_charge', 'otp', 'gest', 'payment_method', 'payment_status'];
-    protected $_dateFields = ['order_date', 'value_date'];
+    protected $_dateFields = ['value_date'];
     protected $allowedNulls = ['value_date', 'description', 'status', 'coupon_id', 'discount'];
 
     public function __construct()
@@ -39,7 +39,7 @@ class Order extends MY_Model
         $data = array(
             'auto_no' => $this->set_next_auto_number('OO'),
             'customer_id' => $this->violet_auth->get_user_id(),
-            'order_date' => date('Y-m-d'),
+            'order_date' => date('Y-m-d H:i:s'),
             'value_date' => '',
             'currency_id' => $local_currency,
             'currency_rate' => 1,
@@ -78,7 +78,7 @@ class Order extends MY_Model
         $data = array(
             'auto_no' => $this->set_next_auto_number('OO'),
             'customer_id' => $user_id,
-            'order_date' => date('Y-m-d'),
+            'order_date' => date('Y-m-d H:i:s'),
             'value_date' => '',
             'currency_id' => $local_currency,
             'currency_rate' => 1,
@@ -94,6 +94,7 @@ class Order extends MY_Model
             'payment_status' => $payment_status
 
         );
+        // var_dump($data);exit;
         $this->Order->set_fields($data);
         $saved = $this->Order->insert();
         return  $saved;
@@ -230,7 +231,7 @@ class Order extends MY_Model
     }
     public function get_order_data($order_id)
     {
-      $this->db->select('
+        $this->db->select('
         orders.*, 
         SUM(order_items.qty * order_items.price * (1 - (order_items.discount / 100))) AS subtotal,
         (SUM(order_items.qty * order_items.price * (1 - (order_items.discount / 100))) - orders.discount + orders.delivery_charge) AS total

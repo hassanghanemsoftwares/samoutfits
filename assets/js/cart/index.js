@@ -281,7 +281,7 @@ function fireRemoveFromCart(item_id, qty) {
     success: function (data) {
       console.log(data);
       if (data["result"]) {
-        console.log(data["data"]);
+        // console.log(data["data"]);
         var product = [
           {
             //  adding a product to a shopping cart.

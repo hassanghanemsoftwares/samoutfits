@@ -72,6 +72,7 @@ class Ecommerce_user extends MY_Model
             'where' => [
                 "transactions.payment_method_gateway = 'whish' And transactions.payment_method_gateway_status = 'Payment successful'",
             ],
+              'group_by' => ['ecommerce_users.id'],
             'order_by' => [['ecommerce_users.id', 'DESC']]
         ];
         return parent::paginate($query, ['urlPrefix' => '']);
@@ -95,6 +96,7 @@ class Ecommerce_user extends MY_Model
                 'where' => [
                     "transactions.payment_method_gateway = 'whish' And transactions.payment_method_gateway_status = 'Payment successful'",
                 ],
+                'group_by' => ['ecommerce_users.id'],
                 'order_by' => [['ecommerce_users.id', 'DESC']]
             ],
             'search_in' => ['first_name, last_name, account_number, phone']

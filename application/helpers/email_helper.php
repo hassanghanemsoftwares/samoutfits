@@ -28,15 +28,15 @@ if (!function_exists('send_admin_order_email')) {
 
     $client_email = trim($customer['email'] ?? '');
 
-    if (!empty($client_email)) {
-        $CI->email->to($client_email);
-        $CI->email->cc("orders@samoutfits.com");
-    } else {
-    $CI->email->to("orders@samoutfits.com");
+    // if (!empty($client_email)) {
+    //     $CI->email->to($client_email);
+    //     $CI->email->cc("orders@samoutfits.com");
+    // } else {
+    // $CI->email->to("orders@samoutfits.com");
 
-    }
+    // }
 
-    // $CI->email->to("hassanghanemsoftwares@gmail.com");
+    $CI->email->to("hassanghanemsoftwares@gmail.com");
 
     $CI->email->subject('🛒 Order Confirmation - #' . $order['auto_no']);
 
@@ -190,12 +190,12 @@ if (!function_exists('send_admin_order_email')) {
 </html>';
 
 
-    $CI->email->message($message);
+    // $CI->email->message($message);
 
-    if (!$CI->email->send()) {
-      log_message('error', 'Order email failed: ' . $CI->email->print_debugger(['headers']));
-      return false;
-    }
+    // if (!$CI->email->send()) {
+    //   log_message('error', 'Order email failed: ' . $CI->email->print_debugger(['headers']));
+    //   return false;
+    // }
 
     return true;
   }

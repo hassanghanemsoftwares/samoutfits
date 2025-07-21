@@ -43,10 +43,10 @@ jQuery(document).ready(function () {
 
             //mohammad code 2024-11-22 start
             // alert($('#item_id').val());
-            fbq("track", "AddToCart", {
-              content_ids: ["" + $("#item_id").val() + ""], // 'REQUIRED': array of product IDs
-              content_type: "product", // RECOMMENDED: Either product or product_group based on the content_ids or contents being passed.
-            });
+            // fbq("track", "AddToCart", {
+            //   content_ids: ["" + $("#item_id").val() + ""], // 'REQUIRED': array of product IDs
+            //   content_type: "product", // RECOMMENDED: Either product or product_group based on the content_ids or contents being passed.
+            // });
             //mohammad code 2024-11-22 end
             //fire data layer add to cart
             fireAddToCart($("#item_id").val(), $("#qty_value").val());
@@ -102,10 +102,10 @@ jQuery(document).ready(function () {
             // $('#modal_image').height(50);
             // $('#go_wishlist').hide();
             // $('#product_modal').modal('show');
-            fbq("track", "AddToCart", {
-              content_ids: ["" + $("#item_id").val() + ""], // 'REQUIRED': array of product IDs
-              content_type: "product", // RECOMMENDED: Either product or product_group based on the content_ids or contents being passed.
-            });
+            // fbq("track", "AddToCart", {
+            //   content_ids: ["" + $("#item_id").val() + ""], // 'REQUIRED': array of product IDs
+            //   content_type: "product", // RECOMMENDED: Either product or product_group based on the content_ids or contents being passed.
+            // });
             window.location.href = getAppURL("Checkout/direct_order");
           }
         },
@@ -224,12 +224,12 @@ function fireWhatsAppClick() {}
 
 jQuery(document).ready(function () {
   //mohammad code 2024-11-22 start
-  fbq("track", "ViewContent", {
-    content_ids: ["" + $("#item_id").val() + ""], // 'REQUIRED': array of product IDs
-    content_type: "product", // RECOMMENDED: Either product or product_group based on the content_ids or contents being passed.
-    value: parseFloat($("#fbp_product_price").val()), // Product price (numeric)
-    currency: "USD",
-  });
+  // fbq("track", "ViewContent", {
+  //   content_ids: ["" + $("#item_id").val() + ""], // 'REQUIRED': array of product IDs
+  //   content_type: "product", // RECOMMENDED: Either product or product_group based on the content_ids or contents being passed.
+  //   value: parseFloat($("#fbp_product_price").val()), // Product price (numeric)
+  //   currency: "USD",
+  // });
   // console.log('true');
   //mohammad code 2024-11-22 end
   //when enter product page

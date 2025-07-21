@@ -223,10 +223,12 @@ class Return_sales extends MY_Controller
 		$categories = explode(",", $categories);
 		$data['categories'] = array_combine($categories, $categories);
 		$sizes = explode(",", $this->Configuration->fetch_sizes()["valueStr"]);
-		$data['sizes']["No"] = "No";
+			$data['sizes']["No"] = "No";
+
 		foreach ($sizes as $s) {
 			$data['sizes'][$s] = $s;
 		}
+		// var_dump($data['sizes']);exit;
 		$delivery_charge = $this->Configuration->fetch_delivery_charge()["valueStr"];
 		$delivery_charge = explode(",", $delivery_charge);
 		$data['delivery_charge'] = array_combine($delivery_charge, $delivery_charge);

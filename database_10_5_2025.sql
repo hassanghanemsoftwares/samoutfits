@@ -30,3 +30,6 @@
 
 -- ALTER TABLE configurations 
 -- MODIFY valueStr TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
+-- ALTER TABLE `orders` CHANGE `order_date` `order_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;

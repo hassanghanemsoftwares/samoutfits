@@ -90,7 +90,7 @@ class Checkout extends MY_Controller
             $data['discount_type'] = $post['discount_type'];
         }
 
-        // var_dump($post);exit;
+        // var_dump($data['cartItems'] );exit;
         if ($delivery_charge['valueStr']) {
             $data['delivery_charge'] = $delivery_charge['valueStr'];
         } else {
@@ -334,11 +334,11 @@ class Checkout extends MY_Controller
         //check if phone number exist start
         $phone_without_code = $this->input->post('phone');
 
-        $firstTwoCharsOfPhone = substr($phone_without_code, 0, 2); // Get the first two characters
+        // $firstTwoCharsOfPhone = substr($phone_without_code, 0, 2); // Get the first two characters
 
-        if ($firstTwoCharsOfPhone === '03' && $this->input->post('phone_code') == 961) {
-            $phone_without_code = '3' . substr($phone_without_code, 2); // Replace with '99' and concatenate the rest of the string
-        }
+        // if ($firstTwoCharsOfPhone === '03' && $this->input->post('phone_code') == 961) {
+        //     $phone_without_code = '3' . substr($phone_without_code, 2); // Replace with '99' and concatenate the rest of the string
+        // }
 
         $phone_string = $this->input->post('phone_code') . $phone_without_code;
         $phone = str_replace(' ', '', $phone_string);
@@ -578,6 +578,12 @@ class Checkout extends MY_Controller
                     $this->cart->destroy();
 
                     $fireData = array(
+                        'customer' => [
+                            "fname" => $this->input->post('fname'),
+                            "lname" => $this->input->post('lname'),
+                            'phone' => $phone,
+                            'email' => $this->input->post('email'),
+                        ],
                         'order' => $iserted_order,
                         'delivery_charge' => $delivery_charge,
                         'order_items' => $inserted_order_items,
@@ -756,11 +762,11 @@ class Checkout extends MY_Controller
         //check if phone number exist start
         $phone_without_code = $formData['phone'];
 
-        $firstTwoCharsOfPhone = substr($phone_without_code, 0, 2); // Get the first two characters
+        // $firstTwoCharsOfPhone = substr($phone_without_code, 0, 2); // Get the first two characters
 
-        if ($firstTwoCharsOfPhone === '03' && $formData['phone_code'] == 961) {
-            $phone_without_code = '3' . substr($phone_without_code, 2); // Replace with '99' and concatenate the rest of the string
-        }
+        // if ($firstTwoCharsOfPhone === '03' && $formData['phone_code'] == 961) {
+        //     $phone_without_code = '3' . substr($phone_without_code, 2); // Replace with '99' and concatenate the rest of the string
+        // }
 
         $phone_string = $formData['phone_code'] . $phone_without_code;
         $phone = str_replace(' ', '', $phone_string);
@@ -991,11 +997,16 @@ class Checkout extends MY_Controller
                     }
                     $this->session->set_flashdata('message', $this->lang->line('*Your_order_sent_successfully*'));
 
-                    $this->send_order_email($order_id);
 
                     $this->cart->destroy();
 
                     $fireData = array(
+                            'customer' => [
+                            "fname" => $this->input->post('fname'),
+                            "lname" => $this->input->post('lname'),
+                            'phone' => $phone,
+                            'email' => $this->input->post('email'),
+                        ],
                         'order' => $iserted_order,
                         'delivery_charge' => $delivery_charge,
                         'order_items' => $inserted_order_items,
@@ -1078,6 +1089,8 @@ class Checkout extends MY_Controller
             $status = 'Payment failed (insufficient balance)';
             $this->Transaction->update_sale_invoice_payment_status($transaction_id, $status);
             $this->Order->update_order_payment_status($get['order_id'], $status);
+            $this->send_order_email($get['order_id']);
+
             redirect('checkout/whish_failure_redirect');
             return;
         }
@@ -1109,6 +1122,7 @@ class Checkout extends MY_Controller
                 $status = 'Payment successful';
                 $this->Transaction->update_sale_invoice_payment_status($transaction_id, $status);
                 $this->Order->update_order_payment_status($get['order_id'], $status);
+                $this->send_order_email($get['order_id']);
             }
             // Store necessary data in session or temp storage if needed
             $this->load->library('session');

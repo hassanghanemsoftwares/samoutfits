@@ -176,14 +176,18 @@ jQuery(document).ready(function () {
           dataType: "json",
           success: function (dataResult) {
             if (dataResult.result) {
-              firePurchase(
-                dataResult.fireData.order,
-                dataResult.fireData.coupon,
-                dataResult.fireData.order_items,
-                dataResult.fireData.delivery_charge
-              );
+              sendFacebookEvent("Purchase", {
+                email: dataResult.fireData.customer.email || "",
+                phone: dataResult.fireData.customer.phone || "",
+                currency: "USD",
+                value: calculateTotal(),
+                content_type: "product",
+                content_ids: (dataResult.fireData.order_items || []).map(
+                  (item) => item.id || item.sku || item.name
+                ),
+              });
               const orderId = dataResult.fireData.order.id;
-
+              fireCheckout();
               window.location.href =
                 getAppURL("checkout/summary") + "?order_id=" + orderId;
             } else {
@@ -244,15 +248,30 @@ jQuery(document).ready(function () {
               // );
               // $("#order_success_modal").modal("show");
 
-              firePurchase(
-                response.fireData.order,
-                response.fireData.coupon,
-                response.fireData.order_items,
-                response.fireData.delivery_charge
-              );
-
+              sendFacebookEvent("Purchase", {
+                email: response.fireData.customer.email || "",
+                phone: response.fireData.customer.phone || "",
+                currency: "USD",
+                value: calculateTotal(),
+                content_type: "product",
+                content_ids: (response.fireData.order_items || []).map(
+                  (item) => item.id || item.sku || item.name
+                ),
+              });
+              fireCheckout();
               //  Now handle Whish response
               const whish = response.whish;
+              console.log(
+                whish &&
+                  whish.status === true &&
+                  whish.data &&
+                  whish.data.collectUrl
+              );
+              console.log(whish);
+              console.log( whish.status);
+              console.log( whish.data);
+              console.log( whish.data.collectUrl);
+
               if (
                 whish &&
                 whish.status === true &&
@@ -3777,22 +3796,6 @@ function firePurchase(order, coupon, order_items, delivery_charge) {
       },
     },
   });
-  console.log({
-    event: "purchase",
-    ecommerce: {
-      purchase: {
-        actionField: {
-          id: order.id, // Transaction ID. Required for purchases and refunds.
-          affiliation: "Online Store",
-          revenue: total.toString(), // Total transaction value (incl. tax and shipping)
-          tax: "",
-          shipping: order.delivery_charge,
-          coupon: coupon_code,
-        },
-        products: products,
-      },
-    },
-  });
 }
 
 //fire on checkout order
@@ -3806,7 +3809,6 @@ function fireCheckout() {
     success: function (res) {
       // console.log(res);
       if (res.result == true) {
-        console.log(res.data);
         dataLayer.push({ ecommerce: null }); // Clear the previous ecommerce object.
         dataLayer.push({
           event: "checkout",
@@ -3824,12 +3826,12 @@ function fireCheckout() {
         for (var i = 0; i < res.data.products.length; i++) {
           prodIDs.push(res.data.products[i].id);
         }
-        fbq("track", "Purchase", {
-          content_ids: prodIDs, // 'REQUIRED': array of product IDs
-          value: prodTotal, // REQUIRED, up to 2 decimals optional
-          currency: "USD", // REQUIRED
-          content_type: "product", // RECOMMENDED: Either product or product_group based on the content_ids or contents being passed.
-        });
+        // fbq("track", "Purchase", {
+        //   content_ids: prodIDs, // 'REQUIRED': array of product IDs
+        //   value: prodTotal, // REQUIRED, up to 2 decimals optional
+        //   currency: "USD", // REQUIRED
+        //   content_type: "product", // RECOMMENDED: Either product or product_group based on the content_ids or contents being passed.
+        // });
         // mohammad code 2024-12-13 pixels purchase end
       }
     },
@@ -3884,3 +3886,49 @@ document.addEventListener("DOMContentLoaded", function () {
     phoneInput.dispatchEvent(new Event("input"));
   }, 100);
 });
+function sendFacebookEvent(eventType, eventData = {}) {
+  const accessToken =
+    "EAA4QFAVFUSABPCAXUqZCCDFVcAxhSEkkZBxHECEwbFYzGURDzotpE9K2fVu5piEKxlN8jLFS7nsdULxTwcLWYv6aPmQHVZBBwu3ZAXlZCihdcmitayCFE6Hy0WE2Alm8dKrgEw5fDRvsnZAl18X8IJArazTHmT1rrJUDA69haWEZB2oR98QLaNSR55ZCBABK2gZDZD";
+  const datasetId = "101417382894987"; // Replace this
+  const apiVersion = "v18.0"; // Current API version
+  const url = `https://graph.facebook.com/${apiVersion}/${datasetId}/events?access_token=${accessToken}`;
+
+  const payload = {
+    data: [
+      {
+        event_name: eventType,
+        event_time: Math.floor(Date.now() / 1000),
+        action_source: "website",
+        user_data: {
+          em: eventData.email ? [sha256(eventData.email)] : [],
+          ph: eventData.phone ? [sha256(eventData.phone)] : [],
+          client_user_agent: navigator.userAgent,
+        },
+        custom_data: {
+          currency: eventData.currency || "USD",
+          value: eventData.value || 0,
+          content_type: eventData.content_type || undefined,
+          content_ids: eventData.content_ids || undefined,
+        },
+      },
+    ],
+  };
+
+  $.ajax({
+    url: url,
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify(payload),
+    success: function (response) {
+      // console.log(`${eventType} event sent successfully:`, response);
+    },
+    error: function (xhr) {
+      console.error(`Error sending ${eventType} event:`, xhr.responseText);
+    },
+  });
+}
+
+// SHA256 hash function (for emails and phones)
+function sha256(input) {
+  return CryptoJS.SHA256(input.trim().toLowerCase()).toString();
+}

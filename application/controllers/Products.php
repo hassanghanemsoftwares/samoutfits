@@ -182,7 +182,7 @@ class Products extends MY_Controller
 			foreach ($subcategory_array as $s) {
 				str_replace('_', ' ',  $s);
 				if ($s == "Deodorant_and_Roll") {
-					$s = "Deodorant_and_Roll-on";
+					$s = "Deodorant_-and_Roll-on";
 				}
 				$data['selected_subcategory'][$s] = $s;
 			}

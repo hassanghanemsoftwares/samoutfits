@@ -448,7 +448,14 @@ class Exchanges extends MY_Controller
 		$categories = explode(",", $categories);
 		$data['categories'] = array_combine($categories, $categories);
 		$sizes = explode(",", $this->Configuration->fetch_sizes()["valueStr"]);
-		$data['sizes'] = array_combine($sizes, $sizes);
+		$data['sizes']["No"] = "No";
+
+		foreach ($sizes as $s) {
+			$data['sizes'][$s] = $s;
+		}
+		// var_dump($data['sizes']);
+		// exit;
+
 		$this->load->model('Account');
 		$data['trans'] = $this->Transaction->load_trans_data_by_trans_id($id);
 		$account = $this->Account->load($data['trans']["account_id"]);

@@ -101,7 +101,7 @@
                             <input class="form-control" type="text" value="" id="direction" name="direction">
                         </div> -->
 
-                        <div class="col-md-6 form-group" style="padding-left:30px !important;">
+                        <div class="col-md-6 form-group" style="padding-left:30px !important;" hidden>
                             <label>Other Phone (Optional)</label>
                             <div class="row">
                                 <div class="col-4 col-md-2 p-0 m-0 w-100 ps-2">
@@ -129,7 +129,7 @@
                             <span id="msg_phone2"></span>
                         </div>
 
-                        <div class="col-md-6 form-group">
+                        <div class="col-md-12 form-group">
                             <label>Email</label>
                             <input class="form-control" type="email" id="email" name="email" autocomplete="email" value="">
 
