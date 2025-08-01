@@ -284,8 +284,14 @@ $yes_no = [
 				echo form_dropdown('fragile', $yes_no, $this->Item->get_field('fragile'), 'id="fragile" class="form-control"');
 				?>
 			</div>
-		</div>
 
+			<label class="col-sm-2 control-label" for="size_guidance"><?php echo $this->lang->line('size_guidance'); ?></label>
+			<div class="col-sm-4">
+				<?php
+				echo form_dropdown('size_guidance', $size_guidance, $this->Item->get_field('size_guidance'), 'id="size_guidance" class="form-control"');
+				?>
+			</div>
+		</div>
 		<?php
 		if ($this->Item->get_field('size_chart')) {
 		?>

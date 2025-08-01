@@ -273,6 +273,24 @@ jQuery(document).ready(function () {
   });
 });
 $(document).ready(function () {
+  let mainReady = false;
+  let thumbReady = false;
+
+  function checkCarouselsReady() {
+    $(".main-carousel").removeClass("carousel-hidden");
+    $(".thumbnail-carousel").removeClass("carousel-hidden");
+    $("#carouselLoader").remove(); // Remove loader from image space
+  }
+  // Bind 'init' event BEFORE initializing Slick
+  $(".main-carousel").on("init", function () {
+    mainReady = true;
+    checkCarouselsReady();
+  });
+
+  $(".thumbnail-carousel").on("init", function () {
+    thumbReady = true;
+    checkCarouselsReady();
+  });
   // Initialize main carousel
   $(".main-carousel").slick({
     slidesToShow: 1,
@@ -307,40 +325,43 @@ $(document).ready(function () {
     ],
   });
 
-     const pageUrl = window.location.href;
-    const customMessage = `Check out this item from Sam Outfits\n${pageUrl}`;
-    const encodedText = encodeURIComponent(customMessage);
+  const pageUrl = window.location.href;
+  const customMessage = `Check out this item from Sam Outfits\n${pageUrl}`;
+  const encodedText = encodeURIComponent(customMessage);
 
-    // Update WhatsApp share link with custom message
-    $("#whatsappShare").attr("href", `https://wa.me/?text=${encodedText}`);
+  // Update WhatsApp share link with custom message
+  $("#whatsappShare").attr("href", `https://wa.me/?text=${encodedText}`);
 
-    // Handle Copy Link click
-    $("#copyLinkBtn").on("click", function () {
-        const link = window.location.href;
+  // Handle Copy Link click
+  $("#copyLinkBtn").on("click", function () {
+    const link = window.location.href;
 
-        // Using the Clipboard API for modern browsers
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(link).then(() => {
-                alert("Link copied to clipboard!");
-            }).catch(() => {
-                fallbackCopyText(link); // Fallback for older browsers
-            });
-        } else {
-            fallbackCopyText(link); // Fallback for older browsers
-        }
-    });
-
-    // Fallback function for copying text when Clipboard API is not available
-    function fallbackCopyText(text) {
-        const tempInput = $("<input>");
-        $("body").append(tempInput);
-        tempInput.val(text).select();
-        try {
-            document.execCommand("copy");
-            alert("Link copied to clipboard!");
-        } catch (err) {
-            alert("Failed to copy the link.");
-        }
-        tempInput.remove();
+    // Using the Clipboard API for modern browsers
+    if (navigator.clipboard) {
+      navigator.clipboard
+        .writeText(link)
+        .then(() => {
+          alert("Link copied to clipboard!");
+        })
+        .catch(() => {
+          fallbackCopyText(link); // Fallback for older browsers
+        });
+    } else {
+      fallbackCopyText(link); // Fallback for older browsers
     }
+  });
+
+  // Fallback function for copying text when Clipboard API is not available
+  function fallbackCopyText(text) {
+    const tempInput = $("<input>");
+    $("body").append(tempInput);
+    tempInput.val(text).select();
+    try {
+      document.execCommand("copy");
+      alert("Link copied to clipboard!");
+    } catch (err) {
+      alert("Failed to copy the link.");
+    }
+    tempInput.remove();
+  }
 });

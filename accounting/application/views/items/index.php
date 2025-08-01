@@ -306,7 +306,17 @@
 							</div>
 						</div>
 					</div>
-
+					<div class="col-sm-6">
+						<div class="form-group">
+							<input class="col-sm-1" type="checkbox" id="edit_size_guidance" name="edit_size_guidance" value="1">
+							<label class="col-sm-2 control-label" for="edit_size_guidance"><?php echo $this->lang->line('size_guidance'); ?></label>
+							<div class="col-sm-9">
+								<?php
+								echo form_dropdown('size_guidance', $size_guidance_list, '', 'id="size_guidance" class="form-control"')
+								?>
+							</div>
+						</div>
+					</div>
 				</div>
 				<table id="table_bulk" class="table table-bordered table-striped table-hover table-condensed table-responsive"></table>
 				<table id="table_bulk_ids" class="table table-bordered table-striped table-hover table-condensed table-responsive" hidden></table>

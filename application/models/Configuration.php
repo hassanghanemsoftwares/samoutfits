@@ -12,7 +12,7 @@ class Configuration extends MY_Model
     protected $_fieldsNames = ['id', 'name', 'type', 'valueInt', 'valueStr'];
     protected $allowedNulls = ['valueInt', 'valueStr'];
     protected $variables = [];
-    protected $keys = ['CompanyName', 'CompanyAddress', 'CompanyPhone', 'CompanyEmail', 'CompanyWebsite', 'CompanyLogo', 'Language', 'SystemCurrency', 'TestThree', 'sizes', 'status', 'source', 'categories', 'delivery_charge'];
+    protected $keys = ['CompanyName', 'CompanyAddress', 'CompanyPhone', 'CompanyEmail', 'CompanyWebsite', 'CompanyLogo', 'Language', 'SystemCurrency', 'TestThree', 'sizes', 'status', 'source', 'categories', 'delivery_charge','size_guidances'];
     protected $numericFields = ['TestThree', 'Language', 'SystemCurrency'];
     private $serializedFields = [];
     protected $fileControls = [];
@@ -28,9 +28,9 @@ class Configuration extends MY_Model
         $this->db->from('configurations');
         $this->db->where('name', "sizes");
         $query = $this->db->get()->row_array();
-        $result = explode(",",$query['valueStr']);
+        $result = explode(",", $query['valueStr']);
         $res = [];
-        foreach($result as $q){
+        foreach ($result as $q) {
             $res[$q] = $q;
         }
         return $res;
@@ -42,9 +42,9 @@ class Configuration extends MY_Model
         $this->db->from('configurations');
         $this->db->where('name', "colors");
         $query = $this->db->get()->row_array();
-        $result = explode(",",$query['valueStr']);
+        $result = explode(",", $query['valueStr']);
         $res = [];
-        foreach($result as $q){
+        foreach ($result as $q) {
             $res[$q] = $q;
         }
         return $res;
@@ -55,6 +55,14 @@ class Configuration extends MY_Model
         $this->db->select('valueStr');
         $this->db->from('configurations');
         $this->db->where('name', "eco_delivery_charge");
+        $query = $this->db->get()->row_array();
+        return $query;
+    }
+    public function fetch_size_guidances()
+    {
+        $this->db->select('valueStr');
+        $this->db->from('configurations');
+        $this->db->where('name', "size_guidances");
         $query = $this->db->get()->row_array();
         return $query;
     }

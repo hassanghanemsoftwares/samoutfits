@@ -11,7 +11,7 @@ class Configuration extends MY_Model {
 	protected $_fieldsNames = ['id', 'name', 'type', 'valueInt', 'valueStr'];
 	protected $allowedNulls = ['valueInt', 'valueStr'];
 	protected $variables = [];
-	protected $keys = ['CompanyName', 'CompanyAddress', 'CompanyPhone', 'CompanyEmail', 'CompanyWebsite', 'CompanyLogo', 'Language', 'SystemCurrency', 'TestThree', 'sizes', 'status', 'source', 'categories', 'sub_categories', 'delivery_charge', 'colors', 'eco_delivery_charge','whatsapp_order_confirmation_msg'];
+	protected $keys = ['CompanyName', 'CompanyAddress', 'CompanyPhone', 'CompanyEmail', 'CompanyWebsite', 'CompanyLogo', 'Language', 'SystemCurrency', 'TestThree', 'sizes', 'status', 'source', 'categories', 'sub_categories', 'delivery_charge', 'colors', 'eco_delivery_charge','whatsapp_order_confirmation_msg','size_guidances'];
 	protected $numericFields = ['TestThree', 'Language', 'SystemCurrency'];
 	private $serializedFields = [];
 	protected $fileControls = [];
@@ -35,7 +35,7 @@ class Configuration extends MY_Model {
 	private function get_conf_group_keys($grp) {
 		$keys = [
 			'set_1' => ['CompanyName', 'CompanyAddress', 'CompanyPhone', 'CompanyEmail', 'CompanyWebsite', 'CompanyLogo'],
-			'set_2' => ['Language', 'TVA1', 'TVA2', 'SystemCurrency', 'categories', 'sub_categories', 'sizes', 'status', 'source', 'delivery_charge', 'colors', 'eco_delivery_charge']		
+			'set_2' => ['Language', 'TVA1', 'TVA2', 'SystemCurrency', 'categories', 'sub_categories', 'sizes', 'status', 'source', 'delivery_charge', 'colors', 'eco_delivery_charge','size_guidances']		
 		];
 		return $keys[$grp];
 	}
@@ -322,6 +322,13 @@ class Configuration extends MY_Model {
 		$this->db->select('valueStr');
 		$this->db->from('configurations');
 		$this->db->where('name', "colors");
+		$query = $this->db->get()->row_array();
+		return $query;
+	}
+	public function fetch_size_guidances(){
+		$this->db->select('valueStr');
+		$this->db->from('configurations');
+		$this->db->where('name', "size_guidances");
 		$query = $this->db->get()->row_array();
 		return $query;
 	}

@@ -33,3 +33,6 @@
 
 
 -- ALTER TABLE `orders` CHANGE `order_date` `order_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- ALTER TABLE `items` ADD `size_guidance` VARCHAR(255) NULL AFTER `fragile`;
+-- INSERT INTO `configurations` (`id`, `name`, `type`, `valueInt`, `valueStr`) VALUES (NULL, 'size_guidances', '1', NULL, '✅ True to Size,⬆️ Runs Small (Recommend upsizing),⬇️ Runs Large (Recommend Downsizing)');

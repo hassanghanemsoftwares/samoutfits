@@ -73,6 +73,12 @@ class Items extends MY_Controller
 				"Jewelry & watches > jewelry" => "Jewelry & watches > jewelry",
 				"Travel & Luggage > Hanbags & Wallets" => "Travel & Luggage > Hanbags & Wallets",
 			];
+
+			$size_guidances = $this->Configuration->fetch_size_guidances()["valueStr"];
+			$size_guidances = explode(",", $size_guidances);
+			foreach ($size_guidances as $c) {
+				$data['size_guidance_list'][$c] = $c;
+			}
 			$data['title'] = $this->lang->line('products');
 			$this->load->view('templates/header', [
 				'_page_title' => $data['title'],
@@ -221,6 +227,9 @@ class Items extends MY_Controller
 			if ($post["variant1"] == "NULL") {
 				$this->Item->set_field('variant1', NULL);
 			}
+			if (trim($post["size_guidance"]) == "") {
+				$this->Item->set_field('size_guidance', NULL);
+			}
 			if (!$fetched) {
 				$this->Item->set_field('open_cost', 0);
 				$this->Item->set_field('open_qty', 0);
@@ -348,6 +357,13 @@ class Items extends MY_Controller
 			"Jewelry & watches > jewelry" => "Jewelry & watches > jewelry",
 			"Travel & Luggage > Hanbags & Wallets" => "Travel & Luggage > Hanbags & Wallets",
 		];
+
+
+		$size_guidances = $this->Configuration->fetch_size_guidances()["valueStr"];
+		$size_guidances = explode(",", $size_guidances);
+		foreach ($size_guidances as $c) {
+			$data['size_guidance'][$c] = $c;
+		}
 		$data['title'] = $page_title;
 		$this->load->view('templates/header', [
 			'_page_title' => $page_title,
@@ -873,7 +889,15 @@ class Items extends MY_Controller
 		}
 		echo $res;
 	}
-
+	public function bulk_product_size_guidance_edit()
+	{
+		$item_ids = $this->input->post('ids');
+		$size_guidance = $this->input->post('size_guidance');
+		foreach ($item_ids as $i) {
+			$res = $this->Item->update_product_size_guidance($i, $size_guidance);
+		}
+		echo $res;
+	}
 	public function bulk_product_category_edit()
 	{
 		$item_ids = $this->input->post('ids');

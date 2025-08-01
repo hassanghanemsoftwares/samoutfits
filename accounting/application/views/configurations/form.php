@@ -77,6 +77,12 @@
 				<input type="text" name="colors_tags" id="colors_tags" class="form-control">
 			</div>
 		</div>
+		<div class="form-group col-sm-6">
+			<label class="col-sm-3 control-label" for="size_guidances"><?php echo $this->lang->line('size_guidances') ?></label>
+			<div class="col-sm-9">
+				<input type="text" name="size_guidances_tags" id="size_guidances_tags" class="form-control">
+			</div>
+		</div>
 	</div>
 	<div class="col-sm-12">
 		<div class="form-group col-sm-12">

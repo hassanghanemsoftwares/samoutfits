@@ -20,6 +20,10 @@ jQuery(document).ready(function ($) {
   $("#colors_tags").tagThis({
     noDuplicates: true,
   });
+  $("#size_guidances_tags").tagThis({
+    noDuplicates: true,
+  });
+
   $("#sub_categories_tags").tagThis({
     noDuplicates: true,
   });
@@ -29,6 +33,7 @@ jQuery(document).ready(function ($) {
   document.getElementById("div-source").style.display = "none";
   document.getElementById("div-delivery_charge").style.display = "none";
   document.getElementById("div-colors").style.display = "none";
+  document.getElementById("div-size_guidances").style.display = "none";
   document.getElementById("div-sub_categories").style.display = "none";
 
   $.ajax({
@@ -149,7 +154,22 @@ jQuery(document).ready(function ($) {
       }
     },
   });
-
+  $.ajax({
+    cache: false,
+    type: "POST",
+    url: getAppURL("configurations/get_size_guidances"),
+    success: function (data) {
+      var size_guidances = data.split(",");
+      if (size_guidances != "") {
+        for (let i = 0; i < size_guidances.length; i++) {
+          $("#size_guidances_tags").addTag({
+            id: size_guidances[i],
+            text: size_guidances[i],
+          });
+        }
+      }
+    },
+  });
   $("#bgsave").on("click", function () {
     //sizes
     var tags = $("#sizes_tags").data("tags");
@@ -200,6 +220,13 @@ jQuery(document).ready(function ($) {
       t.push(tags[i].text);
     }
     $("#colors").val(t.toString());
+    //size_guidances
+    var tags = $("#size_guidances_tags").data("tags");
+    var t = [];
+    for (let i = 0; i < tags.length; i++) {
+      t.push(tags[i].text);
+    }
+    $("#size_guidances").val(t.toString());
   });
 
   const messageTemplate = `*This is an automated message from samoutfits.com confirming your order*
@@ -226,7 +253,7 @@ We truly appreciate your support and are excited to get this order to you!
   document.getElementById("copyBtn").addEventListener("click", () => {
     navigator.clipboard
       .writeText(messageTemplate)
-      .then(() =>  $("#copyToast").fadeIn(300).delay(4000).fadeOut(300))
+      .then(() => $("#copyToast").fadeIn(300).delay(4000).fadeOut(300))
       .catch((err) => alert("Failed to copy text: ", err));
   });
 });

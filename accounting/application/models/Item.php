@@ -8,7 +8,7 @@ class Item extends MY_Model
 	protected $modelName = 'Item';
 	protected $_table = 'items';
 	protected $_listFieldName = 'description';
-	protected $_fieldsNames = ['id', 'barcode', 'description', 'category', 'open_cost', 'cost', 'purchase_cost', 'open_qty', 'price', 'price_ttc', 'qty', 'profit', 'TVA', 'color', 'note', 'gender', 'publish', 'sub_category','variant1', 'stock_clearance', 'old_price', 'size_chart', 'supplier_code', 'rmb', 'link','cool_storage','flammable_handling','fragile'];
+	protected $_fieldsNames = ['id', 'barcode', 'description', 'category', 'open_cost', 'cost', 'purchase_cost', 'open_qty', 'price', 'price_ttc', 'qty', 'profit', 'TVA', 'color', 'note', 'gender', 'publish', 'sub_category','variant1', 'stock_clearance', 'old_price', 'size_chart', 'supplier_code', 'rmb', 'link','cool_storage','flammable_handling','fragile','size_guidance'];
 	protected $allowedNulls = ['supplier_code', 'rmb', 'link','variant1'];
 
 	public function __construct()
@@ -764,6 +764,10 @@ class Item extends MY_Model
 	public function update_product_fragile($item_id, $fragile)
 	{
 		return $this->db->update('items', array('fragile' => $fragile), array('id' => $item_id));
+	}
+	public function update_product_size_guidance($item_id, $size_guidance)
+	{
+		return $this->db->update('items', array('size_guidance' => $size_guidance), array('id' => $item_id));
 	}
 	public function update_product_category($item_id, $category)
 	{

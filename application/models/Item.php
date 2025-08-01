@@ -8,7 +8,7 @@ class Item extends MY_Model
 	protected $modelName = 'Item';
 	protected $_table = 'items';
 	protected $_listFieldName = 'description';
-	protected $_fieldsNames = ['id', 'barcode', 'description', 'category', 'open_cost', 'cost', 'purchase_cost', 'open_qty', 'qty', 'price', 'profit', 'TVA', 'description2', 'brand', 'color', 'gender', 'publish', 'size_chart', 'link','cool_storage','flammable_handling','fragile'];
+	protected $_fieldsNames = ['id', 'barcode', 'description', 'category', 'open_cost', 'cost', 'purchase_cost', 'open_qty', 'qty', 'price', 'profit', 'TVA', 'description2', 'brand', 'color', 'gender', 'publish', 'size_chart', 'link', 'cool_storage', 'flammable_handling', 'fragile', 'size_guidance'];
 	protected $allowedNulls = ['link'];
 
 	public function __construct()
@@ -230,13 +230,13 @@ class Item extends MY_Model
 		$this->db->join('transactions', 'transaction_items.transaction_id = transactions.id', 'inner');
 		$this->db->join('transaction_item_sizes', 'transaction_items.id = transaction_item_sizes.transaction_item_id', 'inner');
 		$this->db->where('items.id', $item_id);
-		   if (!is_null($size)) {
-        $this->db->where('transaction_item_sizes.size', $size);
-    }
+		if (!is_null($size)) {
+			$this->db->where('transaction_item_sizes.size', $size);
+		}
 		$this->db->where('warehouses.warehouse', "Primary Warehouse");
 		$this->db->group_by('transaction_item_sizes.size');
 		$this->db->having('SUM(transaction_item_sizes.qty * transaction_items.mvt_type) >', 0);
-		$query = $this->db->get()->row_array(); 
+		$query = $this->db->get()->row_array();
 		return $query;
 	}
 	public function load_all_item_data($item_id)
@@ -254,7 +254,7 @@ class Item extends MY_Model
 		return $this->load($query);
 	}
 
-	public function load_similar_products($category,$sub_category, $item_id)
+	public function load_similar_products($category, $sub_category, $item_id)
 	{
 		$query = [
 			'select' => "items.*,  SUM(transaction_items.qty * transaction_items.mvt_type) as total_qty",
@@ -397,7 +397,7 @@ class Item extends MY_Model
 		}
 	}
 
-	public function load_more_similar_products($category,$sub_category, $item_id, $limit)
+	public function load_more_similar_products($category, $sub_category, $item_id, $limit)
 	{
 		$query = [
 			'select' => "items.*,  SUM(transaction_items.qty * transaction_items.mvt_type) as total_qty",

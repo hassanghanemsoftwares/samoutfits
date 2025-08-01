@@ -1428,12 +1428,8 @@ class Sales extends MY_Controller
 		) {
 			$order_value = 0;
 		} else {
-			$sub_total = 0;
-			foreach ($trans_items as $k => $t) {
-				$sub_total += floatval($t["price"]) * floatval($t["qty"]) * (1 - (floatval($t["discount"]) / 100));
-			}
-			$order_value = floatval($sub_total) - floatval($trans["discount"]) + floatval($trans["delivery_charge"]);
-			$order_value = number_format($order_value, 2);
+			$total = $this->Transaction->get_journal_amount_by_transaction($id)['total'];
+			$order_value = number_format($total, 2);
 		}
 		$rawMessage = str_replace(
 			["{{customer_name}}", "{{order_value}}", "{{tracking_nb}}"],

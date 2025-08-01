@@ -83,15 +83,14 @@ class Products extends MY_Controller
 		} else {
 			$data['hide_size'] = 0;
 		}
-		if(count($data['sizes']) ==0){
+		if (count($data['sizes']) == 0) {
 			$data['hide_size'] = 1;
-
 		}
-// var_dump($data['product']);exit;
-		$similar = $this->Item->load_similar_products($data['product']['category'],$data['product']['sub_category'], $item_id);
+
+		$similar = $this->Item->load_similar_products($data['product']['category'], $data['product']['sub_category'], $item_id);
 		if (count($similar) < 12) {
 			$more_limit = 12 - count($similar);
-			$more = $this->Item->load_more_similar_products($data['product']['category'],$data['product']['sub_category'], $item_id, $more_limit);
+			$more = $this->Item->load_more_similar_products($data['product']['category'], $data['product']['sub_category'], $item_id, $more_limit);
 			foreach ($more as $m) {
 				$similar[] = $m;
 			}
@@ -174,7 +173,7 @@ class Products extends MY_Controller
 		$data['breadcrumb_sub_category'] = str_replace('All-', '', $breadcrumb_sub_category);
 		$data['category_name'] = $category;
 		$data['breadcrumb_cat_link'] = "products/category/" . $category;
-			
+
 		if ($subcategory) {
 			$subcategory_new = str_replace('-and', 'and', $subcategory);
 			$subcategory_array = explode("-", $subcategory_new);

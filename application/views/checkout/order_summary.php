@@ -112,7 +112,7 @@
                 <li class="d-flex justify-content-start mb-2"><strong class="mr-1">Order Number: </strong> <span class="text-purple"> <?php echo htmlspecialchars($order['auto_no']); ?></span></li>
                 <li class="d-flex justify-content-start mb-2"><strong class="mr-1">Order Value: </strong> <span class="text-purple"> USD <?php echo number_format((float) $order['total'], 2); ?></span></li>
                 <li class="d-flex justify-content-start mb-2"><strong class="mr-1">Status: </strong> <span class="text-purple"> <?php echo htmlspecialchars($order['status']); ?></span></li>
-                <li class="d-flex justify-content-start"><strong class="mr-1">Payment Method: </strong> <span class="text-purple"> <?php echo htmlspecialchars($order['payment_method']); ?></span></li>
+                <li class="d-flex justify-content-start"><strong class="mr-1">Payment Method: </strong> <span class=" <?php echo $order['payment_method'] == "whish" ? "text-danger" : "text-purple"  ?>"> <?php echo htmlspecialchars($order['payment_method']); ?></span></li>
                 <?php
                 if ($order['payment_method'] == "whish") {
                 ?>
@@ -196,3 +196,94 @@
         </div>
     </div>
 </div>
+<script>
+    function sendFacebookEvent(eventType, eventData = {}) {
+        const accessToken =
+            "EAA4QFAVFUSABPCAXUqZCCDFVcAxhSEkkZBxHECEwbFYzGURDzotpE9K2fVu5piEKxlN8jLFS7nsdULxTwcLWYv6aPmQHVZBBwu3ZAXlZCihdcmitayCFE6Hy0WE2Alm8dKrgEw5fDRvsnZAl18X8IJArazTHmT1rrJUDA69haWEZB2oR98QLaNSR55ZCBABK2gZDZD";
+        const datasetId = "101417382894987"; // Replace this
+        const apiVersion = "v18.0"; // Current API version
+        const url = `https://graph.facebook.com/${apiVersion}/${datasetId}/events?access_token=${accessToken}`;
+
+        const payload = {
+            data: [{
+                event_name: eventType,
+                event_time: Math.floor(Date.now() / 1000),
+                action_source: "website",
+                user_data: {
+                    em: eventData.email ? [sha256(eventData.email)] : [],
+                    ph: eventData.phone ? [sha256(eventData.phone)] : [],
+                    client_user_agent: navigator.userAgent,
+                },
+                custom_data: {
+                    currency: eventData.currency || "USD",
+                    value: eventData.value || 0,
+                    content_type: eventData.content_type || undefined,
+                    content_ids: eventData.content_ids || undefined,
+                },
+            }, ],
+        };
+
+        $.ajax({
+            url: url,
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(payload),
+            success: function(response) {
+                console.log(`${eventType} event sent successfully:`, response);
+            },
+            error: function(xhr) {
+                console.error(`Error sending ${eventType} event:`, xhr.responseText);
+            },
+        });
+    }
+
+    // SHA256 hash function (for emails and phones)
+    function sha256(input) {
+        return CryptoJS.SHA256(input.trim().toLowerCase()).toString();
+    }
+
+    window.addEventListener("DOMContentLoaded", function() {
+        dataLayer = window.dataLayer || [];
+        dataLayer.push({
+            event: "purchase",
+            ecommerce: {
+                purchase: {
+                    actionField: {
+                        id: "<?php echo htmlspecialchars($order['auto_no']); ?>", // Transaction ID
+                        affiliation: "Online Store",
+                        revenue: "<?php echo number_format((float)$order['total'], 2, '.', ''); ?>",
+                        tax: "", // add if available
+                        shipping: "<?php echo number_format((float)$order['delivery_charge'], 2, '.', ''); ?>",
+                        coupon: "<?php echo htmlspecialchars($order['coupon_code'] ?? ''); ?>"
+                    },
+                    products: [
+                        <?php foreach ($order_items as $item): ?> {
+                                name: "<?php echo htmlspecialchars($item['description']); ?>",
+                                id: "<?php echo htmlspecialchars($item['item_id']); ?>",
+                                price: "<?php echo number_format((float)$item['price'], 2, '.', ''); ?>",
+                                quantity: <?php echo (int)$item['qty']; ?>,
+                                variant: "<?php echo htmlspecialchars($item['size']); ?>"
+                            },
+                        <?php endforeach; ?>
+                    ]
+                }
+            }
+        });
+        sendFacebookEvent("Purchase", {
+            email: "<?php echo htmlspecialchars($customer['email']); ?>",
+            phone: "<?php echo htmlspecialchars($customer['phone']); ?>",
+            currency: "USD",
+            value: <?php echo number_format((float)$order['total'], 2, '.', ''); ?>,
+            content_type: "product",
+            content_ids: [
+                <?php
+                $ids = array_map(function ($item) {
+                    return '"' . $item['item_id'] . '"';
+                }, $order_items);
+                echo implode(',', $ids);
+                ?>
+            ],
+            order_id: "<?php echo htmlspecialchars($order['auto_no']); ?>"
+        });
+    });
+</script>

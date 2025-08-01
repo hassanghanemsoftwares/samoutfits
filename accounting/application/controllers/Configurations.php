@@ -107,9 +107,14 @@ class Configurations extends MY_Controller
 		$colors = $this->Configuration->fetch_colors();
 		echo ($colors['valueStr']);
 	}
+	public function get_size_guidances()
+	{
+		$size_guidances = $this->Configuration->fetch_size_guidances();
+		echo ($size_guidances['valueStr']);
+	}
 	public function get_sub_categories()
 	{
-		$colors = $this->Configuration->fetch_sub_categories();
-		echo ($colors['valueStr']);
+		$sub_categories = $this->Configuration->fetch_sub_categories();
+		echo ($sub_categories['valueStr']);
 	}
 }

@@ -34,8 +34,8 @@
 	<!-- Libraries Stylesheet -->
 	<link href="assets/lib/animate/animate.min.css" rel="stylesheet">
 	<link href="assets/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="assets/lib//slick-carousel/slick.css" />
-	<link rel="stylesheet" type="text/css" href="assets/lib//slick-carousel/slick-theme.css" />
+	<link rel="stylesheet" type="text/css" href="assets/lib/slick-carousel/slick.css" />
+	<link rel="stylesheet" type="text/css" href="assets/lib/slick-carousel/slick-theme.css" />
 	<!-- Customized Bootstrap Stylesheet -->
 	<link href="assets/css/style.css?version=4.1" rel="stylesheet">
 	<?php

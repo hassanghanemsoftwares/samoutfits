@@ -2925,4 +2925,13 @@ class Transaction extends MY_Model
 		$this->remove_indexes_if_search_not_date($dt['search_in'], [0]);
 		return parent::load_datatables_pagedata($dt);
 	}
+	public function get_journal_amount_by_transaction($transId)
+	{
+		$this->db->select('journals.amount AS total');
+		$this->db->from('transactions');
+		$this->db->join('journals', 'journals.transaction_id = transactions.id', 'inner');
+		$this->db->where('transactions.id', $transId);
+		$query = $this->db->get()->row_array();
+		return $query;
+	}
 }

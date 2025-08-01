@@ -209,7 +209,7 @@ jQuery(document).ready(function () {
     var edit_cool_storage = $("#edit_cool_storage").is(":checked");
     var edit_flammable_handling = $("#edit_flammable_handling").is(":checked");
     var edit_fragile = $("#edit_fragile").is(":checked");
-
+    var edit_size_guidance = $("#edit_size_guidance").is(":checked");
     if (
       edit_price === true ||
       edit_cost === true ||
@@ -217,6 +217,7 @@ jQuery(document).ready(function () {
       edit_stock_clearance === true ||
       edit_cool_storage === true ||
       edit_fragile === true ||
+      edit_size_guidance === true ||
       edit_flammable_handling === true ||
       edit_category == true ||
       edit_sub_category == true ||
@@ -362,6 +363,24 @@ jQuery(document).ready(function () {
           fragile: $("#fragile").val(),
         },
         url: getAppURL("items/bulk_product_fragile_edit"),
+        success: function (data) {
+          // console.log(data);
+          // return false;
+          // setTimeout(() => $('#bulk_modal').modal('hide'), 1000);
+          location.reload();
+        },
+      });
+    }
+    if (edit_size_guidance === true) {
+      $.ajax({
+        cache: false,
+        type: "POST",
+        async: true,
+        data: {
+          ids: ids,
+          size_guidance: $("#size_guidance").val(),
+        },
+        url: getAppURL("items/bulk_product_size_guidance_edit"),
         success: function (data) {
           // console.log(data);
           // return false;

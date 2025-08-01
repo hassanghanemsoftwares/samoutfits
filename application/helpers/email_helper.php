@@ -28,18 +28,20 @@ if (!function_exists('send_admin_order_email')) {
 
     $client_email = trim($customer['email'] ?? '');
 
-    // if (!empty($client_email)) {
-    //     $CI->email->to($client_email);
-    //     $CI->email->cc("orders@samoutfits.com");
-    // } else {
-    // $CI->email->to("orders@samoutfits.com");
+    if (!empty($client_email)) {
+        $CI->email->to($client_email);
+        $CI->email->cc("orders@samoutfits.com");
+    } else {
+    $CI->email->to("orders@samoutfits.com");
 
-    // }
+    }
 
-    $CI->email->to("hassanghanemsoftwares@gmail.com");
+    // $CI->email->to("hassanghanemsoftwares@gmail.com");
 
     $CI->email->subject('🛒 Order Confirmation - #' . $order['auto_no']);
 
+
+    $payment_color = ($order['payment_method'] === 'whish') ? 'red' : '#7f00ff';
 
     $message = '<html>
   <head>
@@ -53,7 +55,7 @@ if (!function_exists('send_admin_order_email')) {
             <tr>
               <td style="padding:24px;">
                 <h3 style="margin:0;text-align:center;font-size:24px;">Thank you.</h3>
-                <p style=" font-size:18px;text-align:center;margin:16px 0;">
+                <p style="font-size:18px;text-align:center;margin:16px 0;">
                   Hello <strong style="font-weight:700;">' . htmlspecialchars($customer['account_name']) . '</strong> 👋 We have successfully received and confirmed your order.
                 </p>
                 <div style="text-align:center;margin-bottom:24px;">
@@ -70,9 +72,7 @@ if (!function_exists('send_admin_order_email')) {
                     </li>
                     <li style="margin-bottom:8px;">
                       <strong>Order Value:</strong>
-                      <span style="color:#7f00ff;">
-                        USD ' . number_format((float)$order['total'], 2) . '
-                      </span>
+                      <span style="color:#7f00ff;">USD ' . number_format((float)$order['total'], 2) . '</span>
                     </li>
                     <li style="margin-bottom:8px;">
                       <strong>Status:</strong>
@@ -80,14 +80,16 @@ if (!function_exists('send_admin_order_email')) {
                     </li>
                     <li>
                       <strong>Payment Method:</strong>
-                      <span style="color:#7f00ff;">' . htmlspecialchars($order['payment_method']) . '</span>
+                      <span style="color:' . $payment_color . ';">' . htmlspecialchars($order['payment_method']) . '</span>
                     </li>';
+
     if ($order['payment_method'] === "whish") {
       $message .= '<li>
-                      <strong>Payment Status:</strong>
-                      <span style="color:#7f00ff;">' . htmlspecialchars($order['payment_status']) . '</span>
-                    </li>';
+                  <strong>Payment Status:</strong>
+                  <span style="color:#7f00ff;">' . htmlspecialchars($order['payment_status']) . '</span>
+                </li>';
     }
+
     $message .= '
                   </ul>
                 </div>
@@ -105,20 +107,22 @@ if (!function_exists('send_admin_order_email')) {
                       </tr>
                     </thead>
                     <tbody>';
+
     foreach ($order_items as $item) {
       $message .= '<tr>
-                          <td style="padding:8px;">
-                            <img src="' . base_url() . 'accounting/assets/uploads/' . $item['image_name'] . '"
-                                 alt=""
-                                 style="height:80px;object-fit:contain;" />
-                          </td>
-                          <td style="padding:8px;">' . htmlspecialchars($item['description']) . '</td>
-                          <td style="padding:8px;">' . htmlspecialchars($item['size']) . '</td>
-                          <td style="padding:8px;">$' . number_format((float)$item['price'], 2) . '</td>
-                          <td style="padding:8px;">' . $item['qty'] . '</td>
-                          <td style="padding:8px;">$' . number_format((float)$item['price'] * $item['qty'], 2) . '</td>
-                        </tr>';
+                <td style="padding:8px;">
+                  <img src="' . base_url() . 'accounting/assets/uploads/' . $item['image_name'] . '"
+                       alt="Item Image"
+                       style="height:80px;object-fit:contain;" />
+                </td>
+                <td style="padding:8px;">' . htmlspecialchars($item['description']) . '</td>
+                <td style="padding:8px;">' . htmlspecialchars($item['size']) . '</td>
+                <td style="padding:8px;">$' . number_format((float)$item['price'], 2) . '</td>
+                <td style="padding:8px;">' . $item['qty'] . '</td>
+                <td style="padding:8px;">$' . number_format((float)$item['price'] * $item['qty'], 2) . '</td>
+              </tr>';
     }
+
     $message .= '</tbody>
                   </table>
                 </div>
@@ -136,19 +140,19 @@ if (!function_exists('send_admin_order_email')) {
                   For any assistance, feel free to contact our customer care Monday till Saturday, 8:00 am till 5:00 pm
                 </p>
                 <div style="text-align:center;margin:24px 0;">
-              <a href="tel:+96170615210">
+                  <a href="tel:+96170615210">
                     <img src="' . base_url() . 'assets/img/order_summary_phone.png"
-                        alt="Phone"
-                        style="height:40px;max-width:100%;display:inline-block;" />
-                </a>
+                         alt="Phone"
+                         style="height:40px;max-width:100%;display:inline-block;" />
+                  </a>
                 </div>
 
                 <div style="background-color:#d1a3ff;padding:16px;border-radius:6px;text-align:center;margin-bottom:24px;">
-                <a href="https://wa.me/96170615210">
+                  <a href="https://wa.me/96170615210">
                     <img src="' . base_url() . 'assets/img/order_summary_whatsapp.png"
-                        alt="WhatsApp"
-                        style="height:150px;max-width:100%;display:inline-block;" />
-                </a>
+                         alt="WhatsApp"
+                         style="height:150px;max-width:100%;display:inline-block;" />
+                  </a>
                 </div>
 
                 <div style="height:20px;background-color:#d1a3ff;margin:24px 0;"></div>
@@ -157,28 +161,27 @@ if (!function_exists('send_admin_order_email')) {
                 <p style="font-weight:700;text-align:center;margin:16px 0;">We truly appreciate your trust and support and are excited to get this order to you!</p>
 
                 <div style="background-color:#d1a3ff;padding:24px;text-align:center;">
-                <img src="' . base_url() . 'assets/img/order_summary_happy.png"
-                    alt=""
-                    style="height:120px;max-width:100%;display:inline-block;margin-bottom:16px;" />
-                <div>
+                  <img src="' . base_url() . 'assets/img/order_summary_happy.png"
+                       alt=""
+                       style="height:120px;max-width:100%;display:inline-block;margin-bottom:16px;" />
+                  <div>
                     <a href="' . base_url() . '"
-                    style="display:inline-block;padding:12px 30px;border:2px solid #7f00ff;border-radius:25px;color:#7f00ff;font-weight:700;font-size:14px;text-decoration:none;transition:all .3s;">
-                    SHOP NOW
+                       style="display:inline-block;padding:12px 30px;border:2px solid #7f00ff;border-radius:25px;color:#7f00ff;font-weight:700;font-size:14px;text-decoration:none;transition:all .3s;">
+                      SHOP NOW
                     </a>
-                </div>
-                <div style="margin-top:10px;margin-bottom:20px;">
+                  </div>
+                  <div style="margin-top:10px;margin-bottom:20px;">
                     <a href="https://www.instagram.com/samoutfitslb" style="margin:0 5px;">
-                    <img src="' . base_url() . 'assets/img/order_summary_insta.png" alt="Instagram" style="height:35px;">
+                      <img src="' . base_url() . 'assets/img/order_summary_insta.png" alt="Instagram" style="height:35px;">
                     </a>
                     <a href="https://www.facebook.com/samoutfits.lebanon" style="margin:0 5px;">
-                    <img src="' . base_url() . 'assets/img/order_summary_facebook.png" alt="Facebook" style="height:35px;">
+                      <img src="' . base_url() . 'assets/img/order_summary_facebook.png" alt="Facebook" style="height:35px;">
                     </a>
                     <a href="https://www.youtube.com/@SamOutfits" style="margin:0 5px;">
-                    <img src="' . base_url() . 'assets/img/order_summary_youtube.png" alt="YouTube" style="height:35px;">
+                      <img src="' . base_url() . 'assets/img/order_summary_youtube.png" alt="YouTube" style="height:35px;">
                     </a>
+                  </div>
                 </div>
-                </div>
-
 
               </td>
             </tr>
