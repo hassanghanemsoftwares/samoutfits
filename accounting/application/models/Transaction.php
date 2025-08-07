@@ -28,7 +28,7 @@ class Transaction extends MY_Model
 	protected $_listFieldName = 'auto_no';
 	protected $_fieldsNames = ['id', 'fiscal_year_id', 'trans_type', 'auto_no', 'trans_date', 'value_date', 'account_id', 'account2_id', 'currency_id', 'currency_rate', 'discount', 'user_id', 'driver_id', 'employee_id', 'status', 'delivered', 'pickup', 'description', 'relation_id', 'delivery_charge', 'status2', 'source', 'delivery_note', 'payment_method', 'payment_method_gateway', 'payment_method_gateway_status',  'op_nb', 'hide', 'exchange', 'try_on'];
 	protected $_dateFields = ['trans_date', 'value_date'];
-	protected $allowedNulls = ['value_date', 'discount', 'exchange', 'try_on', 'payment_method_gateway', 'payment_method_gateway_status'];
+	protected $allowedNulls = ['value_date', 'discount', 'exchange', 'try_on', 'payment_method_gateway', 'payment_method_gateway_status','op_nb'];
 
 	public function __construct()
 	{
@@ -166,7 +166,7 @@ class Transaction extends MY_Model
 				["account1.account_name AS account1, account2.account_name AS account2"],
 				["currencies.currency_code, transactions.currency_rate, transactions.discount, $total AS total"],
 				["transactions.status"],
-				["transactions.id,transactions.payment_method_gateway, COALESCE(transactions.payment_method_gateway_status, '-') as payment_method_gateway_status"]
+				["transactions.id, transactions.payment_method_gateway, COALESCE(transactions.payment_method_gateway_status, '-') as payment_method_gateway_status, COALESCE(transactions.op_nb, '-') as op_nb"]
 			],
 			'join' => [
 				['fiscal_years', 'fiscal_years.id = transactions.fiscal_year_id', 'inner'],
@@ -199,6 +199,7 @@ class Transaction extends MY_Model
 		$dt = [
 			'columns' => [
 				'transactions.auto_no',
+				['COALESCE(transactions.op_nb, "-")', 'op_nb'],
 				'transactions.trans_date',
 				'transactions.value_date',
 				['account1.account_name', 'account1'],
@@ -1388,7 +1389,17 @@ class Transaction extends MY_Model
 				["accounts.account_name, accounts.email, accounts.phone, 
 				accounts.city, accounts.floor, accounts.building"],
 				["IF(accounts.phone2 IS NULL or accounts.phone2 = '' or accounts.phone2 = '0', $dir, CONCAT_WS(' /mobile2: ', $dir, accounts.phone2)) AS direction"],
-				["journals.amount AS total, currencies.currency_code, IF(transactions.payment_method = 'BOTH', 'lbp','lbp') as method, 'Regular' as package_type, '1' as package_qty"],
+				["CASE 
+    WHEN transactions.payment_method_gateway = 'whish' 
+         AND transactions.payment_method_gateway_status = 'Payment successful' 
+    THEN 0 
+    ELSE journals.amount 
+ END AS total, 
+ currencies.currency_code, 
+ IF(transactions.payment_method = 'BOTH', 'lbp','lbp') as method, 
+ 'Regular' as package_type, 
+ '1' as package_qty"],
+
 				["transactions.auto_no, transactions.delivery_note, CASE WHEN transactions.try_on = 1 then 'Yes' else 'No' END AS try_on, CASE WHEN transactions.exchange = 1 then 'Yes' else 'No' END AS exchange"]
 			],
 			'join' => [
@@ -1422,7 +1433,13 @@ class Transaction extends MY_Model
 				'accounts.floor',
 				' accounts.building',
 				["IF(accounts.phone2 IS NULL or accounts.phone2 = '' or accounts.phone2 = '0', $dir, CONCAT_WS(' /mobile2: ', $dir, accounts.phone2))", 'direction'],
-				['journals.amount', 'total'],
+				["CASE 
+    WHEN transactions.payment_method_gateway = 'whish' 
+         AND transactions.payment_method_gateway_status = 'Payment successful' 
+    THEN 0 
+    ELSE journals.amount 
+ END", 'total'],
+
 				'currencies.currency_code',
 				["IF(transactions.payment_method = 'BOTH', 'lbp','lbp')", "method"],
 				["'Regular'", "package_type"],
@@ -1614,6 +1631,23 @@ class Transaction extends MY_Model
 				) as total_profit"
 
 				// "SUM(transaction_items.qty * transaction_items.profit) as total_profit,"
+			],
+			'join' => [
+				['transaction_items', 'transactions.id = transaction_items.transaction_id', 'inner']
+			],
+			'where' => [
+				["transactions.fiscal_year_id", $this->violet_auth->get_fiscal_year_id()],
+				["transactions.auto_no", $auto_no],
+				["transactions.trans_type", "SA"]
+			],
+		];
+		return $this->load($query);
+	}
+	public function fetch_invoice_total_cost($auto_no)
+	{
+		$query = [
+			'select' => [
+				"SUM(transaction_items.qty * transaction_items.cost) as total_cost"
 			],
 			'join' => [
 				['transaction_items', 'transactions.id = transaction_items.transaction_id', 'inner']
@@ -2931,6 +2965,39 @@ class Transaction extends MY_Model
 		$this->db->from('transactions');
 		$this->db->join('journals', 'journals.transaction_id = transactions.id', 'inner');
 		$this->db->where('transactions.id', $transId);
+		$query = $this->db->get()->row_array();
+		return $query;
+	}
+
+	public function search_transactions_suggestions($q = false)
+	{
+		(false === $q) and ($q = $this->input->post('term', true));
+
+		$query = $this->db->select("accounts.*")
+			->select("CONCAT_WS(' - ', transactions.auto_no, accounts.account_name, transactions.trans_date) AS suggestion")
+			->from($this->_table)
+			->join("accounts", "accounts.id = transactions.account_id", "left")
+			->where("transactions.id != 0")
+			->group_start()
+			->like('transactions.auto_no', $q)
+			->or_like('accounts.account_name', $q)
+			->or_like('transactions.trans_date', $q)
+			->group_end()
+			->get();
+
+		if ($query && $query->num_rows() > 0) {
+			return $query->result_array();
+		}
+		return [];
+	}
+	public function get_account_by_transaction_no($auto_no)
+	{
+		$this->db->select('accounts.*');
+		$this->db->from('transactions');
+		$this->db->join('accounts', 'accounts.id = transactions.account_id', 'inner');
+		$this->db->where('transactions.auto_no', $auto_no);
+		$this->db->where('transactions.fiscal_year_id', $this->violet_auth->get_fiscal_year_id());
+
 		$query = $this->db->get()->row_array();
 		return $query;
 	}

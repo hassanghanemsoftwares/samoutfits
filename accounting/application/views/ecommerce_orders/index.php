@@ -103,7 +103,7 @@
                         </div>
                     </div>
                     <div class="form-group col-md-6" id="order_data_div">
-                        <div class="col-md-12" style="padding:10px; background-color: #ffdf59; color:black;">
+                        <div class="col-md-12" style="padding:10px; background-color: #d1a3ff; color:black;">
                             <h4 style="text-decoration: underline;"><b><?php echo $this->lang->line('Order_Data') ?></b></h4>
                             <h4><b><?php echo $this->lang->line('Items') ?>:</b></h4>
                             <table id="order_items_table" class="table-style">
@@ -115,7 +115,7 @@
                                 <tbody id="order_items_table_body"></tbody>
                             </table>
                         </div>
-                        <div class="col-md-12" style="background-color: #ffdf59; color:black;">
+                        <div class="col-md-12" style="background-color: #d1a3ff; color:black;">
                             <h4><b>Address: </b><span id="order_address"></span></h4>
                             <div class="col-md-6">
                                 <h5><b><?php echo $this->lang->line('Country') ?>: </b><span id="order_address0"></span></h5>

@@ -189,9 +189,13 @@ function addLineToTransaction(item, newLine) {
     jQuery("select.i-shelf", $tr)
       .append(`<option value="1">1</option>`)
       .val("1");
+    jQuery("select.i-warehouse", $tr)
+      .prop("selectedIndex", 1)
+      .trigger("change");
     var getselected = jQuery("select.i-warehouse", $tr)
       .children("option:selected")
       .text();
+    console.log(getselected);
     $.ajax({
       cache: false,
       type: "POST",

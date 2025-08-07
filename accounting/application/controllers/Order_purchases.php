@@ -26,7 +26,7 @@ class Order_purchases extends MY_Controller
         // $this->pageTitle = $this->lang->line('order_purchases');
         $this->load->model('Transaction');
     }
- 
+
     public function index()
     {
         if ($this->input->is_ajax_request()) {
@@ -72,6 +72,7 @@ class Order_purchases extends MY_Controller
             $this->Transaction->set_field('trans_type', $transType);
             $this->Transaction->set_field('fiscal_year_id', $this->violet_auth->get_fiscal_year_id());
             $this->Transaction->set_field('user_id', $this->violet_auth->get_user_id());
+            $this->Transaction->set_fields('op_nb', trim($post['op_nb']) === '' ? null : $post['op_nb']);
             $saved = $fetched ? $this->Transaction->update() : $this->Transaction->insert();
             if ($saved) {
                 if (!$fetched) {
@@ -123,8 +124,14 @@ class Order_purchases extends MY_Controller
         $this->load->view('order_purchases/order_purchase_form', $data);
         $this->load->view('templates/footer', [
             '_moreJs' => [
-                'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-                'jquery.autocomplete.min', 'bootstrap-select.min', 'bootstrap-select-country.min', 'transactions/purchase', 'accounts/account_modal', 'items/item_modal'
+                'air-datepicker/js/datepicker.min',
+                'air-datepicker/js/i18n/datepicker.en',
+                'jquery.autocomplete.min',
+                'bootstrap-select.min',
+                'bootstrap-select-country.min',
+                'transactions/purchase',
+                'accounts/account_modal',
+                'items/item_modal'
             ]
         ]);
     }
@@ -137,9 +144,12 @@ class Order_purchases extends MY_Controller
         $data['transType'] = $this->Transaction->get_transaction_types_list()[$transType];
         $data['currenciesList'] = $this->Currency->load_currencies_list();
         $data['account_type'] = array(
-            "Customer" => "Customer", "Supplier" => "Supplier",
-            "Cash" => "Cash", "Expenses" => "Expenses",
-            "Bank" => "Bank", "Sale VAT" => "Sale VAT",
+            "Customer" => "Customer",
+            "Supplier" => "Supplier",
+            "Cash" => "Cash",
+            "Expenses" => "Expenses",
+            "Bank" => "Bank",
+            "Sale VAT" => "Sale VAT",
             "Purchase VAT" => "Purchase VAT"
         );
         $this->load->model('Account');
@@ -301,8 +311,10 @@ class Order_purchases extends MY_Controller
         $this->load->view('order_purchases/order_purchase_form', $data);
         $this->load->view('templates/footer', [
             '_moreJs' => [
-                'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-                'jquery.autocomplete.min', 'transactions/purchase'
+                'air-datepicker/js/datepicker.min',
+                'air-datepicker/js/i18n/datepicker.en',
+                'jquery.autocomplete.min',
+                'transactions/purchase'
             ]
         ]);
     }
@@ -366,8 +378,10 @@ class Order_purchases extends MY_Controller
         $this->load->view('transactions/preview', $data);
         $this->load->view('templates/footer', [
             '_moreJs' => [
-                'air-datepicker/js/datepicker.min', 'air-datepicker/js/i18n/datepicker.en',
-                'jquery.autocomplete.min', 'sales/preview'
+                'air-datepicker/js/datepicker.min',
+                'air-datepicker/js/i18n/datepicker.en',
+                'jquery.autocomplete.min',
+                'sales/preview'
             ]
         ]);
     }

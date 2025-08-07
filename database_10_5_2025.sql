@@ -36,3 +36,7 @@
 
 -- ALTER TABLE `items` ADD `size_guidance` VARCHAR(255) NULL AFTER `fragile`;
 -- INSERT INTO `configurations` (`id`, `name`, `type`, `valueInt`, `valueStr`) VALUES (NULL, 'size_guidances', '1', NULL, '✅ True to Size,⬆️ Runs Small (Recommend upsizing),⬇️ Runs Large (Recommend Downsizing)');
+
+
+-- ALTER TABLE `transactions` CHANGE `op_nb` `op_nb` DOUBLE UNSIGNED NULL DEFAULT NULL;
+

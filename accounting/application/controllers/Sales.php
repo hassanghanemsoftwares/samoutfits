@@ -787,7 +787,7 @@ class Sales extends MY_Controller
 			$this->Transaction->bulk_update_for_cash_date($trans_ids, $cash_date);
 			if ($receipt === "true") {
 				$this->load->model('Journal');
-				$this->Journal->bulk_add_receipts_for_invoices($trans_ids, $amounts);
+				$this->Journal->bulk_add_receipts_for_invoices($trans_ids, $amounts,$cash_date);
 			}
 		}
 		if ($return_date !== "0") {
@@ -854,8 +854,7 @@ class Sales extends MY_Controller
 		$post = $this->input->post(null, true);
 		$data["tot_profit"] = 0;
 		if ($post) {
-			// var_dump($_FILES["file"]["name"]);
-			// exit;
+
 			$upload_file = $_FILES["file"]["name"];
 			if ($upload_file !== '') {
 				$extension = pathinfo($upload_file, PATHINFO_EXTENSION);
@@ -883,12 +882,18 @@ class Sales extends MY_Controller
 					}
 					$this->load->model('Journal');
 					$data["tot_profit"] = 0;
+					$data["tot_cost"] = 0;
+
 					foreach ($excel_data as $k => $e) {
 						$amount = $this->Journal->fetch_invoice_amount_by_trans_auto_no($e["invoice nb"]);
 						$excel_data[$k]["profit"] = $this->Transaction->fetch_invoice_total_profit($e["invoice nb"])["total_profit"];
+						$excel_data[$k]["cost"] = $this->Transaction->fetch_invoice_total_cost($e["invoice nb"])["total_cost"];
+						$account = $this->Transaction->get_account_by_transaction_no($e["invoice nb"]);
+						$excel_data[$k]["account_nb"] = $account['account_number'];
 						$data["tot_profit"] += doubleval($excel_data[$k]["profit"]);
+						$data["tot_cost"] += doubleval($excel_data[$k]["cost"]);
 						if ($amount !== NULL) {
-							$excel_data[$k]["differance"] = doubleval($amount["amount"]) - doubleval($e["cash"]);
+							$excel_data[$k]["differance"] = round(doubleval($amount["amount"]) - doubleval($e["cash"]), 2);
 							if ($excel_data[$k]["differance"] === floatval(0)) {
 								$excel_data[$k]["note"] = "Accapted";
 							} else {
@@ -918,7 +923,8 @@ class Sales extends MY_Controller
 		$status2[0] = 0;
 		$data['status2'] = array_combine($status2, $status2);
 		$data['status2'][0] = '';
-		// var_dump($data['status2']);exit;
+		// var_dump($data);
+		// exit;
 		if (in_array('Successfully Delivered', $data['status2'])) {
 			$data['selected_status'] = "Successfully Delivered";
 		}
@@ -943,7 +949,7 @@ class Sales extends MY_Controller
 			$trans_ids[$k] = $this->Transaction->fetch_transaction_id_by_autono_for_bulk_receipts($a)[0]["id"];
 		}
 		$this->load->model('Journal');
-		$this->Journal->bulk_add_receipts_for_invoices($trans_ids, $amounts);
+		$this->Journal->bulk_add_receipts_for_invoices($trans_ids, $amounts,$cash_date);
 		if ($cash_date !== '') {
 			$this->Transaction->update_invoice_cash_date($trans_ids, $cash_date);
 		}
@@ -1459,5 +1465,21 @@ class Sales extends MY_Controller
 				'cartItems' => $trans_items,
 				'order' => $trans,
 			]));
+	}
+
+	public function get_transaction_by_id()
+	{
+		$this->_render_json(
+			$this->Transaction->fetch_transaction_data(trim($this->input->get('transaction_id', true)))
+		);
+	}
+	public function lookup_seatch_transactions()
+	{
+		$query = trim($this->input->get('query', true));
+		$query = str_replace(['[', ']'], '', $query);
+
+		$this->_render_json(
+			$this->Transaction->search_transactions_suggestions($query)
+		);
 	}
 }

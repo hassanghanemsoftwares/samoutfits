@@ -11,6 +11,7 @@
 	<thead>
 		<tr>
 			<th><?php echo $this->lang->line('auto_number') ?></th>
+			<th><?php echo $this->lang->line('order_number') ?></th>
 			<th><?php echo $this->lang->line('transaction_date') ?></th>
 			<th><?php echo $this->lang->line('value_date') ?></th>
 			<th><?php echo $this->lang->line('supplier_account') ?></th>
@@ -27,6 +28,7 @@
 		<?php foreach ($records as $record) { ?>
 			<tr>
 				<td><?php echo $record['auto_no'] ?></td>
+				<td><?php echo $record['op_nb'] ?></td>
 				<td><?php echo $record['trans_date'] ?></td>
 				<td><?php echo $record['value_date'] ?></td>
 				<td><?php echo $record['account1'] ?></td>

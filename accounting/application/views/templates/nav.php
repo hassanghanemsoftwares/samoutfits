@@ -295,8 +295,6 @@ $link = substr($link, 1);
                     <!-- <i class="fa fa-search fa-lg" ></i> -->
                     <?php echo form_input('', '', ' class="form-control account_nb_search"  style="width: 100%"') ?>
                     <?php echo form_input('', '', ' class="form-control hide account_id_search"') ?>
-
-
                 </div>
             </li>
         </ul>

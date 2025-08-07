@@ -282,7 +282,7 @@ class Journal extends MY_Model
 		return parent::load_datatables_pagedata($dt);
 	}
 
-	public function bulk_add_receipts_for_invoices($trans_ids, $amounts)
+	public function bulk_add_receipts_for_invoices($trans_ids, $amounts,$cash_date)
 	{
 		$this->load->model('Transaction');
 		$this->load->model('Account');
@@ -294,7 +294,7 @@ class Journal extends MY_Model
 				'auto_no' => $auto_no,
 				'account_id' => $invoice['account_id'],
 				'account2_id' => $account2_id["id"],
-				'journal_date' => date('Y-m-d'),
+				'journal_date' => $cash_date,
 				'currency_id' => $invoice['currency_id'],
 				'currency_rate' => $invoice['currency_rate'],
 				'amount' => $amounts[$k],

@@ -29,7 +29,7 @@
         form_reset('reset', $this->lang->line('reset'), 'class="btn btn-link"') ?>
     </div>
     <div class="col-sm-2 text-right">
-       <button type="button" id="export" name="export" onclick="ExportToExcel('xlsx')" class="btn btn-primary"><?php echo $this->lang->line('Export_Excel') ?></button>
+        <button type="button" id="export" name="export" onclick="ExportToExcel('xlsx')" class="btn btn-primary"><?php echo $this->lang->line('Export_Excel') ?></button>
     </div>
 </div>
 <?php echo form_close() ?>
@@ -50,7 +50,7 @@
             <div class="col-sm-6">
                 <?php echo form_dropdown('status', $status2, $selected_status, 'id="status" class="form-control" required')
                 ?>
-                 <div id="error_status" style="text-align:center" onclick="document.getElementById('error_status').style.display = 'none'"></div>
+                <div id="error_status" style="text-align:center" onclick="document.getElementById('error_status').style.display = 'none'"></div>
             </div>
         </div>
     </div>
@@ -63,6 +63,7 @@
     <table class="table table-bordered table-striped table-hover table-condensed table-responsive" id="cashTbl">
         <thead>
             <tr>
+                <th><?php echo $this->lang->line('account_nb') ?></th>
                 <th><?php echo $this->lang->line('invoice_nb') ?></th>
                 <th><?php echo $this->lang->line('customer_name') ?></th>
                 <th><?php echo $this->lang->line('amount') ?></th>
@@ -73,7 +74,8 @@
         </thead>
         <tbody>
             <?php foreach ($results as $result) { ?>
-                <tr>
+                  <tr <?php if ($result['note'] == 'Rejected') echo 'style="background-color: #eb6262;"'; ?>>
+                    <td><?php echo $result['account_nb'] ?></td>
                     <td><?php echo $result['invoice nb'] ?></td>
                     <td><?php echo $result['customer'] ?></td>
                     <td><?php echo $result['cash'] ?></td>

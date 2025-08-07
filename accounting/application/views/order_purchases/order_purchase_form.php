@@ -72,7 +72,7 @@
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-4 control-label" for="op_nb"><?php echo $this->lang->line('OP_number') ?></label>
+			<label class="col-sm-4 control-label" for="op_nb"><?php echo $this->lang->line('order_number') ?></label>
 			<div class="col-sm-8">
 				<?php
 				echo form_input('trans[op_nb]', $this->Transaction->get_field('op_nb'), 'id="op_nb" class="form-control" required '),
