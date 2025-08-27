@@ -46,14 +46,14 @@
 -- ALTER TABLE `items` ADD CONSTRAINT `item_id_main_item_id` FOREIGN KEY (`main_item_id`) REFERENCES `items`(`id`) ON DELETE SET NULL ON UPDATE SET NULL;
 -- ALTER TABLE `items` ADD `arrangement` TINYINT UNSIGNED NULL DEFAULT NULL AFTER `main_item_id`;
 
-SELECT * FROM `items` WHERE barcode REGEXP '.*-[0-9]+$' ORDER BY barcode ASC;
+-- SELECT * FROM `items` WHERE barcode REGEXP '.*-[0-9]+$' ORDER BY barcode ASC;
 
-UPDATE items AS child
-JOIN items AS parent
-  ON parent.barcode = CONCAT(SUBSTRING_INDEX(child.barcode, '-', 1), '-1')
-SET child.main_item_id = parent.id,
-    child.arrangement = CAST(SUBSTRING_INDEX(child.barcode, '-', -1) AS UNSIGNED)
-WHERE child.barcode REGEXP '.*-[0-9]+$';
+-- UPDATE items AS child
+-- JOIN items AS parent
+--   ON parent.barcode = CONCAT(SUBSTRING_INDEX(child.barcode, '-', 1), '-1')
+-- SET child.main_item_id = parent.id,
+--     child.arrangement = CAST(SUBSTRING_INDEX(child.barcode, '-', -1) AS UNSIGNED)
+-- WHERE child.barcode REGEXP '.*-[0-9]+$';
 
 
 

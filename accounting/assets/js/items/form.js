@@ -28,14 +28,12 @@ function validation() {
         data: { barcode: document.itemsform.barcode.value, id: id },
         url: getAppURL("Items/check_if_barcode_exists_on_item_update"),
         success: function (data) {
-          if (data.barcode != document.itemsform.barcode.value) {
-            if (data.count != "0") {
-              document.getElementById("error_barcode").innerHTML =
-                _lang.unique_value;
-              document.getElementById("error_barcode").className =
-                "alert alert-danger";
-              count++;
-            }
+          if (data != "0") {
+            document.getElementById("error_barcode").innerHTML =
+              _lang.unique_value;
+            document.getElementById("error_barcode").className =
+              "alert alert-danger";
+            count++;
           }
         },
       });
@@ -158,11 +156,11 @@ function validation() {
     return true;
   }
 }
-$("#itemsform").on("submit", function (e) {
-  if (!validation()) {
-    e.preventDefault(); // stop form from submitting
-  }
-});
+// $("#itemsform").on("submit", function (e) {
+//   if (!validation()) {
+//     e.preventDefault(); // stop form from submitting
+//   }
+// });
 // Helper function to show error
 function setError(id, message) {
   const el = document.getElementById(id);
@@ -178,9 +176,12 @@ $(document).ready(function () {
   $("#add-variant").click(function () {
     let template = $("#variant-template").html();
     template = template.replace(/__INDEX__/g, index);
-    $("#variants-container").append(
+
+    // Insert new variant right after the header+button row
+    $("#variants-container .d-flex").after(
       '<div class="variant-item mb-3">' + template + "</div>"
     );
+
     index++;
   });
 

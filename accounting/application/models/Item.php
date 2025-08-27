@@ -488,11 +488,38 @@ class Item extends MY_Model
 
 	public function check_barcode($barcode)
 	{
-		$this->db->select('count(*) as count');
+		$this->db->select('COUNT(*) as count');
 		$this->db->from('items');
-		$this->db->where('items.barcode', $barcode);
+
+		// If barcode already has a suffix (-number), strip it
+		if (preg_match('/^(.*)-\d+$/', $barcode, $matches)) {
+			$main_barcode = $matches[1];
+			$this->db->where("items.barcode REGEXP", "^" . $main_barcode . "(-[0-9]+)?$");
+		} else {
+			// Check both the exact barcode and its suffixed versions
+			$this->db->where("items.barcode REGEXP", "^" . $barcode . "(-[0-9]+)?$");
+		}
+
 		$query = $this->db->get()->row_array();
-		return $query;
+		return $query; // returns ['count' => X] just like before
+	}
+
+	public function check_barcode_on_item_updat($barcode, $main_item_id)
+	{
+		$this->db->select('COUNT(*) as count');
+		$this->db->from('items')
+			->where('main_item_id',"!=" ,$main_item_id);
+		// If barcode already has a suffix (-number), strip it
+		if (preg_match('/^(.*)-\d+$/', $barcode, $matches)) {
+			$main_barcode = $matches[1];
+			$this->db->where("items.barcode REGEXP", "^" . $main_barcode . "(-[0-9]+)?$");
+		} else {
+			// Check both the exact barcode and its suffixed versions
+			$this->db->where("items.barcode REGEXP", "^" . $barcode . "(-[0-9]+)?$");
+		}
+
+		$query = $this->db->get()->row_array();
+		return $query; // returns ['count' => X] just like before
 	}
 
 	public function paginate_missing_products_checked()
@@ -945,7 +972,7 @@ class Item extends MY_Model
 			->or_where('id', $main_item_id)
 			->group_end();
 
-		$this->db->order_by('arrangement', 'ASC');
+		$this->db->order_by('arrangement', 'DESC');
 		$query = $this->db->get('items');
 
 		return $query->result_array();

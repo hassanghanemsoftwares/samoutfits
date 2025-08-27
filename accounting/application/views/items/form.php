@@ -295,7 +295,8 @@ $yes_no = [
 			'gender'     => '',
 			'price'      => 0,
 			'old_price'  => 0,
-			'item_images' => []
+			'item_images' => [],
+			'publish' => 1,
 		]];
 
 		foreach ($variants as $key => $variant): ?>
@@ -452,7 +453,8 @@ $yes_no = [
 					type="checkbox"
 					value="1"
 					name="variants[__INDEX__][publish]"
-					id="publish___INDEX__">
+					id="publish___INDEX__"
+					checked>
 				<label class="form-check-label" for="publish___INDEX__">
 					<?= $this->lang->line('Published'); ?>
 				</label>

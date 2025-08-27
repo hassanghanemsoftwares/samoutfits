@@ -185,7 +185,7 @@ class Items extends MY_Controller
 			if (isset($post["size_guidance"]) && trim($post["size_guidance"]) == "") {
 				$this->Item->set_field('size_guidance', NULL);
 			}
-// var_dump($post);exit;
+			// var_dump($post);exit;
 			// ---- Variants handling ----
 			foreach ($post['variants'] as $index => $variant) {
 				$this->Item->set_fields($post); // common fields
@@ -325,7 +325,7 @@ class Items extends MY_Controller
 			}
 			$this->session->set_flashdata('message_success', $this->lang->line($fetched ? 'Updated_Successfully' : 'Saved_Successfully'));
 			if (!$fetched) {
-				redirect("items/add");
+				redirect("items/edit/" . $this->Item->get_field('main_item_id'));
 			} else {
 				redirect("items/edit/" . $id);
 			}
@@ -370,7 +370,7 @@ class Items extends MY_Controller
 		foreach ($sub_categories as $c) {
 			$data['sub_categories'][$c] = $c;
 		}
-		$data['gender'] = array('Unisex' => 'Unisex','Female' => 'Female', 'Male' => 'Male',  'gender_free' => 'Gender Free',);
+		$data['gender'] = array('Unisex' => 'Unisex', 'Female' => 'Female', 'Male' => 'Male',  'gender_free' => 'Gender Free',);
 		$colors = $this->Configuration->fetch_colors()["valueStr"];
 		$colors = explode(",", $colors);
 		$data['colors'][0] = '';
@@ -688,15 +688,10 @@ class Items extends MY_Controller
 	{
 		$barcode = $this->input->post('barcode');
 		$item_id = $this->input->post('id');
-		$item_barcode = $this->Item->get_barcode_by_id($item_id)["barcode"];
-		$res = $this->Item->check_barcode($barcode)["count"];
-		// echo ($result["count"]);
-		$result["count"] = $res;
-		$result["barcode"] = $item_barcode;
-		// echo($item_barcode);
-		$this->_render_json(
-			$result
-		);
+		$item = $this->Item->fetch_item($item_id)[0];
+		$main_item_id = $item['main_item_id'];
+		$result = $this->Item->check_barcode_on_item_updat($barcode, $main_item_id)["count"];
+		echo ($result);
 	}
 
 	public function get_item_cost_LC()
