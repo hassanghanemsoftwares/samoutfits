@@ -636,3 +636,4 @@ $lang['Edit_Order_Status_Of '] = 'Edit Order Status Of';
 $lang['whish_users'] = "Whish users";
 $lang['go_toecommerce'] = 'Go to E-commerce';
 $lang['size_guidance'] = 'Size Guidance';
+$lang['video_link'] = 'Video link';

@@ -78,10 +78,13 @@ $(document).ready(function () {
 		}
 	});
 	$('.image-nb').on('change', function(e){
-		let image_id = $(this).parent().find('input#image_id').val();
-		let old_order_nb = $(this).parent().find('input#old_order_nb').val();
+		let image_id = $(this).data('image-id');
+
+		let old_order_nb = $(this).data('order_nb');
 		let image_nb = $(this).val();
-		var item_id = $('#id').val();
+		var item_id =  $(this).data('item-id');
+
+
 		$.ajax({
 			cache: false,
 			type: 'POST',
@@ -90,7 +93,7 @@ $(document).ready(function () {
 			},
 			url: getAppURL('Items/update_item_image_order_nb'),
 			success: function (data) {
-				window.location.href = getAppURL('Items/edit/'+item_id);
+				location.reload(true);
 			}
 		});
 	})

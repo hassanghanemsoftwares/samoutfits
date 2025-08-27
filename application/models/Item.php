@@ -8,7 +8,7 @@ class Item extends MY_Model
 	protected $modelName = 'Item';
 	protected $_table = 'items';
 	protected $_listFieldName = 'description';
-	protected $_fieldsNames = ['id', 'barcode', 'description', 'category', 'open_cost', 'cost', 'purchase_cost', 'open_qty', 'qty', 'price', 'profit', 'TVA', 'description2', 'brand', 'color', 'gender', 'publish', 'size_chart', 'link', 'cool_storage', 'flammable_handling', 'fragile', 'size_guidance'];
+	protected $_fieldsNames = ['id', 'barcode', 'description', 'category', 'open_cost', 'cost', 'purchase_cost', 'open_qty', 'qty', 'price', 'profit', 'TVA', 'description2', 'brand', 'color', 'gender', 'publish', 'size_chart', 'link', 'cool_storage', 'flammable_handling', 'fragile', 'size_guidance', 'main_item_id', 'arrangement'];
 	protected $allowedNulls = ['link'];
 
 	public function __construct()
@@ -540,5 +540,20 @@ class Item extends MY_Model
 		$this->db->from('reordenig_sections');
 		$this->db->order_by('reordenig_sections.order_nb', 'ASC');
 		return $this->db->get()->result_array();
+	}
+
+	public function getItemVariants($main_item_id)
+	{
+		$this->db
+			->where('publish', 1)
+			->group_start()
+			->where('main_item_id', $main_item_id)
+			->or_where('id', $main_item_id)
+			->group_end();
+
+		$this->db->order_by('arrangement', 'ASC');
+		$query = $this->db->get('items');
+
+		return $query->result_array();
 	}
 }

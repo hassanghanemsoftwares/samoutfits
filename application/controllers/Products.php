@@ -108,6 +108,23 @@ class Products extends MY_Controller
 			'availability' => (doubleval($data['product']['qty'] > 0)) ? 'In Stock' : 'Out of Stock',
 			'image' => (isset($data['images'][0]['image_name']) ? "https://www.samoutfits.com/accounting/assets/uploads/" . $data['images'][0]['image_name'] : "")
 		);
+
+		$main_item_id = $data['product']['main_item_id'] ?: $item_id;
+		// var_dump($main_item_id);exit;
+		$data['variants'] = $this->Item->getItemVariants($main_item_id);
+		foreach ($data['variants'] as $key => $variant) {
+			$data['variants'][$key]['item_images'] = $this->Item->load_item_images($variant['id']);
+		}
+		foreach ($data['variants'] as $key => $variant) {
+			if ($variant['id'] == $item_id) {
+				$current = $data['variants'][$key];
+				unset($data['variants'][$key]);
+				array_unshift($data['variants'], $current);
+				break;
+			}
+		}
+		// var_dump($data['variants']);exit;
+
 		$data['title'] = $this->lang->line('Product') . " - " . $data['product']['barcode'];
 		$this->load->view('templates/header', [
 			'_page_title' => $data['title'],

@@ -62,3 +62,6 @@ $lang['less_equal'] = "*Please Enter value less than or equal ";
 $lang['old_new'] = "new qty can not be equal to old qty";
 $lang['exceeded_max_qty'] = "The submitted qty of item '%b' from '%w' exceeded the Max avialable qty '%m', please check.";
 $lang['all_required'] = "*All fields are required*";
+
+$lang['product_images_required'] = "*product images required*";
+

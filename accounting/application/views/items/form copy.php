@@ -12,22 +12,6 @@
 		height: 100%;
 		display: block;
 	}
-
-	#variants-container {
-		margin-bottom: 10px;
-		padding: 10px;
-	}
-
-	.variant-item {
-		background-color: #f9f9f9;
-		margin-top: 20px;
-		padding: 20px;
-	}
-
-	.remove-variant {
-		margin-left: 10px;
-		cursor: pointer;
-	}
 </style>
 <?php
 $yes_no = [
@@ -38,11 +22,6 @@ $yes_no = [
 <?php if ($this->session->flashdata('message_success')) { ?>
 	<div id="save_msg" class="alert alert-success" style="text-align:center" onclick="document.getElementById('save_msg').style.display = 'none'">
 		<strong><?php echo $this->session->flashdata('message_success') ?></strong>
-	</div>
-<?php } ?>
-<?php if ($this->session->flashdata('message')) { ?>
-	<div id="delete_ignore" class="alert alert-danger" style="text-align:center" onclick="document.getElementById('delete_ignore').style.display = 'none'">
-		<strong><?php echo $this->session->flashdata('message') ?></strong>
 	</div>
 <?php } ?>
 <p class="text-right" <?php echo ($this->violet_auth->get_user_type() == "Employee") ? 'hidden' : ''; ?>>
@@ -57,6 +36,24 @@ $yes_no = [
 	<div class="col-sm-6">
 		<h3><strong><?php echo $title ?></strong></h3>
 		<hr>
+	</div>
+	<div class="col-sm-3">
+		<div class="form-check">
+			<input type="text" value="0" name="publish" hidden>
+			<input class="form-check-input" type="checkbox" value="1" name="publish" id="publish" <?php echo ($this->Item->get_field('publish') == 1) ? "checked" : "" ?>>
+			<label class="form-check-label" for="publish">
+				<?php echo $this->lang->line('Published'); ?>
+			</label>
+		</div>
+	</div>
+	<div class="col-sm-3">
+		<div class="form-check">
+			<input type="text" value="0" name="stock_clearance" hidden>
+			<input class="form-check-input" type="checkbox" value="1" name="stock_clearance" id="stock_clearance" <?php echo ($this->Item->get_field('stock_clearance') == 1) ? "checked" : "" ?>>
+			<label class="form-check-label" for="stock_clearance">
+				<?php echo $this->lang->line('Stock_Clearance'); ?>
+			</label>
+		</div>
 	</div>
 </div>
 <input name="id" id="id" type="hidden" value="<?php echo $this->Item->get_field('id') ?>" />
@@ -114,7 +111,37 @@ $yes_no = [
 				<div id="error_variant1" style="text-align:center" onclick="document.getElementById('error_variant1').style.display = 'none'"></div>
 			</div>
 		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label" for="gender"><?php echo $this->lang->line('gender') ?></label>
+			<div class="col-sm-9">
+				<?php
+				echo form_dropdown('gender', $gender, $this->Item->get_field('gender'), 'id="gender" class="form-control"')
+				?>
+			</div>
+		</div>
 
+
+
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label" for="color"><?php echo $this->lang->line('color') ?></label>
+			<div class="col-sm-9">
+				<?php
+				echo form_dropdown('color', $colors, $this->Item->get_field('color'), 'id="color" class="form-control"')
+				?>
+				<div id="error_color" style="text-align:center" onclick="document.getElementById('error_color').style.display = 'none'"></div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label" for="old_price"><?php echo $this->lang->line('old_price') ?></label>
+			<div class="col-sm-9">
+				<?php
+				echo form_input('old_price', $this->Item->get_field('old_price'), 'id="old_price" maxlength="255" class="form-control" required'),
+				$this->Item->get_error('old_price')
+				?>
+				<div id="error_old_price" style="text-align:center" onclick="document.getElementById('error_old_price').style.display = 'none'"></div>
+			</div>
+		</div>
 		<style>
 			.bootstrap-select>.dropdown-toggle {
 				width: 112%;
@@ -126,7 +153,12 @@ $yes_no = [
 				<?php echo form_dropdown('tags[]', $tags, $selected_tags, 'id="tags" class="form-control selectpicker" data-live-search="true" multiple title="select tags..."') ?>
 			</div>
 		</div>
-
+		<div class="form-group">
+			<label class="col-sm-3 control-label" for="upload_images"><?php echo $this->lang->line('product_images') ?></label>
+			<div class="col-sm-9">
+				<input type="file" name="files[]" class="form-control" id="upload_images" value="./assets/uploads/ac.png" multiple>
+			</div>
+		</div>
 		<div class="form-group">
 			<label class="col-sm-3 control-label" for="size_chart"><?php echo $this->lang->line('size_chart') ?></label>
 			<div class="col-sm-9">
@@ -200,7 +232,7 @@ $yes_no = [
 			</div>
 		</div>
 		<div class="form-group ">
-			<label class="col-sm-2 control-label" for="note"><?php echo $this->lang->line('description') ?></label>
+			<label class="col-sm-2 control-label" for="note"><?php echo $this->lang->line('note') ?></label>
 			<div class="col-sm-10">
 				<?php
 				echo form_textarea('note', $this->Item->get_field('note'), 'id="note" maxlength="255" class="form-control" style="height:85px;" required')
@@ -208,7 +240,7 @@ $yes_no = [
 			</div>
 		</div>
 		<div class="form-group ">
-			<label class="col-sm-2 control-label" for="link"><?php echo $this->lang->line('video_link') ?></label>
+			<label class="col-sm-2 control-label" for="link"><?php echo $this->lang->line('link') ?></label>
 			<div class="col-sm-10">
 				<?php
 				echo form_textarea('link', $this->Item->get_field('link'), 'id="link" maxlength="255" class="form-control" style="height:85px;"')
@@ -279,248 +311,31 @@ $yes_no = [
 		}
 		?>
 	</div>
-</div>
-<div class="row">
-	<div id="variants-container" class="my-5">
-		<div class="d-flex mb-2">
-			<h4>Variants</h4>
-			<button type="button" id="add-variant" class="btn btn-success ms-2">Add Variant</button>
-		</div>
+	<div class="col-sm-9 col-sm-offset-2">
 
-		<?php
-		$variants = !empty($variants) ? $variants : [0 => [
-			'id'         => null,
-			'barcode'    => '',
-			'color'      => '',
-			'gender'     => '',
-			'price'      => 0,
-			'old_price'  => 0,
-			'item_images' => []
-		]];
-
-		foreach ($variants as $key => $variant): ?>
-			<div class="variant-item mb-3 p-3 border rounded">
-				<div class="row g-3 mb-3">
-					<?php if (!empty($variant['barcode'])): ?>
-						<div class="col-sm-6">
-
-							<div class="col-md-12 p-2">
-								<span><?= $this->lang->line('barcode') ?>:
-									<b><?= $variant['barcode'] ?></b>
-								</span>
-							</div>
-							<input type="hidden" name="variants[<?= $key ?>][id]" value="<?= $variant['id'] ?>">
-						</div>
-
-					<?php endif; ?>
-
-					<div class="col-sm-3">
-						<div class="form-check">
-							<input type="hidden" value="0" name="variants[<?= $key ?>][publish]">
-							<input class="form-check-input"
-								type="checkbox"
-								value="1"
-								name="variants[<?= $key ?>][publish]"
-								id="publish_<?= $key ?>"
-								<?= !empty($variant['publish']) && $variant['publish'] == 1 ? "checked" : "" ?>>
-							<label class="form-check-label" for="publish_<?= $key ?>">
-								<?= $this->lang->line('Published'); ?>
-							</label>
-						</div>
-					</div>
-
-
-					<div class="col-sm-3">
-						<div class="form-check">
-							<input type="hidden" value="0" name="variants[<?= $key ?>][stock_clearance]">
-							<input class="form-check-input"
-								type="checkbox"
-								value="1"
-								name="variants[<?= $key ?>][stock_clearance]"
-								id="stock_clearance_<?= $key ?>"
-								<?= !empty($variant['stock_clearance']) && $variant['stock_clearance'] == 1 ? "checked" : "" ?>>
-							<label class="form-check-label" for="stock_clearance_<?= $key ?>">
-								<?= $this->lang->line('Stock_Clearance'); ?>
-							</label>
-						</div>
-					</div>
+		<?php foreach ($item_images as $image) : ?>
+			<div class="gallery">
+				<a target="_blank" href="<?php echo base_url('assets/uploads/' . $image["image_name"]) ?>">
+					<img src="<?php echo base_url('assets/uploads/' . $image["image_name"]) ?>" alt="Cinque Terre">
+				</a>
+				<div class="desc">
+					<input type="text" id="image_id" value="<?php echo $image["id"] ?>" hidden>
+					<input type="text" id="old_order_nb" value="<?php echo $image["order_nb"] ?>" hidden>
+					<?php echo form_dropdown('order_nb', $images_nbs, $image["order_nb"], 'id="order_nb" class="form-control image-nb"') ?>
 				</div>
-				<div class="row g-3">
-					<!-- Left column -->
-					<div class="col-md-5 d-grid">
-						<div class="form-group">
-							<label class="col-sm-3 control-label"><?= $this->lang->line('color') ?></label>
-							<div class="col-sm-9">
-								<?= form_dropdown("variants[$key][color]", $colors, $variant['color'], 'class="form-control"') ?>
-								<div id="error_color" style="text-align:center" onclick="document.getElementById('error_color').style.display = 'none'"></div>
-
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-sm-3 control-label"><?= $this->lang->line('gender') ?></label>
-							<div class="col-sm-9">
-								<?= form_dropdown("variants[$key][gender]", $gender, $variant['gender'], 'class="form-control"') ?>
-								<div id="error_gender" style="text-align:center" onclick="document.getElementById('error_gender').style.display = 'none'"></div>
-
-							</div>
-						</div>
-
-						<div class="form-group mb-2">
-							<label class="col-sm-3 control-label"><?= $this->lang->line('product_images') ?></label>
-							<div class="col-sm-9">
-								<input type="file" name="variants[<?= $key ?>][files][]" class="form-control" multiple>
-								<div id="error_files" style="text-align:center" onclick="document.getElementById('error_files').style.display = 'none'"></div>
-
-							</div>
-						</div>
-					</div>
-
-					<!-- Right column -->
-					<div class="col-md-5 d-grid">
-						<div class="form-group mb-2">
-							<label class="col-sm-3 control-label"><?= $this->lang->line('price') ?></label>
-							<div class="col-sm-9">
-								<?= form_input("variants[$key][price]", $variant['price'], 'class="form-control" required') ?>
-								<div id="error_price" style="text-align:center" onclick="document.getElementById('error_price').style.display = 'none'"></div>
-
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-sm-3 control-label"><?= $this->lang->line('old_price') ?></label>
-							<div class="col-sm-9">
-								<?= form_input("variants[$key][old_price]", $variant['old_price'], 'class="form-control" required') ?>
-								<div id="error_old_price" style="text-align:center" onclick="document.getElementById('error_old_price').style.display = 'none'"></div>
-
-							</div>
-						</div>
-					</div>
-
-					<!-- Delete button -->
-					<div class="col-md-2">
-						<?php if (!empty($variant['id'])): ?>
-							<button type="button" onclick="confirmDelete('<?= base_url("items/delete/" . $variant['id']) ?>')" class="btn btn-danger">&#x2715;</button>
-						<?php else: ?>
-							<button type="button" class="btn btn-danger remove-variant">&#x2715;</button>
-						<?php endif; ?>
-					</div>
-
-					<!-- Image gallery -->
-					<?php if (!empty($variant['item_images'])): ?>
-						<div class="col-sm-12">
-							<?php foreach ($variant['item_images'] as $image): ?>
-								<div class="gallery">
-									<a target="_blank" href="<?= base_url('assets/uploads/' . $image['image_name']) ?>">
-										<img src="<?= base_url('assets/uploads/' . $image['image_name']) ?>" alt="Image">
-									</a>
-									<div class="desc">
-										<?= form_dropdown('order_nb', $variant['images_nbs'], $image['order_nb'],   'class="form-control image-nb" data-order_nb="' . $image["order_nb"] . '" data-image-id="' . $image['id'] . '" data-item-id="' . $variant['id'] . '"') ?>
-									</div>
-									<div class="desc">
-										<button type="button" class="btn btn-danger i-remove" id="<?= $image['image_name'] ?>">
-											<?= $this->lang->line('Remove') ?>
-										</button>
-									</div>
-								</div>
-							<?php endforeach; ?>
-						</div>
-					<?php endif; ?>
-
-				</div>
+				<div class="desc"><button type="button" class="btn btn-danger i-remove" id="<?php echo $image["image_name"] ?>"><?php echo $this->lang->line('Remove') ?></button></div>
 			</div>
-		<?php endforeach; ?>
+		<?php endforeach ?>
 	</div>
-</div>
-
-<div class="form-group row">
-	<div class="col-sm-offset-10 col-sm-2">
-		<?php echo form_submit('submitBtn', $this->lang->line('save'), 'class="btn btn-primary" id="bgsave" accesskey="s" value="upload"'),
-		' ',
-		form_reset('reset', $this->lang->line('reset'), 'class="btn btn-link"') ?>
-	</div>
-</div>
-<?php echo form_close() ?>
-
-<div id="variant-template" class="variant-item mb-3 p-3 border rounded" style="display:none;margin-bottom: 10px;">
-	<div class="row g-3">
-
-		<div class="col-sm-3">
-			<div class="form-check">
-				<input type="hidden" value="0" name="variants[__INDEX__][publish]">
-				<input class="form-check-input"
-					type="checkbox"
-					value="1"
-					name="variants[__INDEX__][publish]"
-					id="publish___INDEX__">
-				<label class="form-check-label" for="publish___INDEX__">
-					<?= $this->lang->line('Published'); ?>
-				</label>
-			</div>
-		</div>
-
-		<div class="col-sm-3">
-			<div class="form-check">
-				<input type="hidden" value="0" name="variants[__INDEX__][stock_clearance]">
-				<input class="form-check-input"
-					type="checkbox"
-					value="1"
-					name="variants[__INDEX__][stock_clearance]"
-					id="stock_clearance___INDEX__">
-				<label class="form-check-label" for="stock_clearance___INDEX__">
-					<?= $this->lang->line('Stock_Clearance'); ?>
-				</label>
-			</div>
+	<div class="form-group row">
+		<div class="col-sm-offset-10 col-sm-2">
+			<?php echo form_submit('submitBtn', $this->lang->line('save'), 'class="btn btn-primary" id="bgsave" accesskey="s" value="upload"'),
+			' ',
+			form_reset('reset', $this->lang->line('reset'), 'class="btn btn-link"') ?>
 		</div>
 	</div>
-	<div class="row g-3">
-		<div class="col-md-5" style="display: grid;">
-			<div class="form-group">
-				<label class="col-sm-3 control-label" for="color"><?= $this->lang->line('color') ?></label>
-				<div class="col-sm-9">
-					<?= form_dropdown('variants[__INDEX__][color]', $colors, null, 'id="color" class="form-control"') ?>
-					<div id="error_color" style="text-align:center" onclick="document.getElementById('error_color').style.display = 'none'"></div>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label" for="gender"><?= $this->lang->line('gender') ?></label>
-				<div class="col-sm-9">
-					<?= form_dropdown('variants[__INDEX__][gender]', $gender, null, 'id="gender" class="form-control"') ?>
-				</div>
-			</div>
-			<div class="form-group mb-2">
-				<label class="col-sm-3 control-label" for="upload_images"><?= $this->lang->line('product_images') ?></label>
-				<div class="col-sm-9">
-					<input type="file" name="variants[__INDEX__][files][]" class="form-control" id="upload_images" multiple>
-					<div id="error_files" style="text-align:center" onclick="document.getElementById('error_files').style.display = 'none'"></div>
-				</div>
-			</div>
-		</div>
-
-		<div class="col-md-5" style="display: grid;">
-			<div class="form-group mb-2">
-				<label class="col-sm-3 control-label" for="price"><?= $this->lang->line('price') ?></label>
-				<div class="col-sm-9">
-					<?= form_input('variants[__INDEX__][price]', 0, 'id="price" maxlength="255" class="form-control" required') ?>
-					<div id="error_price" style="text-align:center" onclick="document.getElementById('error_price').style.display = 'none'"></div>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label" for="old_price"><?= $this->lang->line('old_price') ?></label>
-				<div class="col-sm-9">
-					<?= form_input('variants[__INDEX__][old_price]', 0, 'id="old_price" maxlength="255" class="form-control" required') ?>
-					<div id="error_old_price" style="text-align:center" onclick="document.getElementById('error_old_price').style.display = 'none'"></div>
-				</div>
-			</div>
-		</div>
-
-		<div class="col-md-2">
-			<button type="button" class="btn btn-danger remove-variant">&#x2715;</button>
-		</div>
-	</div>
+	<?php echo form_close() ?>
 </div>
-
-
 
 <script>
 	const chooseFile = document.getElementById("upload_images");

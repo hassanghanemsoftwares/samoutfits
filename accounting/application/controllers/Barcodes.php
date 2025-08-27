@@ -61,9 +61,9 @@ class Barcodes extends CI_Controller
     $this->load->model('Item');
     $this->zend->load('Zend/Barcode');
     $trans_items = $this->Transaction_item->load_all_trans_items_without_sizes($trans_id);
-    
+
     $data['barcodes'] = [];
-    foreach ($trans_items as $k=> $t) {
+    foreach ($trans_items as $k => $t) {
       // $data['barcodes'][$t['barcode']] = $t['barcode'];
       $barcodeOptions = array(
         'text' => $t['barcode']
@@ -87,6 +87,41 @@ class Barcodes extends CI_Controller
     ]);
     // var_dump($data['barcodes']);
     // exit;
+  }
+
+  public function generate_inventory($id, $size)
+  {
+
+    $this->load->model('Item');
+    $item = $this->Item->fetch_item($id);
+    $barcode_number = $this->Item->get_barcode_by_id($id);
+
+    $this->zend->load('Zend/Barcode');
+    $barcodeOptions = array(
+      'text'      => $barcode_number['barcode'],
+      'font' => 5,
+      'barHeight' => 35,
+      'drawText'  => true,
+    );
+    $rendererOptions = array();
+    $file = Zend_Barcode::draw('code128', 'image', $barcodeOptions, $rendererOptions);
+    $code = time() . $barcode_number['barcode'];
+    $store_image = imagepng($file, "assets/barcode/{$barcode_number['barcode']}.png");
+    $data['image'] = $barcode_number['barcode'] . '.png';
+    $data["title"] = "Barcode Generator";
+
+    $data['size'] = $size;
+    $data['color'] = $item[0]['color'];
+
+    // var_dump($data); exit;
+    $this->load->view('templates/print_h', [
+      '_moreCss' => ['js/air-datepicker/css/datepicker.min'],
+      '_page_title' => $data["title"]
+    ]);
+    $this->load->view('barcode/render_inventory', $data);
+    $this->load->view('templates/print_f', [
+      '_moreJs' => []
+    ]);
   }
 }
 

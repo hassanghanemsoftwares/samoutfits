@@ -51,10 +51,22 @@ class Sales extends MY_Controller
 			}
 			$status2 = $this->Configuration->fetch_status()["valueStr"];
 			$status2 = explode(",", $status2);
+
+			$remove = [
+				"Cancelled By Administration",
+				"Successfully Delivered",
+				"Failed To Deliver",
+				"Pending By Administration",
+				"Cancelled By Customer"
+			];
+
+			$status2 = array_diff($status2, $remove);
+
 			$data['status2'][0] = '';
 			foreach ($status2 as $s) {
 				$data['status2'][$s] = $s;
 			}
+
 			$data['title'] = $this->lang->line('active_orders');
 			$this->load->view('templates/header', [
 				'_page_title' => $this->lang->line('Invoices'),
@@ -787,7 +799,7 @@ class Sales extends MY_Controller
 			$this->Transaction->bulk_update_for_cash_date($trans_ids, $cash_date);
 			if ($receipt === "true") {
 				$this->load->model('Journal');
-				$this->Journal->bulk_add_receipts_for_invoices($trans_ids, $amounts,$cash_date);
+				$this->Journal->bulk_add_receipts_for_invoices($trans_ids, $amounts, $cash_date);
 			}
 		}
 		if ($return_date !== "0") {
@@ -949,7 +961,7 @@ class Sales extends MY_Controller
 			$trans_ids[$k] = $this->Transaction->fetch_transaction_id_by_autono_for_bulk_receipts($a)[0]["id"];
 		}
 		$this->load->model('Journal');
-		$this->Journal->bulk_add_receipts_for_invoices($trans_ids, $amounts,$cash_date);
+		$this->Journal->bulk_add_receipts_for_invoices($trans_ids, $amounts, $cash_date);
 		if ($cash_date !== '') {
 			$this->Transaction->update_invoice_cash_date($trans_ids, $cash_date);
 		}

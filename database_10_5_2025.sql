@@ -40,3 +40,25 @@
 
 -- ALTER TABLE `transactions` CHANGE `op_nb` `op_nb` DOUBLE UNSIGNED NULL DEFAULT NULL;
 
+
+
+-- ALTER TABLE `items` ADD `main_item_id` INT UNSIGNED NULL DEFAULT NULL AFTER `size_guidance`;
+-- ALTER TABLE `items` ADD CONSTRAINT `item_id_main_item_id` FOREIGN KEY (`main_item_id`) REFERENCES `items`(`id`) ON DELETE SET NULL ON UPDATE SET NULL;
+-- ALTER TABLE `items` ADD `arrangement` TINYINT UNSIGNED NULL DEFAULT NULL AFTER `main_item_id`;
+
+SELECT * FROM `items` WHERE barcode REGEXP '.*-[0-9]+$' ORDER BY barcode ASC;
+
+UPDATE items AS child
+JOIN items AS parent
+  ON parent.barcode = CONCAT(SUBSTRING_INDEX(child.barcode, '-', 1), '-1')
+SET child.main_item_id = parent.id,
+    child.arrangement = CAST(SUBSTRING_INDEX(child.barcode, '-', -1) AS UNSIGNED)
+WHERE child.barcode REGEXP '.*-[0-9]+$';
+
+
+
+
+--get duplicate barcodes
+-- SELECT p.* FROM items p JOIN ( SELECT barcode FROM items GROUP BY barcode HAVING COUNT(*) > 1 ) dup ON p.barcode = dup.barcode ORDER BY p.barcode;
+
+

@@ -158,147 +158,129 @@ class Items extends MY_Controller
 	{
 		$fetched = ($id > 0 ? $this->Item->fetch(_gnv($id)) : false);
 		$post = $this->input->post(null, true);
-		$data = [];
-		// var_dump($post);
+		// var_dump($_FILES['size_chart']['name']);
 		// exit;
-
 		if (!empty($post)) {
-			// ---- Size chart upload ----
-			if (isset($_FILES['size_chart']) && $_FILES['size_chart']['name'] != "") {
-				$config = [
-					'upload_path'   => './assets/uploads',
-					'allowed_types' => 'jpg|jpeg|png|gif',
-					'max_size'      => 5000,
-					'file_name'     => uniqid() . '_' . $_FILES['size_chart']['name']
-				];
-				$this->load->library('upload', $config);
-				if ($this->upload->do_upload('size_chart')) {
-					$uploadDatasize_chart = $this->upload->data();
-					$post['size_chart'] = $uploadDatasize_chart['file_name'];
+			// var_dump($post);
+			// exit;
+
+			//mohammad code if isset 2024-09-17
+			if (isset($_FILES['size_chart'])) {
+				if ($_FILES['size_chart']['name'] != "") {
+					$config['upload_path'] =  './assets/uploads';
+					$config['allowed_types'] = 'jpg|jpeg|png|gif';
+					$config['max_size'] = '5000'; // max_size in kb
+					$config['file_name'] = $_FILES['size_chart']['name'];
+					$this->load->library('upload', $config);
+
+					// File upload
+					if ($this->upload->do_upload('size_chart')) {
+						// Get data about the file
+						$uploadDatasize_chart = $this->upload->data();
+						$filenamesize_chart = $uploadDatasize_chart['file_name'];
+						$post['size_chart'] = $filenamesize_chart;
+					} else {
+						$errors = array('error' => $this->upload->display_errors());
+					}
 				}
 			}
-			$main_item_id = null;
+
+			// Count total files
+			$countfiles = count($_FILES['files']['name']);
+			$data['filenames'] = [];
+			// Looping all files
+			for ($i = 0; $i < $countfiles; $i++) {
+
+				if (!empty($_FILES['files']['name'][$i])) {
+
+					// Define new $_FILES array - $_FILES['file']
+					$_FILES['file']['name'] = $_FILES['files']['name'][$i];
+					$_FILES['file']['type'] = $_FILES['files']['type'][$i];
+					$_FILES['file']['tmp_name'] = $_FILES['files']['tmp_name'][$i];
+					$_FILES['file']['error'] = $_FILES['files']['error'][$i];
+					$_FILES['file']['size'] = $_FILES['files']['size'][$i];
+
+					// Set preference
+					$config['upload_path'] =  './assets/uploads';
+					$config['allowed_types'] = 'jpg|jpeg|png|gif';
+					$config['max_size'] = '5000'; // max_size in kb
+					$config['file_name'] = $_FILES['files']['name'][$i];
+
+					//Load upload library
+					$this->load->library('upload', $config);
+
+					// File upload
+					if ($this->upload->do_upload('file')) {
+						// Get data about the file
+						$uploadData = $this->upload->data();
+						$filename = $uploadData['file_name'];
+
+						// Initialize array
+						$data['filenames'][] = $filename;
+					} else {
+						$errors = array('error' => $this->upload->display_errors());
+					}
+				}
+			}
+			// var_dump($filenamesize_chart);exit;
 			$this->Item->set_fields($post);
-			if (isset($post["variant1"]) && $post["variant1"] == "NULL") {
+			if ($post["variant1"] == "NULL") {
 				$this->Item->set_field('variant1', NULL);
 			}
-			if (isset($post["size_guidance"]) && trim($post["size_guidance"]) == "") {
+			if (trim($post["size_guidance"]) == "") {
 				$this->Item->set_field('size_guidance', NULL);
 			}
-// var_dump($post);exit;
-			// ---- Variants handling ----
-			foreach ($post['variants'] as $index => $variant) {
-				$this->Item->set_fields($post); // common fields
-				$this->Item->set_field('color', $variant['color']);
-				$this->Item->set_field('gender', $variant['gender']);
-				$this->Item->set_field('price', $variant['price']);
-				$this->Item->set_field('old_price', $variant['old_price']);
-				$this->Item->set_field('publish', $variant['publish']);
-				$this->Item->set_field('stock_clearance', $variant['stock_clearance']);
-
-				// var_dump($index);exit;
-				$this->Item->set_field('barcode', $post['barcode'] . '-' . ($index + 1));
-				$this->Item->set_field('arrangement', $index + 1);
-
-				// ---- Defaults handling ----
-				if (!isset($variant['id'])) {
-					$this->Item->set_field('open_cost', 0);
-					$this->Item->set_field('open_qty', 0);
-					$this->Item->set_field('cost', 0);
-					$this->Item->set_field('qty', 0);
-					$this->Item->set_field('profit', isset($post['profit']) ? $post['profit'] : '');
-					if ($variant["price"] === "") {
-						$this->Item->set_field('price', 0);
-						$this->Item->set_field('price_ttc', 0);
-					}
-				} else {
-					$this->load->model('Transaction');
-					$last_trans_date = $this->Transaction->fetch_last_trans_date_of_purchase_or_transfer_of_item($id);
-					if ($last_trans_date === NULL && isset($post["open_cost"])) {
-						$this->Item->set_field('cost', $post["open_cost"]);
-					}
-					$this->Item->set_field('profit', isset($post['profit']) ? $post['profit'] : '');
-					if ($variant["price"] === "") {
-						$this->Item->set_field('price', 0);
-						$this->Item->set_field('price_ttc', 0);
-					}
-					if (floatval($post["profit"]) > 0) {
-						$this->Item->set_field('price', $variant["cost"] * (1 + ($variant["profit"] / 100)));
-						$this->Item->set_field('price_ttc', ($variant["cost"] * (1 + ($variant["profit"] / 100))) * (1 + ($variant["TVA"] / 100)));
-					}
+			if (!$fetched) {
+				$this->Item->set_field('open_cost', 0);
+				$this->Item->set_field('open_qty', 0);
+				$this->Item->set_field('cost', 0);
+				$this->Item->set_field('qty', 0);
+				// if ($_FILES['size_chart']['name'] != "") {
+				// 	$this->Item->set_field('size_chart', $filenamesize_chart);
+				// }
+				if ($post["profit"] === "") {
+					$this->Item->set_field('profit', 0);
 				}
-
-
-				// ---- INSERT OR UPDATE ----
-				if (isset($variant['id']) && $variant['id'] > 0) {
-					// Existing variant: update
-					$this->Item->set_field('id', $variant['id']);
-					$this->Item->update($variant['id']);
-
-					if ($index == 0 && !$main_item_id) {
-						$main_item_id = $variant['id']; // first variant defines main
-					}
-				} else {
-					// New variant: insert
-					$this->Item->set_field('id', null);
-
-					if ($index == 0 && !$fetched) {
-						// First variant of a new item
-						$this->Item->set_field('main_item_id', null); // cannot reference self yet
-						$this->Item->insert();
-						$main_item_id =  $this->Item->get_field('id');
-						$this->Item->set_field('main_item_id', $main_item_id);
-						$this->Item->update($this->Item->get_field('id'));
-					} else {
-						// Subsequent variants
-						$this->Item->set_field('main_item_id', $main_item_id ?: $id); // link to main
-						$this->Item->insert();
-					}
+				if ($post["price"] === "") {
+					$this->Item->set_field('price', 0);
+					$this->Item->set_field('price_ttc', 0);
 				}
-
-				// ---- Images for this variant ----
-				$saved_id = $this->Item->get_field('id');
-				$data['filenames'] = [];
-
-				if (isset($_FILES['variants']['name'][$index]['files']) && !empty($_FILES['variants']['name'][$index]['files'][0])) {
-					$variantFiles = $_FILES['variants'];
-
-					$countfiles = count($variantFiles['name'][$index]['files']);
-					for ($i = 0; $i < $countfiles; $i++) {
-						if (!empty($variantFiles['name'][$index]['files'][$i])) {
-							$_FILES['file']['name']     = $variantFiles['name'][$index]['files'][$i];
-							$_FILES['file']['type']     = $variantFiles['type'][$index]['files'][$i];
-							$_FILES['file']['tmp_name'] = $variantFiles['tmp_name'][$index]['files'][$i];
-							$_FILES['file']['error']    = $variantFiles['error'][$index]['files'][$i];
-							$_FILES['file']['size']     = $variantFiles['size'][$index]['files'][$i];
-
-							$config['upload_path']   = './assets/uploads';
-							$config['allowed_types'] = 'jpg|jpeg|png|gif';
-							$config['max_size']      = 5000;
-							$config['file_name'] = $variantFiles['name'][$index]['files'][$i];
-
-
-							$this->load->library('upload', $config);
-
-							if ($this->upload->do_upload('file')) {
-								$uploadData = $this->upload->data();
-								$filename   = $uploadData['file_name'];
-								$data['filenames'][] = $uploadData['file_name'];
-							}
-						}
-					}
+			} else {
+				$this->load->model('Transaction');
+				$last_trans_date = $this->Transaction->fetch_last_trans_date_of_purchase_or_transfer_of_item($id);
+				// if ($_FILES['size_chart']['name'] != "") {
+				// 	$this->Item->set_field('size_chart', $filenamesize_chart);
+				// }
+				if ($last_trans_date === NULL) {
+					$this->Item->set_field('cost', $post["open_cost"]);
 				}
-
-				// Flatten all variant files for DB insertion
+				if ($post["profit"] === "") {
+					$this->Item->set_field('profit', 0);
+				}
+				if ($post["price"] === "") {
+					$this->Item->set_field('price', 0);
+					$this->Item->set_field('price_ttc', 0);
+				}
+				if (floatval($post["profit"]) > 0) {
+					$this->Item->set_field('price', $post["cost"] * (1 + ($post["profit"] / 100)));
+					$this->Item->set_field('price_ttc', ($post["cost"] * (1 + ($post["profit"] / 100))) * (1 + ($post["TVA"] / 100)));
+				}
+			}
+			$saved = $fetched ? $this->Item->update() : $this->Item->insert();
+			if ($saved) {
+				$this->load->model('Tag');
 				if (!$fetched) {
-					$this->Item->insert_item_images($data['filenames'], $this->Item->get_field('id'));
-					$images = $this->Item->load_all_item_images($saved_id);
-					$count_img = 1;
-					foreach ($images as $img) {
-						$this->Item->update_product_image_order_nb($img['id'], $count_img);
-						$count_img++;
+					if (isset($post['tags'])) {
+						$this->Tag->insert_item_tags($post['tags'], $this->Item->get_field('id'));
 					}
+					$this->Item->insert_item_images($data['filenames'], $this->Item->get_field('id'));
+					$this->session->set_flashdata('message_success', $this->lang->line('Saved_Successfully'));
+					redirect("items/add");
 				} else {
+					$this->Tag->delete_all_item_tags($id);
+					if (isset($post['tags'])) {
+						$this->Tag->insert_item_tags($post['tags'], $this->Item->get_field('id'));
+					}
 					if ($data['filenames'] !== []) {
 						// $this->Item->delete_item_images($this->Item->get_field('id'));
 						$this->Item->insert_item_images($data['filenames'], $this->Item->get_field('id'));
@@ -309,50 +291,31 @@ class Items extends MY_Controller
 							$count++;
 						}
 					}
+					$this->session->set_flashdata('message_success', $this->lang->line('Updated_Successfully'));
 				}
-				// ---- Tags for this variant ----
-				$this->load->model('Tag');
-				if (!$fetched) {
-					if (isset($post['tags'])) {
-						$this->Tag->insert_item_tags($post['tags'], $this->Item->get_field('id'));
-					}
-				} else {
-					$this->Tag->delete_all_item_tags($this->Item->get_field('id'));
-					if (isset($post['tags'])) {
-						$this->Tag->insert_item_tags($post['tags'], $this->Item->get_field('id'));
-					}
-				}
-			}
-			$this->session->set_flashdata('message_success', $this->lang->line($fetched ? 'Updated_Successfully' : 'Saved_Successfully'));
-			if (!$fetched) {
-				redirect("items/add");
-			} else {
-				redirect("items/edit/" . $id);
 			}
 		}
-
-		// ---- Load view for edit/add ----
-		$this->load->model('Tag');
-		$data['selected_tags'] = $fetched ? array_column($this->Tag->load_item_tags($id), 'id', 'id') : '';
 		if ($fetched) {
-			$fetched_item = $this->Item->fetch_item($id)[0];
-			$main_item_id = $fetched_item['main_item_id'] ?: $id;
-			// var_dump($main_item_id);exit;
-			$data['variants'] = $this->Item->getItemVariants($main_item_id);
-			foreach ($data['variants'] as $key => $variant) {
-				$data['variants'][$key]['item_images'] = $this->Item->load_item_images($variant['id']);
-				$data['variants'][$key]['images_nbs'] = [];
-				$count = 1;
-				foreach ($data['variants'][$key]['item_images'] as $img) {
-					$data['variants'][$key]['images_nbs'][$count] = $count;
-					$count++;
+			$this->load->model('Tag');
+			$selected_tags = $this->Tag->load_item_tags($id);
+			if (!$selected_tags) {
+				$data['selected_tags'] = '';
+			} else {
+				foreach ($selected_tags as $s) {
+					$data['selected_tags'][$s['id']] = $s['id'];
 				}
 			}
-			$clean_barcode = preg_replace('/-\d+$/', '', (string) $this->Item->get_field('barcode'));
-			$this->Item->set_field('barcode', $clean_barcode);
+			$data['item_images'] = $this->Item->load_item_images($this->Item->get_field('id'));
+			$count = 0;
+			foreach ($data['item_images'] as $image) {
+				$count++;
+				$data['images_nbs'][$count] = $count;
+			}
+		} else {
+			$data['selected_tags'] = '';
+			$data['item_images'] = [];
+			$data['images_nbs'] = [];
 		}
-
-		// ---- Configs, categories, colors, tags, etc ----
 		$this->load->model('Configuration');
 		$TVA1 = $this->Configuration->fetch_TVA1()["valueStr"];
 		$TVA2 = $this->Configuration->fetch_TVA2()["valueStr"];
@@ -370,7 +333,7 @@ class Items extends MY_Controller
 		foreach ($sub_categories as $c) {
 			$data['sub_categories'][$c] = $c;
 		}
-		$data['gender'] = array('Unisex' => 'Unisex','Female' => 'Female', 'Male' => 'Male',  'gender_free' => 'Gender Free',);
+		$data['gender'] = array('Female' => 'Female', 'Male' => 'Male', 'Unisex' => 'Unisex', 'gender_free' => 'Gender Free',);
 		$colors = $this->Configuration->fetch_colors()["valueStr"];
 		$colors = explode(",", $colors);
 		$data['colors'][0] = '';
@@ -401,7 +364,6 @@ class Items extends MY_Controller
 		foreach ($size_guidances as $c) {
 			$data['size_guidance'][$c] = $c;
 		}
-		// var_dump($data);exit;
 		$data['title'] = $page_title;
 		$this->load->view('templates/header', [
 			'_page_title' => $page_title,
@@ -419,52 +381,26 @@ class Items extends MY_Controller
 		]);
 	}
 
+
 	public function delete($id)
 	{
-		$item = $this->Item->fetch_item($id)[0];
-
-		$main_item_id = $item['main_item_id'];
-		$variants = $this->Item->getItemVariants($main_item_id);
-		$base_barcode = preg_replace('/-\d+$/', '',  $item['barcode']);
-
 		if ($this->Item->fetch_all_item_details($id)) {
 			$this->session->set_flashdata('message', $this->lang->line('active_item_cant_be_deleted'));
-			redirect($_SERVER['HTTP_REFERER']);
-			return;
-		}
-
-		if ($main_item_id == $item['id']) {
-			$main_item_id = $variants[1]['id'];
-		}
-		$item_images = $this->Item->load_item_images($id);
-		if ($this->Item->delete($id)) {
-			foreach ($item_images as $image) {
-				$filename =  'assets/uploads/' . $image['image_name'];
-				unlink($filename);
-			}
-			$variants = array_filter($variants, function ($variant) use ($id) {
-				return $variant['id'] != $id;
-			});
-
-			if (empty($variants)) {
-				redirect('items/index');
-				return;
-			}
-			$this->Item->rearrange_variants($variants, $base_barcode, $main_item_id);
-			$referer = $_SERVER['HTTP_REFERER'];
-			$edit_page_pattern = '/edit\/' . $id . '$/';
-
-			if (preg_match($edit_page_pattern, $referer)) {
-				redirect('items/edit/' . $main_item_id);
-			} else {
-				redirect($referer);
-			}
+			redirect('items/index');
 		} else {
-			redirect($_SERVER['HTTP_REFERER']);
+			$item_images = $this->Item->load_item_images($id);
+			if ($this->Item->delete($id)) {
+				foreach ($item_images as $image) {
+					$filename =  'assets/uploads/' . $image['image_name'];
+					$r = unlink($filename);
+				}
+				redirect('items/index');
+			} else {
+				//$this->add_msg($this->lang->line('record_not_deleted'), 'warning');
+				redirect('items/index');
+			}
 		}
 	}
-
-
 
 	public function fetchitemnumberfromDatabase()
 	{

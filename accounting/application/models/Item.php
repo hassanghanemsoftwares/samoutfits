@@ -8,8 +8,8 @@ class Item extends MY_Model
 	protected $modelName = 'Item';
 	protected $_table = 'items';
 	protected $_listFieldName = 'description';
-	protected $_fieldsNames = ['id', 'barcode', 'description', 'category', 'open_cost', 'cost', 'purchase_cost', 'open_qty', 'price', 'price_ttc', 'qty', 'profit', 'TVA', 'color', 'note', 'gender', 'publish', 'sub_category','variant1', 'stock_clearance', 'old_price', 'size_chart', 'supplier_code', 'rmb', 'link','cool_storage','flammable_handling','fragile','size_guidance'];
-	protected $allowedNulls = ['supplier_code', 'rmb', 'link','variant1'];
+	protected $_fieldsNames = ['id', 'barcode', 'description', 'category', 'open_cost', 'cost', 'purchase_cost', 'open_qty', 'price', 'price_ttc', 'qty', 'profit', 'TVA', 'color', 'note', 'gender', 'publish', 'sub_category', 'variant1', 'stock_clearance', 'old_price', 'size_chart', 'supplier_code', 'rmb', 'link', 'cool_storage', 'flammable_handling', 'fragile', 'size_guidance', 'main_item_id', 'arrangement'];
+	protected $allowedNulls = ['supplier_code', 'rmb', 'link', 'variant1'];
 
 	public function __construct()
 	{
@@ -51,7 +51,17 @@ class Item extends MY_Model
 	{
 		$dt = [
 			'columns' => [
-				'items.barcode', 'items.description', 'items.category', 'items.cost', 'items.purchase_cost', 'items.profit', 'items.price', 'items.price_ttc', 'items.qty', ['IF(items.publish = 1, "Yes", "No")', 'published'], 'items.id'
+				'items.barcode',
+				'items.description',
+				'items.category',
+				'items.cost',
+				'items.purchase_cost',
+				'items.profit',
+				'items.price',
+				'items.price_ttc',
+				'items.qty',
+				['IF(items.publish = 1, "Yes", "No")', 'published'],
+				'items.id'
 			],
 			'query' => [],
 			'search_in' => ['items.barcode', 'items.description', 'items.category', 'items.cost', 'items.open_cost', 'items.open_qty', 'items.price', 'items.qty', 'items.profit']
@@ -147,14 +157,16 @@ class Item extends MY_Model
 			->where('items.barcode <', 9999999)
 			->get($this->_table);
 
-		if ($query->row()->newbarcode == null) {
-			$no = 9900000;
-			return  $no;
+		$maxBarcode = $query->row()->newbarcode;
+
+		if ($maxBarcode == null) {
+			return 9900000;
 		} else {
-			$no =	$query->row()->newbarcode;
-			return 1 + $no;
+			return 1 + (int)$maxBarcode;  // cast to integer
 		}
 	}
+
+
 
 	public function get_barcode_by_id($id)
 	{
@@ -269,12 +281,21 @@ class Item extends MY_Model
 	{
 		$dt = [
 			'columns' => [
-				"account1.account_name", "transactions.trans_type", "transactions.trans_date",
-				"transactions.auto_no", "currencies.currency_code", "currencies.currency_rate", "w.warehouse", "w.shelf", "ti.qty", "ti.price",
+				"account1.account_name",
+				"transactions.trans_type",
+				"transactions.trans_date",
+				"transactions.auto_no",
+				"currencies.currency_code",
+				"currencies.currency_rate",
+				"w.warehouse",
+				"w.shelf",
+				"ti.qty",
+				"ti.price",
 				["ROUND(( ti.qty * (IF( transactions.trans_type = 'PU', ti.cost, 0) + ((ti.price * (1 - ti.discount/100))))),2)", "total_of_item"],
 				["transactions.id", "trans_id"]
 
-			], 'query' => [
+			],
+			'query' => [
 				'join' => [
 					['transaction_items as ti', 'ti.item_id = items.id'],
 					['transactions', 'transactions.id = ti.transaction_id'],
@@ -664,7 +685,13 @@ class Item extends MY_Model
 	{
 		$dt = [
 			'columns' => [
-				'items.barcode', 'items.description', 'items.category', 'items.price', 'items.price_ttc', 'items.qty', 'items.id'
+				'items.barcode',
+				'items.description',
+				'items.category',
+				'items.price',
+				'items.price_ttc',
+				'items.qty',
+				'items.id'
 			],
 			'query' => [],
 			'search_in' => ['items.barcode', 'items.description', 'items.category']
@@ -858,7 +885,7 @@ class Item extends MY_Model
 		}
 		return [];
 	}
-		public function search_suggestions_new($q = false)
+	public function search_suggestions_new($q = false)
 	{
 		(false === $q) and ($q = $this->input->post('term', true));
 		$query = $this->db->select("{$this->_table}.*")
@@ -896,18 +923,46 @@ class Item extends MY_Model
 		$this->db->where('id', $item_id);
 		return $this->db->update('items', $data);
 	}
-	
-	public function get_all_items_for_pixels(){
-		$query=$this->db->select('items.*,SUM(transaction_items.qty * transaction_items.mvt_type) as availabile_qty,product_images.image_name as first_image')
-		                ->from('items')
-						->join('transaction_items','transaction_items.item_id=items.id','left')
-						->join('(SELECT * FROM product_images WHERE product_images.order_nb=1 OR product_images.order_nb IS NULL GROUP BY product_images.item_id) AS product_images','product_images.item_id=items.id','left')
-						->where('items.publish',1)
-						->group_by('items.id')
-						->get();
-		if($query->num_rows()==0){
+
+	public function get_all_items_for_pixels()
+	{
+		$query = $this->db->select('items.*,SUM(transaction_items.qty * transaction_items.mvt_type) as availabile_qty,product_images.image_name as first_image')
+			->from('items')
+			->join('transaction_items', 'transaction_items.item_id=items.id', 'left')
+			->join('(SELECT * FROM product_images WHERE product_images.order_nb=1 OR product_images.order_nb IS NULL GROUP BY product_images.item_id) AS product_images', 'product_images.item_id=items.id', 'left')
+			->where('items.publish', 1)
+			->group_by('items.id')
+			->get();
+		if ($query->num_rows() == 0) {
 			return array();
 		}
 		return $query->result();
+	}
+	public function getItemVariants($main_item_id)
+	{
+		$this->db->group_start()
+			->where('main_item_id', $main_item_id)
+			->or_where('id', $main_item_id)
+			->group_end();
+
+		$this->db->order_by('arrangement', 'ASC');
+		$query = $this->db->get('items');
+
+		return $query->result_array();
+	}
+
+	public function rearrange_variants($variants, $base_barcode, $main_item_id)
+	{
+		$arrangement = 1;
+		foreach ($variants as $v) {
+			$barcode = $base_barcode . '-' . $arrangement;;
+			$data = [
+				'arrangement' => $arrangement,
+				'barcode' => $barcode,
+				'main_item_id' => $main_item_id
+			];
+			$this->db->where('id', $v['id'])->update('items', $data);
+			$arrangement++;
+		}
 	}
 }
