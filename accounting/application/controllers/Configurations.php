@@ -114,7 +114,7 @@ class Configurations extends MY_Controller
 	}
 	public function get_sub_categories()
 	{
-		$sub_categories = $this->Configuration->fetch_sub_categories();
-		echo ($sub_categories['valueStr']);
+		$colors = $this->Configuration->fetch_sub_categories();
+		echo ($colors['valueStr']);
 	}
 }

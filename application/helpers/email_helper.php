@@ -28,22 +28,21 @@ if (!function_exists('send_admin_order_email')) {
 
     $client_email = trim($customer['email'] ?? '');
 
-    if (!empty($client_email)) {
-        $CI->email->to($client_email);
-        $CI->email->cc("orders@samoutfits.com");
-    } else {
-    $CI->email->to("orders@samoutfits.com");
+    // if (!empty($client_email)) {
+    //     $CI->email->to($client_email);
+    //     $CI->email->cc("orders@samoutfits.com");
+    // } else {
+    // $CI->email->to("orders@samoutfits.com");
 
-    }
+    // }
 
-    // $CI->email->to("hassanghanemsoftwares@gmail.com");
+    $CI->email->to("hassanghanemsoftwares@gmail.com");
 
     $CI->email->subject('🛒 Order Confirmation - #' . $order['auto_no']);
 
+$payment_color = ($order['payment_method'] === 'whish') ? 'red' : '#7f00ff';
 
-    $payment_color = ($order['payment_method'] === 'whish') ? 'red' : '#7f00ff';
-
-    $message = '<html>
+$message = '<html>
   <head>
     <meta charset="UTF-8">
   </head>
@@ -83,14 +82,14 @@ if (!function_exists('send_admin_order_email')) {
                       <span style="color:' . $payment_color . ';">' . htmlspecialchars($order['payment_method']) . '</span>
                     </li>';
 
-    if ($order['payment_method'] === "whish") {
-      $message .= '<li>
+if ($order['payment_method'] === "whish") {
+  $message .= '<li>
                   <strong>Payment Status:</strong>
                   <span style="color:#7f00ff;">' . htmlspecialchars($order['payment_status']) . '</span>
                 </li>';
-    }
+}
 
-    $message .= '
+$message .= '
                   </ul>
                 </div>
 
@@ -108,8 +107,8 @@ if (!function_exists('send_admin_order_email')) {
                     </thead>
                     <tbody>';
 
-    foreach ($order_items as $item) {
-      $message .= '<tr>
+foreach ($order_items as $item) {
+  $message .= '<tr>
                 <td style="padding:8px;">
                   <img src="' . base_url() . 'accounting/assets/uploads/' . $item['image_name'] . '"
                        alt="Item Image"
@@ -121,9 +120,9 @@ if (!function_exists('send_admin_order_email')) {
                 <td style="padding:8px;">' . $item['qty'] . '</td>
                 <td style="padding:8px;">$' . number_format((float)$item['price'] * $item['qty'], 2) . '</td>
               </tr>';
-    }
+}
 
-    $message .= '</tbody>
+$message .= '</tbody>
                   </table>
                 </div>
 
@@ -192,13 +191,12 @@ if (!function_exists('send_admin_order_email')) {
   </body>
 </html>';
 
+    $CI->email->message($message);
 
-    // $CI->email->message($message);
-
-    // if (!$CI->email->send()) {
-    //   log_message('error', 'Order email failed: ' . $CI->email->print_debugger(['headers']));
-    //   return false;
-    // }
+    if (!$CI->email->send()) {
+      log_message('error', 'Order email failed: ' . $CI->email->print_debugger(['headers']));
+      return false;
+    }
 
     return true;
   }
